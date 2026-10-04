@@ -17,6 +17,8 @@ function M.try(dog,target)
     if mode == "takedown" then return false end
     id = "dogs_ankle_tear"
   end
+  local telemetry=require("lib.telemetry")
+  telemetry.observe(target,"before_attack")
   dog:set_target(target)
   dog:set_special_attack_enabled(id,true)
   local ready = dog:special_attack_ready(id)
@@ -26,12 +28,13 @@ function M.try(dog,target)
   M.disable(dog)
   if not ok then error(handled) end
   if ready then
-    log.write("attack", "id="..id.." target="..target:get_type():str().." handled="..tostring(handled)..
+    log.write("attack", "entity="..telemetry.id(dog).." target_entity="..telemetry.id(target).." id="..id.." target="..target:get_type():str().." handled="..tostring(handled)..
       " damage="..tostring(hp-target:get_hp()).." downed="..tostring(target:has_effect(EffectTypeId.new("downed")))..
       " bleed="..tostring(target:has_effect(EffectTypeId.new("bleed")))..
       " ankle="..tostring(target:has_effect(EffectTypeId.new("dogs_ankle_wound")))..
       " cooldown="..tostring(dog:get_special_attack_cooldown(id)))
   end
+  telemetry.observe(target,"after_attack")
   return handled
 end
 return M

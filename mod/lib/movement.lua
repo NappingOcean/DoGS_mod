@@ -45,8 +45,8 @@ function M.step(dog, goal, enemies, retreat)
     if improves then
       local moves=dog:get_moves()
       if dog:move_to(candidate.pos,false,false,1.0) then
-        if dog:get_value("dogs_trace") == "1" then
-          log.write("move", "from="..origin.x..","..origin.y..","..origin.z..
+        do
+          log.write("move", "entity="..require("lib.telemetry").id(dog).." from="..origin.x..","..origin.y..","..origin.z..
             " to="..candidate.pos.x..","..candidate.pos.y..","..candidate.pos.z..
             " cost="..tostring(moves-dog:get_moves()).." retreat="..tostring(retreat))
         end
@@ -56,6 +56,7 @@ function M.step(dog, goal, enemies, retreat)
       if dog:get_moves() ~= moves then return true end
     end
   end
+  log.write("move_blocked","entity="..require("lib.telemetry").id(dog).." retreat="..tostring(retreat).." candidates="..#candidates)
   return false
 end
 return M

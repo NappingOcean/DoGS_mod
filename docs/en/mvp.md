@@ -31,25 +31,15 @@ Run from the repository root on Windows:
 
 This creates `mods/DoGS` as a junction to this repository's `mod` directory. Existing unrelated destinations are refused. Restart the game after changing scripts/data and enable **DoGS — Dogs of Good Sense (MVP)** in a disposable test world. Lua API 2 is required; the 2026-09-24 stable build was not used for validation.
 
-1. Spawn a Labrador mutt and the **DoGS debug remote** through the game's debug menus. Tame the dog using the normal game mechanics; the remote does not grant friendliness.
-2. Activate the remote, select the dog, and enable experimental training. Toggle action messages and detailed movement logs as needed.
-3. Spawn an ordinary zombie in an open area. Test automatic, Takedown-only, and Ankle-Tear-only modes separately. Cooldowns are never cleared by changing modes.
-4. Select the hostile creature with the remote to log its HP, speed, downed/bleed/wound status, and bleeding immunity. Compare speed after the game's next effect-processing tick.
-5. Compare an untrained dog; then test low HP, multiple nearby enemies, obstacles, tied/downed states, and a distant player.
-6. Save and reload, select the dog again, and compare training, messages, attack mode, action, and cooldown snapshots. Persistence is source-supported but this playtest is still pending.
+1. Spawn and tame a Labrador mutt using normal game/debug tools.
+2. Open **action_menu / Misc / DoGS laboratory**, select the dog, and enable experimental training. Attack mode and optional action messages are configured there. No remote item or manual snapshot is needed.
+3. Test an ordinary zombie in an open area with automatic/Takedown-only/Ankle-Tear-only modes. Changing modes does not reset cooldowns.
+4. Logs automatically record dog state changes before/after AI, a heartbeat every five turns, and visible monsters within eight tiles of a supported dog. Attack targets are recorded before/after attacks. Movement success and failed-step outcomes are automatic.
+5. Test untrained dogs, low HP, nearby groups, obstacles, tied/downed states, and save/reload. These are live playtests, not implied by successful loading.
 
-The log is the active user directory's **config/debug.log**. Search for `[DoGS]`. Ensure the game's INFO/LUA logging is enabled if lines are missing.
+The log is the active user directory's **config/debug.log**. Search for `[DoGS]`. Enable INFO/LUA logging if necessary. `state` records persistent per-entity IDs, type, position, current/maximum HP, observed HP delta, speed, friendliness/training, tactical action, attack mode, effects, cooldowns, moves and game turn. HP delta is the net change since the previous observation; it is not an individual hit count or damage-source attribution. IDs distinguish multiple dogs of the same type and persist through normal creature value serialization; actual save/reload still needs testing.
 
-| Event | Meaning |
-| --- | --- |
-| load / finalize | registration / finalized definition checks |
-| selftest | policy or mock guard fixture result |
-| action | changed tactical label; optional game message |
-| move | optional origin, destination, movement cost, retreat flag |
-| attack | actor handling, real damage, effects, cooldown |
-| snapshot / effects / cooldown | user-triggered individual inspection |
-
-A snapshot can also be invoked from the Lua console with `game.mod_runtime.DoGS.snapshot(monster)` when a Monster reference is available. It is a diagnostic function, not a scheduled hook.
+`move` reports coordinates and cost; `move_blocked` reports unsuccessful local stepping; `attack` reports actor handling, actual damage and effects, with dog/target IDs. `action` retains the compact transition message. Nearby target states are logged on changes; periodic dog heartbeats provide context without user intervention. Disappearance/death and invisible targets are not yet monitored. Old saved remote items remain functional for compatibility, but the action menu is the supported workflow.
 
 ## Verification
 
@@ -59,10 +49,10 @@ Test environment: Windows x64 MSVC redhot **2026-10-04-0345**, commit `ef0eceda3
 .\scripts\Test-Mod.ps1 -GameDirectory ..\game_redhot
 ```
 
-The checker uses an isolated temporary user directory, runs `--check-mods DoGS`, retains stdout/stderr/debug.log, and requires exit zero plus Lua success markers. **Passed:** data/script loading, ten policy assertions using native coordinate objects, eight guard assertions with mock monsters, and finalized ID validity. Guard fixtures do not prove actual engine callback dispatch or combat.
+The checker uses an isolated temporary user directory, runs `--check-mods DoGS`, retains stdout/stderr/debug.log, and requires exit zero plus Lua success markers. **Passed:** data/script loading, ten policy assertions using native coordinate objects, eight guard assertions and four telemetry assertions with mock monsters, and finalized ID validity. Guard fixtures do not prove actual engine callback dispatch or combat.
 
 **Pending live playtests:** movement/terrain costs, actor hit/miss and armor/immunity cases, first-turn behavior of real untrained dogs, effect processing/expiration, actual save/load, and compatibility with other mods. LURE, production training, additional breeds, and full path planning are not implemented. No live combat success is claimed.
 
 ## Files
 
-`mod/json/` contains dog overrides, effects, and debug items. `mod/lib/` separates configuration, logging, policy, perception, movement, attacks, AI, and diagnostics. `mod/tests/` contains load-time fixtures. `preload.lua` registers callbacks before JSON use; `finalize.lua` checks loaded definitions. See the [source audit](source-verification.md) for native behavior.
+`mod/json/` contains dog overrides, effects, and legacy debug items and action-menu controls. `mod/lib/` separates configuration, logging, policy, perception, movement, attacks, AI, and diagnostics, and automatic telemetry. `mod/tests/` contains load-time fixtures. `preload.lua` registers callbacks before JSON use; `finalize.lua` checks loaded definitions. See the [source audit](source-verification.md) for native behavior.

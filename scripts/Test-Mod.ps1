@@ -11,6 +11,7 @@ $dogsStdout = Join-Path $dogsTest 'stdout.txt'
 $dogsStderr = Join-Path $dogsTest 'stderr.txt'
 $dogsArgs = @('--userdir', ('"' + $dogsTest + '/"'), '--check-mods', 'DoGS')
 $dogsProcess = Start-Process -FilePath $dogsExecutable -ArgumentList $dogsArgs -WorkingDirectory $dogsGame -WindowStyle Hidden -RedirectStandardOutput $dogsStdout -RedirectStandardError $dogsStderr -PassThru
+$null = $dogsProcess.Handle
 while (-not $dogsProcess.WaitForExit(30000)) { Write-Output 'BN is still checking mod data...' }
 $dogsProcess.WaitForExit()
 $dogsLog = Join-Path $dogsTest 'config/debug.log'
@@ -19,7 +20,7 @@ Get-Content -LiteralPath $dogsStdout
 Get-Content -LiteralPath $dogsStderr
 if ($dogsProcess.ExitCode -ne 0) { throw "BN check failed: exit $($dogsProcess.ExitCode)" }
 $dogsLogText = Get-Content -LiteralPath $dogsLog -Raw
-foreach ($dogsMarker in @('policy_assertions=10 result=pass', 'guard_assertions=8 result=pass', 'definitions=valid')) {
+foreach ($dogsMarker in @('policy_assertions=10 result=pass', 'guard_assertions=8 result=pass', 'definitions=valid', 'telemetry_assertions=4 result=pass')) {
     if (-not $dogsLogText.Contains($dogsMarker)) { throw "Missing Lua validation marker: $dogsMarker" }
 }
-Write-Output 'PASS: BN data loading and Lua policy/guard fixtures. Live combat and save/load still require playtesting.'
+Write-Output 'PASS: BN data loading and Lua policy/guard/telemetry fixtures. Live combat and save/load still require playtesting.'

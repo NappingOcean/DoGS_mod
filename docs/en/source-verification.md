@@ -52,3 +52,5 @@ Working rules: [research and verification](../../AGENT/research-rules.md).
 ## MVP follow-up
 
 A modular MVP now exists. See [MVP laboratory](mvp.md) for the newer executable revision, completed loading/fixture checks, and remaining live gameplay tests. The source findings above retain their original pinned revision.
+
+Combat-path and hook coverage audit: [Combat hooks](combat-hooks.md).

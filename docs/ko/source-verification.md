@@ -51,4 +51,6 @@ materials.json의 flesh/iflesh, effects.json의 downed·bleed·grabbed·bite·in
 
 ## MVP 후속 검증
 
+훅 선언·실제 호출 위치·공통 피해 함수의 관계는 [전투 호출 경로와 훅 조사](combat-hooks.md)에 별도로 기록했다. 특히 `on_creature_attacked_by_character`의 투사체 처리 경로를 확인했다.
+
 모듈별 MVP를 구현했다. 최신 실행 파일의 리비전, 완료한 로딩·fixture 검사와 남은 플레이 검사는 [MVP 실험실](mvp.md)에 기록했다. 위 소스 조사 결과는 원래 고정 리비전 기준을 유지한다.

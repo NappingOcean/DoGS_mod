@@ -10,6 +10,8 @@ Check the actual creature definition and inherited material/flags before applyin
 
 ## Follow the full execution path
 
+For Lua hooks, enumerate registered names and search every actual emitter. Trace shared callees and early returns, inspect event payloads and flag/source-type gates, and distinguish normal attacks, generic actors, hardcoded specials, Character/fake-NPC firearms, raw monster projectiles, spells and environment damage. A common damage function or a binding declaration does not establish hook coverage.
+
 Inspect the loader, runtime state, callback dispatch, action costs, immunity checks, and save/load paths relevant to a claim. Verify binding signatures and return semantics rather than relying on function names. Consider mod load order and replacement behavior.
 
 Do not equate source support with a working DoGS implementation. An existing test definition is evidence of coverage intent; it is not evidence that the test was run.

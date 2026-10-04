@@ -17,3 +17,5 @@ Design snapshot based on the curated Korean Obsidian notes, updated 2026-10-04. 
 - [Roadmap and open questions](roadmap.md)
 
 Source evidence and remaining runtime checks: [BN source verification](source-verification.md).
+
+Combat-path and hook coverage audit: [Combat hooks](combat-hooks.md).

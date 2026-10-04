@@ -2,7 +2,7 @@
 
 [한국어](README.ko.md)
 
-A planned dog AI mod for **Cataclysm: Bright Nights**. DoGS turns trained dogs into tactical companions through positioning, threat assessment, enemy separation, and timely retreats.
+An experimental dog AI mod for **Cataclysm: Bright Nights**. DoGS turns trained dogs into tactical companions through positioning, threat assessment, enemy separation, and timely retreats.
 
 ## Planned behavior
 
@@ -11,6 +11,8 @@ A planned dog AI mod for **Cataclysm: Bright Nights**. DoGS turns trained dogs i
 - Visually lure exposed enemies away, break pursuit, and return safely.
 - Apply DoGS behavior to trained individual dogs while preserving normal AI for untrained dogs.
 
-**Status:** design and documentation only. No playable mod or verified implementation is included yet.
+**Status:** modular laboratory MVP for redhot BN (Lua API 2). One adult dog type, provisional NORMAL tactics, control attacks, and a debug remote are implemented. Data loading and Lua fixtures pass on 2026-10-04; live combat and save/load tests remain pending. LURE and production training are future work.
+
+Install and test: [MVP laboratory](docs/en/mvp.md).
 
 See the [English design documentation](docs/en/index.md) or [한국어 설계 문서](docs/ko/index.md) for architecture, implementation constraints, and the roadmap.

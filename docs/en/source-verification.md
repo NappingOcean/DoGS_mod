@@ -48,3 +48,7 @@ Once DoGS exists: JSON loading and supported dog coverage; first-action disablin
 JSON definitions inspected: materials.json (flesh/iflesh), effects.json (downed, bleed, grabbed, bite, infected, pacified), and mutations/mutations.json (TOXICFLESH). WARM maps through the monster flag loader and appears in mon_zombie JSON.
 
 Working rules: [research and verification](../../AGENT/research-rules.md).
+
+## MVP follow-up
+
+A modular MVP now exists. See [MVP laboratory](mvp.md) for the newer executable revision, completed loading/fixture checks, and remaining live gameplay tests. The source findings above retain their original pinned revision.

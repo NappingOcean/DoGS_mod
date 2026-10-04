@@ -48,3 +48,7 @@ DoGS 구현 후 JSON 로드·개 타입 적용, 첫 행동의 공격 비활성�
 materials.json의 flesh/iflesh, effects.json의 downed·bleed·grabbed·bite·infected·pacified, mutations/mutations.json의 TOXICFLESH를 확인했다. WARM은 몬스터 플래그 로더로 연결되며 mon_zombie JSON에 존재한다.
 
 작업 원칙: [조사와 검증 지침](../../AGENT/research-rules.md).
+
+## MVP 후속 검증
+
+모듈별 MVP를 구현했다. 최신 실행 파일의 리비전, 완료한 로딩·fixture 검사와 남은 플레이 검사는 [MVP 실험실](mvp.md)에 기록했다. 위 소스 조사 결과는 원래 고정 리비전 기준을 유지한다.

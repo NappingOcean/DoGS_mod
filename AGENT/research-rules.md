@@ -32,3 +32,7 @@ Run checks appropriate to the change. For documentation, verify links and format
 ## Shared and local context
 
 Commit project-wide rules. Keep personal paths, credentials, environment-specific settings, and temporary investigation notes local. Shared guidance should use logical or repository-relative paths.
+
+## Commit attribution
+
+Include `Assisted-by: OpenAI GPT` in commits containing GPT-assisted work.

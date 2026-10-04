@@ -1,0 +1,33 @@
+[
+  {
+    "type": "item_action",
+    "id": "DOGS_DEBUG_REMOTE",
+    "name": {
+      "str": "DoGS laboratory"
+    }
+  },
+  {
+    "type": "TOOL",
+    "id": "dogs_debug_remote",
+    "name": {
+      "str": "DoGS debug remote"
+    },
+    "description": "Experimental DoGS controls. Activate and select a Labrador mutt. Spawn through the debug item menu.",
+    "symbol": ";",
+    "color": "light_blue",
+    "price": "0 cent",
+    "price_postapoc": "0 cent",
+    "weight": "100 g",
+    "volume": "250 ml",
+    "material": [
+      "plastic"
+    ],
+    "max_charges": 0,
+    "initial_charges": 0,
+    "charges_per_use": 0,
+    "turns_per_charge": 0,
+    "use_action": [
+      "DOGS_DEBUG_REMOTE"
+    ]
+  }
+]

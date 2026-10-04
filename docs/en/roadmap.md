@@ -1,6 +1,6 @@
 # Roadmap and open questions
 
-The project is in the design stage. Implementation is not yet verified. Check technical details against the target BN version.
+A modular laboratory MVP is implemented. Data/script loading and Lua fixtures pass on redhot 2026-10-04; live gameplay validation remains pending. See [MVP scope and checks](mvp.md).
 
 ## Implementation order
 
@@ -17,7 +17,7 @@ The project is in the design stage. Implementation is not yet verified. Check te
 
 All source-level items were inspected; see [the audit](source-verification.md). Integration, persistence, callback dispatch, attacks, and effects are confirmed in source. Pursuit identity and waypoint execution have documented limits. Other mods can replace the same definitions, so compatibility remains conditional.
 
-Runtime checks remain: load DoGS JSON, verify untrained fallback and first-action disabling, save/load mission state, exercise attack/effect immunity and armor, waypoint movement, LURE, and named mod combinations. No DoGS implementation exists to run these checks yet.
+Runtime checks remain: verify untrained fallback and first-action disabling, save/load mission state, exercise attack/effect immunity and armor, waypoint movement, LURE, and named mod combinations. The MVP supplies debug controls and log events for these checks; they are not yet completed in live gameplay.
 
 ## Open design questions
 

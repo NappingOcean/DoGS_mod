@@ -178,7 +178,7 @@ The engine's `plan()` recomputes target and destination on every action. Check:
 
 Implement the Guard, Harass and Free roles based on E3. Guard is implemented; Harass comes later.
 
-### E6 Guard (first run partial pass; rerun planned)
+### E6 Guard (done: first run partial pass, second passed)
 - Setup: two regular zombies, apart from each other, about 6 tiles from the player. The player fights them with a melee weapon. Repeat with a vanilla dog and a Guard-role dog.
 - Measure: damage taken by the player, turns until the player has killed both zombies, turns the dog spent more than 3 tiles from the player (`player` in `summary`).
 - Check: does the dog close on zombies approaching the player (`step kind=intercept`)? Does it avoid chasing distant zombies while guarding? Do control attacks turn into openings for the player?
@@ -351,6 +351,32 @@ Log: `config/debug.log` 01:23–01:29. Dog #10, first in the Guard role against 
 - **Experimenter's observation:** while a zombie was downed, its attacks were easier to dodge and the player's attacks landed more often. This matches the source finding that a downed monster's dodge is 0 (`src/monster.cpp`).
 
 **Verdict: partial pass.** The dog stayed within the radius, and control turned into kills by the player. The success criterion "damage taken by the player" is not in the log and could not be compared. Logging was added for the player's melee swings (`player_melee`, including whether the target was downed), melee attacks on the player (`player_attacked`), and player HP in `summary`; E6 will be rerun with it. With training turned off in the menu, the role still reads guard but the dog behaves as vanilla.
+
+### 2026-10-05 E6 (Guard), second run
+
+Log: `config/debug.log` 08:37–08:43. Dog #10. In the Guard role against 5 regular zombies (#39, #40, #43, #44, #45) and 2 fat zombies (`mon_zombie_fat`, #41, #42), then with training OFF (vanilla) against 8 regular zombies. The player fought alongside with a melee weapon. `player_hp` is the sum of body-part HP.
+
+| Condition | Zombies the player fought | Hits taken by the player | Player HP lost | Damage taken by the dog | Dog–player distance |
+| --- | --- | --- | --- | --- | --- |
+| Guard, regular zombies | 5 | 2 | about 6 | 4 | 1–3 |
+| Guard, fat zombies | 2 | 3 | 19 | 17 | 1–3 |
+| Vanilla, regular zombies | 5 (the dog killed the other 3) | 5 | 21 | 16 | 1–5 |
+
+The player's melee hit rate (`player_melee`):
+
+| Target state | Hits / swings |
+| --- | --- |
+| Downed regular zombie | 5 / 5 |
+| Standing regular zombie (Guard and vanilla combined) | 24 / 28 |
+| Fat zombie (never downed) | 7 / 11 |
+
+**Verdict: E6 passed.** Against regular zombies, the player took 2 hits (about 6 HP) fighting alongside the Guard dog versus 5 hits (21 HP) with the vanilla dog. The Guard dog stayed within 3 tiles of the player. The sample is small, and the vanilla runs differ in that the dog killed 3 zombies on its own.
+
+Observations:
+
+1. **Downed zombies were always hit:** 5/5 against 86% (24/28) for standing ones. Same direction as the experimenter's observation, on a small sample.
+2. **Without Takedown, guarding helps little.** Fat zombies are not Takedown targets (only `mon_zombie` is), so they got only Ankle Tear (1 damage). The player took 3 hits from the two of them, and the dog took 17 damage. The Takedown target range (size and resistance rules) is still an open design question.
+3. **Downed flag on the killing blow.** Some killing swings logged `downed=false` (#39). Whether the zombie had stood up or death processing cleared it was not checked.
 
 ## 7. Working rules
 

@@ -8,6 +8,10 @@ local M = {}
 local MODES = { "auto", "takedown", "ankle" }
 
 ---@param dog Monster
+---@return string
+local function role(dog) return dog:get_value("dogs_role") == "guard" and "guard" or "free" end
+
+---@param dog Monster
 ---@param key string
 ---@return boolean
 local function on(dog, key) return dog:get_value(key) == "1" end
@@ -65,10 +69,12 @@ function M.apply(dog, choice)
     dog:set_value("dogs_attack_mode", MODES[index % #MODES + 1])
   elseif choice == 3 then dog:set_value("dogs_messages", messages_on(dog) and "0" or "1")
   elseif choice == 4 then dog:set_hp(dog:get_hp_max())
+  elseif choice == 5 then dog:set_value("dogs_role", role(dog) == "guard" and "" or "guard")
   else return nil end
   log.write("menu", "dog=" .. log.id(dog) .. " choice=" .. choice .. " trained=" .. tostring(on(dog, "dogs_trained")) ..
-    " mode=" .. dog:get_value("dogs_attack_mode") .. " hp=" .. dog:get_hp())
-  return string.format("DoGS #%s: training %s, mode %s, HP %d/%d.", log.id(dog), on(dog, "dogs_trained") and "ON" or "OFF",
+    " mode=" .. dog:get_value("dogs_attack_mode") .. " role=" .. role(dog) .. " hp=" .. dog:get_hp())
+  return string.format("DoGS #%s: training %s, role %s, mode %s, HP %d/%d.", log.id(dog),
+    on(dog, "dogs_trained") and "ON" or "OFF", role(dog),
     dog:get_value("dogs_attack_mode") == "" and "auto" or dog:get_value("dogs_attack_mode"), dog:get_hp(), dog:get_hp_max())
 end
 
@@ -78,13 +84,14 @@ function M.open()
   if dog == nil then return 0 end
   local mode = dog:get_value("dogs_attack_mode") == "" and "auto" or dog:get_value("dogs_attack_mode")
   local menu = UiList.new()
-  menu:title(string.format("DoGS #%s | HP %d/%d | state %s | Takedown CD %d | Ankle Tear CD %d", log.id(dog),
-    dog:get_hp(), dog:get_hp_max(), dog:get_value("dogs_state") == "" and "-" or dog:get_value("dogs_state"),
+  menu:title(string.format("DoGS #%s | %s | HP %d/%d | state %s | Takedown CD %d | Ankle Tear CD %d", log.id(dog),
+    role(dog), dog:get_hp(), dog:get_hp_max(), dog:get_value("dogs_state") == "" and "-" or dog:get_value("dogs_state"),
     attacks.remaining(dog, "dogs_takedown"), attacks.remaining(dog, "dogs_ankle_tear")))
   menu:add(1, "Training: " .. (on(dog, "dogs_trained") and "ON" or "OFF") .. " (toggle)")
   menu:add(2, "Attack mode: " .. mode .. " (cycle auto / takedown / ankle)")
   menu:add(3, "State messages: " .. (messages_on(dog) and "ON" or "OFF") .. " (toggle)")
   menu:add(4, "Refill HP")
+  menu:add(5, "Role: " .. role(dog) .. " (toggle free / guard)")
   local message = M.apply(dog, menu:query())
   if message then gapi.add_msg(MsgType.info, message) end
   return 0

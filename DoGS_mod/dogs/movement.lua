@@ -27,11 +27,12 @@ end
 ---@param kind string "retreat" | "flee" | "disengage" | "regroup"
 ---@param enemies TripointBubMs[]
 ---@param quiet boolean|nil caller logs the no-step case itself
+---@param goal TripointBubMs|nil target tile for "intercept"
 ---@return boolean
-function M.step(dog, kind, enemies, quiet)
+function M.step(dog, kind, enemies, quiet, goal)
   local origin = dog:get_pos_ms()
   local player = gapi.get_avatar():get_pos_ms()
-  local ranked = policy.rank_steps(kind, origin, free_neighbors(origin), enemies, player)
+  local ranked = policy.rank_steps(kind, origin, free_neighbors(origin), enemies, player, goal)
   for _, pos in ipairs(ranked) do
     local moves = dog:get_moves()
     if dog:move_to(pos, false, false, 1.0) then

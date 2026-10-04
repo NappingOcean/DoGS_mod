@@ -11,10 +11,13 @@
 - 외곽 적의 시각 유인, 추격 해제 후 안전한 복귀
 - 개체별 훈련 여부에 따른 DoGS AI 적용과 미훈련 개의 일반 AI 유지
 
-**현재 상태:** redhot BN(Lua API 2)용 모듈별 실험용 MVP입니다. 성견 한 종류, 임시 NORMAL 전술, 제압 공격, action_menu 진단과 자동 로그를 제공합니다. 2026-10-04 빌드에서 데이터 로딩과 Lua fixture 검사를 통과했습니다. 실제 전투·저장 복원 검사는 남아 있으며 LURE와 정식 훈련은 후속 작업입니다.
+**현재 상태:** redhot BN(Lua API 2)용 실험 빌드이며 [`DoGS_mod/`](DoGS_mod/)에 있습니다. Labrador mutt의 기본 펫 AI 위에 얹는 판단층입니다. 안전 veto(플레이어 뒤로 물러나는 저체력 후퇴 포함), Takedown·Ankle Tear 제압 공격, 복귀 거리 제한, 선택적인 엄호 역할에서만 개입하고 나머지는 엔진에 맡깁니다. 훈련과 역할은 action_menu에서 개체별로 정합니다. 실험 E0~E5를 기록했으며 LURE, 견제 역할, 정식 훈련은 후속 작업입니다.
+
+설치·검사·실험 결과: [실험 계획서](docs/claude/experiment-plan.ko.md).
+
+```powershell
+.\scripts\Install-Mod.ps1 -GameDirectory <BN 게임 디렉터리>
+.\scripts\Test-Mod.ps1 -GameDirectory <BN 게임 디렉터리>
+```
 
 구조·구현 제약·개발 순서는 [한국어 설계 문서](docs/ko/index.md)와 [English documentation](docs/en/index.md)를 참조하세요.
-
-설치·검사: [MVP 실험실](docs/ko/mvp.md).
-
-지속 전투 실험을 위해 현재 실험용 빌드는 mon_dog의 기본 최대 HP를 3,000으로 설정합니다. 정식 밸런스가 아닌 임시 시험 설정입니다.

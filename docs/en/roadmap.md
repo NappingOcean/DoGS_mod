@@ -1,6 +1,6 @@
 # Roadmap and open questions
 
-A modular laboratory MVP is implemented. Data/script loading and Lua fixtures pass on redhot 2026-10-04; live gameplay validation remains pending. See [MVP scope and checks](mvp.md).
+The current implementation is a judgment layer over the stock pet AI in `DoGS_mod/`. Its decisions and play experiments are recorded in the [experiment plan](../claude/experiment-plan.md), which supersedes the earlier MVP.
 
 ## Implementation order
 
@@ -17,7 +17,7 @@ A modular laboratory MVP is implemented. Data/script loading and Lua fixtures pa
 
 All source-level items were inspected; see [the audit](source-verification.md). Integration, persistence, callback dispatch, attacks, and effects are confirmed in source. Pursuit identity and waypoint execution have documented limits. Other mods can replace the same definitions, so compatibility remains conditional.
 
-Runtime checks remain: verify untrained fallback and first-action disabling, save/load mission state, exercise attack/effect immunity and armor, waypoint movement, LURE, and named mod combinations. The MVP supplies debug controls and log events for these checks; they are not yet completed in live gameplay.
+Runtime checks remain: verify untrained fallback and first-action disabling, save/load mission state, exercise attack/effect immunity and armor, waypoint movement, LURE, and named mod combinations. Untrained first-action disabling and save/load of per-entity state were checked in play (experiment E4); the other items remain.
 
 ## Open design questions
 

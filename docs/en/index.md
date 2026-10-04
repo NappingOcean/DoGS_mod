@@ -1,10 +1,10 @@
 # DoGS design documentation
 
-Design snapshot based on the curated Korean Obsidian notes, updated 2026-10-04. Technical claims were checked against BN commit `e0e25e9`; The MVP passes data loading and Lua fixtures; live gameplay checks remain pending (see the MVP laboratory).
+Design snapshot based on the curated Korean Obsidian notes, updated 2026-10-04. Technical claims were checked against BN commit `e0e25e9`; The current implementation and its play experiments are in the experiment plan below.
 
 [한국어](../ko/index.md)
 
-- [MVP laboratory and runtime checks](mvp.md)
+- [Experiment plan and results (Claude Code)](../claude/experiment-plan.md) — current implementation, experiments E0–E5
 
 - [Goals and philosophy](philosophy.md)
 - [AI architecture](ai-architecture.md)

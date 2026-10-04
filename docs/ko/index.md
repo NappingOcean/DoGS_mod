@@ -4,7 +4,7 @@ Cataclysm: Bright Nights에서 개의 판단력과 전술 행동을 개선하는
 
 ## 주제별 문서
 
-- [MVP 실험실과 실행 검사](mvp.md)
+- [실험 계획서와 결과 (Claude Code)](../claude/experiment-plan.ko.md) — 현재 구현, 실험 E0~E5
 
 - [01 목표와 설계 철학](philosophy.md) — 역할, 세계관, 범위
 - [02 AI 계층과 기본 전술](ai-architecture.md) — 임무·전술·원자 행동
@@ -18,7 +18,7 @@ Cataclysm: Bright Nights에서 개의 판단력과 전술 행동을 개선하는
 
 ## 문서의 기준
 
-출처는 「사냥개 AI 설계」 대화의 최종 설계 요약이다. 기술 사항은 BN 커밋 `e0e25e9`의 소스와 JSON에서 확인했다. MVP의 데이터 로딩과 Lua fixture 검사는 통과했으며 실제 플레이 검사는 남아 있다(MVP 실험실 참조).
+출처는 「사냥개 AI 설계」 대화의 최종 설계 요약이다. 기술 사항은 BN 커밋 `e0e25e9`의 소스와 JSON에서 확인했다. 현재 구현과 플레이 실험은 실험 계획서에 있다.
 
 근거와 남은 실행 검사는 [BN 소스 검사 결과](source-verification.md)를 참조한다.
 

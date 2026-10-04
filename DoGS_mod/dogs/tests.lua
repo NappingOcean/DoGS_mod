@@ -69,6 +69,17 @@ function M.run()
   assert(#back == 2 and back[1].x == 0 and back[1].y == 1)
   assert(#policy.rank_steps("regroup", p(0, 0), { p(1, 0) }, { p(2, 0) }, p(5, 0)) == 0)
 
+  -- Guard: threats near the player or the dog; the one closest to the player first.
+  local t = policy.guard_target(p(0, 0), { p(9, 9), p(3, 0), p(0, 5) }, p(0, 4))
+  assert(t.x == 0 and t.y == 5)
+  assert(policy.guard_target(p(0, 0), { p(9, 9) }, p(0, 4)) == nil)
+  assert(policy.guard_target(p(0, 0), { p(2, 0) }, p(0, -6)).x == 2)
+  -- Intercept closes on the goal but never leaves 3 tiles of the player.
+  local go = policy.rank_steps("intercept", p(0, 0), { p(1, 0), p(-1, 0) }, { p(3, 0) }, p(-2, 0), p(3, 0))
+  assert(#go == 1 and go[1].x == 1)
+  -- At the edge of the radius, a step toward the goal that leaves 3 tiles is refused.
+  assert(#policy.rank_steps("intercept", p(0, 0), { p(1, 0), p(0, 1) }, { p(3, 0) }, p(-3, 0), p(3, 0)) == 0)
+
   gdebug.log_info("[DoGS] event=selftest scope=policy result=pass")
 end
 

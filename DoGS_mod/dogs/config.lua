@@ -19,6 +19,10 @@ return {
   -- E5: delegating whenever no enemy was within `radius` let the engine chase a farther target.
   regroup = { enter = 8, exit = 4, hold = 3, block = 5 },
 
+  -- Guard role: stay within `radius` of the player; engage enemies within `engage` of the player
+  -- or of the dog itself, without leaving `radius`.
+  guard = { radius = 3, engage = 2 },
+
   -- Control attacks need a lone target: at most this many enemies within 3 tiles.
   control_nearby = 2,
 

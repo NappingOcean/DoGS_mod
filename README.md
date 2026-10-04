@@ -11,10 +11,13 @@ An experimental dog AI mod for **Cataclysm: Bright Nights**. DoGS turns trained 
 - Visually lure exposed enemies away, break pursuit, and return safely.
 - Apply DoGS behavior to trained individual dogs while preserving normal AI for untrained dogs.
 
-**Status:** modular laboratory MVP for redhot BN (Lua API 2). One adult dog type, provisional NORMAL tactics, control attacks, and action-menu controls with automatic logging are implemented. Data loading and Lua fixtures pass on 2026-10-04; live combat and save/load tests remain pending. LURE and production training are future work.
+**Status:** experimental build for redhot BN (Lua API 2), in [`DoGS_mod/`](DoGS_mod/). DoGS is a judgment layer over the stock pet AI for the Labrador mutt: it steps in for a safety veto (including a low-HP fall-back behind the player), Takedown/Ankle Tear control attacks, a leash, and an optional Guard role, and otherwise leaves the dog to the engine. Training and role are set per dog in the action menu. Experiments E0–E5 are recorded; LURE, the Harass role and production training are future work.
 
-Install and test: [MVP laboratory](docs/en/mvp.md).
+Install, test and experiment results: [experiment plan](docs/claude/experiment-plan.md).
+
+```powershell
+.\scripts\Install-Mod.ps1 -GameDirectory <BN game directory>
+.\scripts\Test-Mod.ps1 -GameDirectory <BN game directory>
+```
 
 See the [English design documentation](docs/en/index.md) or [한국어 설계 문서](docs/ko/index.md) for architecture, implementation constraints, and the roadmap.
-
-For sustained combat experiments, this laboratory build gives mon_dog 3,000 base maximum HP. This is temporary test configuration, not final balance.

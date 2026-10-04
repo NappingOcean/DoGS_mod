@@ -122,18 +122,38 @@ function M.behind_player(dog, enemies, player)
   return { x = player.x + 2 * sign(player.x - pursuer.x), y = player.y + 2 * sign(player.y - pursuer.y), z = player.z }
 end
 
+---Guard role: the enemy to take on, if any. Threats are enemies within `engage` tiles of the
+---player or of the dog; the one closest to the player comes first.
+---@param dog {x:integer,y:integer,z:integer}
+---@param enemies {x:integer,y:integer,z:integer}[]
+---@param player {x:integer,y:integer,z:integer}
+---@return {x:integer,y:integer,z:integer}|nil
+function M.guard_target(dog, enemies, player)
+  local engage = config.guard.engage
+  local best, best_d = nil, math.huge
+  for _, e in ipairs(enemies) do
+    local to_player = M.distance(e, player)
+    if (to_player <= engage or M.distance(e, dog) <= engage) and to_player < best_d then
+      best, best_d = e, to_player
+    end
+  end
+  return best
+end
+
 ---Orders candidate tiles for a step; returns only acceptable ones, best first.
 ---kind: "retreat" lowers risk (ties broken toward the player),
 ---"flee" heads for the point behind the player without touching an enemy
 ---(from an adjacent start, any step that breaks contact is accepted),
----"disengage" leaves every enemy's reach, "regroup" closes on the player without new contact.
+---"disengage" leaves every enemy's reach, "regroup" closes on the player without new contact,
+---"intercept" closes on `goal` without leaving the guard radius around the player.
 ---@param kind string
 ---@param origin {x:integer,y:integer,z:integer}
 ---@param candidates {x:integer,y:integer,z:integer}[] free neighbor tiles
 ---@param enemies {x:integer,y:integer,z:integer}[]
 ---@param player {x:integer,y:integer,z:integer}
+---@param goal {x:integer,y:integer,z:integer}|nil target tile for "intercept"
 ---@return {x:integer,y:integer,z:integer}[]
-function M.rank_steps(kind, origin, candidates, enemies, player)
+function M.rank_steps(kind, origin, candidates, enemies, player, goal)
   local here_risk = M.risk(origin, enemies)
   local here_player = M.distance(origin, player)
   local here_adjacent = M.adjacent(origin, enemies)
@@ -143,21 +163,27 @@ function M.rank_steps(kind, origin, candidates, enemies, player)
   for _, c in ipairs(candidates) do
     local risk, to_player, nearest = M.risk(c, enemies), M.distance(c, player), M.nearest(c, enemies)
     local to_safe = M.distance(c, safe)
+    local to_goal = goal and M.distance(c, goal) or 0
     local ok
     if kind == "retreat" then
       ok = risk < here_risk or (risk == here_risk and here_risk > 0 and to_player < here_player)
     elseif kind == "flee" then
       ok = M.adjacent(c, enemies) == 0 and (to_safe < here_safe or here_adjacent > 0)
+    elseif kind == "intercept" then
+      ok = to_goal < M.distance(origin, goal) and to_player <= config.guard.radius
     elseif kind == "disengage" then
       ok = M.adjacent(c, enemies) == 0
     else
       ok = to_player < here_player and M.adjacent(c, enemies) <= here_adjacent
     end
-    if ok then out[#out + 1] = { pos = c, risk = risk, to_player = to_player, nearest = nearest, to_safe = to_safe } end
+    if ok then
+      out[#out + 1] = { pos = c, risk = risk, to_player = to_player, nearest = nearest, to_safe = to_safe, to_goal = to_goal }
+    end
   end
   table.sort(out, function(a, b)
     if kind == "regroup" and a.to_player ~= b.to_player then return a.to_player < b.to_player end
     if kind == "flee" and a.to_safe ~= b.to_safe then return a.to_safe < b.to_safe end
+    if kind == "intercept" and a.to_goal ~= b.to_goal then return a.to_goal < b.to_goal end
     if kind == "flee" and a.nearest ~= b.nearest then return a.nearest > b.nearest end
     if a.risk ~= b.risk then return a.risk < b.risk end
     return a.to_player < b.to_player

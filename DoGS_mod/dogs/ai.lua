@@ -82,6 +82,34 @@ local function delegate_regroup(dog)
   return false
 end
 
+---Back toward the player. The engine keeps a destination only while it has no target (E3), so
+---delegate only when no hostile is visible at any range and the engine has not overridden one
+---recently (E5). Otherwise DoGS steps.
+---@param dog Monster
+---@param positions TripointBubMs[]
+---@param now integer
+---@return boolean handled
+local function regroup(dog, positions, now)
+  local blocked = (tonumber(dog:get_value("dogs_delegate_block")) or 0) > now
+  if not blocked and #perception.enemies(dog, math.huge) == 0 then return delegate_regroup(dog) end
+  return movement.step(dog, "regroup", positions)
+end
+
+---Guard role: stay within reach of the player and take on only enemies that threaten the player
+---or close on the dog. Other enemies are ignored, so the engine never chases them.
+---@param dog Monster
+---@param obs DogsObservation
+---@param positions TripointBubMs[]
+---@param now integer
+---@return boolean handled
+local function guard(dog, obs, positions, now)
+  if obs.player > config.guard.radius then return regroup(dog, positions, now) end
+  if obs.adjacent > 0 then return false end -- the stock AI bites what is in front of the dog
+  local target = policy.guard_target(dog:get_pos_ms(), positions, gapi.get_avatar():get_pos_ms())
+  if target and movement.step(dog, "intercept", positions, false, target) then return true end
+  return true -- by the player: wait
+end
+
 ---@param dog Monster
 ---@return boolean handled
 function M.turn(dog)
@@ -147,16 +175,13 @@ function M.turn(dog)
     end
   end
 
-  -- 4. Leash. The engine keeps a destination only while it has no target (E3), so delegate only
-  -- when no hostile is visible at any range and the engine has not overridden one recently (E5).
-  -- Otherwise DoGS steps.
-  if state == "REGROUP" then
-    local blocked = (tonumber(dog:get_value("dogs_delegate_block")) or 0) > now
-    if not blocked and #perception.enemies(dog, math.huge) == 0 then return delegate_regroup(dog) end
-    if movement.step(dog, "regroup", positions) then return true end
-  end
+  -- 4. Role. Guard replaces the leash with its own tighter one.
+  if dog:get_value("dogs_role") == "guard" then return guard(dog, obs, positions, now) end
 
-  -- 5. Nothing to add.
+  -- 5. Leash (Free role).
+  if state == "REGROUP" then return regroup(dog, positions, now) end
+
+  -- 6. Nothing to add.
   return false
 end
 

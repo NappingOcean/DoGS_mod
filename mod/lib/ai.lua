@@ -1,3 +1,4 @@
+local spacing=require("lib.spacing")
 local laboratory=require("lib.laboratory")
 local config = require("lib.config")
 local policy = require("lib.policy")
@@ -16,14 +17,25 @@ function M.turn(dog)
   laboratory.prepare(dog)
   attacks.tick(dog,gapi.current_turn():to_turn())
   local enemies = perception.enemies(dog)
+  spacing.observe(dog,enemies)
   local target = perception.target(dog,enemies)
   local pos = dog:get_pos_ms()
   local avatar = gapi.get_avatar():get_pos_ms()
   local action = policy.choose(dog:get_hp()/math.max(1,dog:get_hp_max()), perception.count(pos,enemies,1),
     perception.count(pos,enemies,3), policy.distance(pos,avatar),
     target and policy.distance(pos,target:get_pos_ms()), target and policy.distance(avatar,target:get_pos_ms()))
+  if target and action~="RETREAT" and action~="RECOVER" and attacks.ready(dog,target)==nil then
+    action="COOL_OFF"
+  end
   log.transition(dog,action)
   dog:set_value("dog_mission","NORMAL")
+  if action == "COOL_OFF" then
+    if not spacing.safe(dog,enemies) then
+      if movement.step(dog,avatar,enemies,true,false,true) then return true end
+    end
+    dog:mod_moves(-100)
+    return true
+  end
   if action == "RECOVER" then
     if policy.distance(pos,avatar)>2 then
       if movement.step(dog,avatar,enemies,false) then return true end
@@ -32,7 +44,7 @@ function M.turn(dog)
     return true
   end
   if action == "RETREAT" then
-    if not movement.step(dog,avatar,enemies,true) then dog:mod_moves(-100) end
+    if not movement.step(dog,avatar,enemies,true,false,true) then dog:mod_moves(-100) end
     return true
   end
   if action == "REGROUP" then

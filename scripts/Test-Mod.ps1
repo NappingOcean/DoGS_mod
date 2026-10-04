@@ -20,7 +20,7 @@ Get-Content -LiteralPath $dogsStdout
 Get-Content -LiteralPath $dogsStderr
 if ($dogsProcess.ExitCode -ne 0) { throw "BN check failed: exit $($dogsProcess.ExitCode)" }
 $dogsLogText = Get-Content -LiteralPath $dogsLog -Raw
-foreach ($dogsMarker in @('policy_assertions=10 result=pass', 'guard_assertions=8 result=pass', 'definitions=valid', 'telemetry_assertions=7 result=pass', 'combat_assertions=12 result=pass')) {
+foreach ($dogsMarker in @('policy_assertions=10 result=pass', 'guard_assertions=8 result=pass', 'definitions=valid', 'telemetry_assertions=7 result=pass', 'combat_assertions=12 result=pass', 'spacing_assertions=12 result=pass')) {
     if (-not $dogsLogText.Contains($dogsMarker)) { throw "Missing Lua validation marker: $dogsMarker" }
 }
 Write-Output 'PASS: BN data loading and Lua policy/guard/telemetry fixtures. Live combat and save/load still require playtesting.'

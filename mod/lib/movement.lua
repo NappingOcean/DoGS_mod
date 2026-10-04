@@ -1,3 +1,4 @@
+local spacing=require("lib.spacing")
 local telemetry = require("lib.telemetry")
 local config = require("lib.config")
 local policy = require("lib.policy")
@@ -16,33 +17,41 @@ end
 ---@param enemies Monster[]
 ---@param retreat boolean
 ---@param engage boolean|nil
+---@param keep_distance boolean|nil
 ---@return boolean
-function M.step(dog, goal, enemies, retreat, engage)
+function M.step(dog, goal, enemies, retreat, engage, keep_distance)
   local origin = dog:get_pos_ms()
   if origin.z ~= goal.z then return false end
   local candidates = {}
   -- Freeze the threat set for this decision; live position reads must not change scores mid-step.
   local enemy_positions={}
-  for _,enemy in ipairs(enemies) do enemy_positions[#enemy_positions+1]=enemy:get_pos_ms() end
+  for _,enemy in ipairs(enemies) do
+    enemy_positions[#enemy_positions+1]={pos=enemy:get_pos_ms(),reach=keep_distance and spacing.reach(dog,enemy) or 1}
+  end
   local function count(pos,radius)
     local n=0
-    for _,ep in ipairs(enemy_positions) do if policy.distance(pos,ep)<=radius then n=n+1 end end
+    for _,ep in ipairs(enemy_positions) do if policy.distance(pos,ep.pos)<=radius then n=n+1 end end
+    return n
+  end
+  local function danger(pos)
+    local n=0
+    for _,ep in ipairs(enemy_positions) do if policy.distance(pos,ep.pos)<=ep.reach then n=n+1 end end
     return n
   end
   local function nearest(pos)
     local n=9
-    for _,ep in ipairs(enemy_positions) do n=math.min(n,policy.distance(pos,ep)) end
+    for _,ep in ipairs(enemy_positions) do n=math.min(n,policy.distance(pos,ep.pos)-ep.reach+1) end
     return n
   end
   for dx=-1,1 do for dy=-1,1 do
     if dx ~= 0 or dy ~= 0 then
       local pos = TripointBubMs.new(origin.x+dx,origin.y+dy,origin.z)
       if not gapi.get_map():is_out_of_bounds(pos) and gapi.get_creature_at(pos, true) == nil then
-        local risk = count(pos,1)*20 + count(pos,2)*4
+        local risk = danger(pos)*20 + count(pos,2)*4
         local score = risk + policy.distance(pos,goal)
         if retreat then
           local nearest = 9
-          for _, ep in ipairs(enemy_positions) do nearest=math.min(nearest,policy.distance(pos,ep)) end
+          for _, ep in ipairs(enemy_positions) do nearest=math.min(nearest,policy.distance(pos,ep.pos)-ep.reach+1) end
           score = score - nearest*6
         end
         candidates[#candidates+1] = {pos=pos,score=score,risk=risk}
@@ -51,7 +60,7 @@ function M.step(dog, goal, enemies, retreat, engage)
   end end
   table.sort(candidates,function(a,b) return a.score < b.score end)
   for _, candidate in ipairs(candidates) do
-    local current_risk=count(origin,1)*20+count(origin,2)*4
+    local current_risk=danger(origin)*20+count(origin,2)*4
     local improves=policy.accept_step(retreat,current_risk,candidate.risk,policy.distance(origin,goal),
       policy.distance(candidate.pos,goal),current_risk+policy.distance(origin,goal)-nearest(origin)*6,
       candidate.score,count(candidate.pos,1),count(candidate.pos,3),engage)

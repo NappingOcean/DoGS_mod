@@ -66,3 +66,15 @@ BN clears the mod-scoped package.path after loading. Diagnostics, movement and a
 Restart the game to load the 3,000 base maximum HP override. An existing trained dog is filled to its new maximum once on its next eligible AI action, marked per individual so damage is not continuously healed. Vanilla pet-training multipliers can raise its effective maximum further. Use action_menu / DoGS laboratory / Refill experimental HP to restart an experiment. This restores current HP to the actual maximum, not an over-maximum value.
 
 DoGS actors remain disabled except during explicitly selected attacks. Their cooldowns are now advanced manually by elapsed game turns, once per turn even when a fast dog acts several times. In automatic mode an eligible alternate control attack can be selected while the preferred attack cools down. Source evidence: monster.cpp's process_effects skips cooldown updates for disabled actors. Twelve mock regression assertions cover elapsed-turn ticking, repeated calls, clamping, one-time HP preparation, safe approach and strict retreat score improvement. Loading/fixture validation does not establish live hit rates or successful effects.
+
+## Readable attacks, cooldown spacing and dog selection
+
+Special-attack use always produces a visible DoGS message naming Takedown or Ankle Tear, reporting damage and current control effects. Zero damage is labelled as missed or stopped by armor; actor handling is not presented as a successful wound. This message is independent of the optional tactical action-message toggle.
+
+When no eligible actor is ready, COOL_OFF replaces engagement. The dog steps outside every visible opponent's assumed reach and waits there until a usable attack is ready. Default enemy reach is one tile, so waiting distance is at least two. Low-HP retreat still takes priority. Terrain can prevent escape; such failures remain logged.
+
+Each dog remembers increased reach by opponent type in persistent creature values. A successful nonadjacent native melee hook is direct evidence. The executable lacks a general monster damage/source hook, so an HP decrease with one continuously identified visible opponent, both previous/current separations greater than one, and no bleeding is only a cautious range hypothesis. Crowds and known native melee events suppress this inference. Environmental damage or unseen enemies can still confound it: reach_learning logs distinguish observed_successful_melee from suspected_nonadjacent_hp_loss. This is not exact attacker attribution for all ranged/special attacks.
+
+The action menu now lists supported visible dogs sorted by distance with ID, name, HP, training and friendliness. A single dog opens its settings directly. No tile cursor selection is used. Settings show current training, HP, attack mode, message toggle and cooldowns.
+
+Twelve additional mock assertions cover cooldown readiness/fallback, mode eligibility, safe distances, per-type reach learning, crowd ambiguity and attack-message wording. Loader/fixtures pass; live UI, cooldown kiting and ranged-hit learning still require a new playtest.

@@ -20,21 +20,38 @@ function M.tick(dog,now)
 end
 ---@param dog Monster
 ---@param target Monster
+---@return string|nil
+function M.ready(dog,target)
+  local mode=dog:get_value("dogs_attack_mode")
+  local eligible=target:get_type():str()=="mon_zombie"
+  local ids={}
+  if mode=="takedown" then
+    if eligible then ids={"dogs_takedown"} end
+  elseif mode=="ankle" then ids={"dogs_ankle_tear"}
+  elseif eligible and not target:has_effect(EffectTypeId.new("downed")) then
+    ids={"dogs_takedown","dogs_ankle_tear"}
+  else
+    ids={"dogs_ankle_tear"}
+    if eligible then ids[#ids+1]="dogs_takedown" end
+  end
+  for _,id in ipairs(ids) do
+    if dog:has_special_attack(id) and dog:get_special_attack_cooldown(id)==0 then return id end
+  end
+  return nil
+end
+---@param id string
+---@param damage number
+---@return string
+function M.message(id,damage)
+  local label=id=="dogs_takedown" and "Takedown" or "Ankle Tear"
+  return "uses "..label.." (damage "..damage..(damage==0 and "; missed or stopped by armor" or "")..")"
+end
+---@param dog Monster
+---@param target Monster
 ---@return boolean
 function M.try(dog,target)
-  -- Experimental eligibility: only the ordinary zombie, not all flesh targets.
-  local id = "dogs_ankle_tear"
-  local mode = dog:get_value("dogs_attack_mode")
-  if mode == "takedown" or (mode ~= "ankle" and not target:has_effect(EffectTypeId.new("downed"))) then id="dogs_takedown" end
-  if id == "dogs_takedown" and target:get_type():str() ~= "mon_zombie" then
-    if mode == "takedown" then return false end
-    id = "dogs_ankle_tear"
-  end
-  -- Use the other eligible control attack when the preferred actor is cooling down.
-  if mode ~= "takedown" and mode ~= "ankle" and (dog:get_special_attack_cooldown(id) or 0)>0 then
-    local alternative=id == "dogs_takedown" and "dogs_ankle_tear" or "dogs_takedown"
-    if alternative ~= "dogs_takedown" or target:get_type():str() == "mon_zombie" then id=alternative end
-  end
+  local id=M.ready(dog,target)
+  if id==nil then return false end
   telemetry.observe(target,"before_attack")
   dog:set_target(target)
   dog:set_special_attack_enabled(id,true)
@@ -50,6 +67,12 @@ function M.try(dog,target)
       " bleed="..tostring(target:has_effect(EffectTypeId.new("bleed")))..
       " ankle="..tostring(target:has_effect(EffectTypeId.new("dogs_ankle_wound")))..
       " cooldown="..tostring(dog:get_special_attack_cooldown(id)))
+  end
+  if handled and gapi.get_avatar():sees(dog:get_pos_ms()) then
+    local damage=hp-target:get_hp()
+    gapi.add_msg(MsgType.info,"DoGS: dog #"..telemetry.id(dog).." "..M.message(id,damage).." on "..target:name(1)..
+      "; downed="..tostring(target:has_effect(EffectTypeId.new("downed")))..
+      ", ankle wound="..tostring(target:has_effect(EffectTypeId.new("dogs_ankle_wound")))..".")
   end
   telemetry.observe(target,"after_attack")
   return handled

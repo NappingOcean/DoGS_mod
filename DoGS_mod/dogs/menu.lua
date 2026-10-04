@@ -2,14 +2,13 @@ local config = require("dogs.config")
 local policy = require("dogs.policy")
 local attacks = require("dogs.attacks")
 local log = require("dogs.log")
+local roles = require("dogs.role")
 
 local M = {}
 
 local MODES = { "auto", "takedown", "ankle" }
 
----@param dog Monster
----@return string
-local function role(dog) return dog:get_value("dogs_role") == "guard" and "guard" or "free" end
+local role = roles.get
 
 ---@param dog Monster
 ---@param key string
@@ -69,7 +68,7 @@ function M.apply(dog, choice)
     dog:set_value("dogs_attack_mode", MODES[index % #MODES + 1])
   elseif choice == 3 then dog:set_value("dogs_messages", messages_on(dog) and "0" or "1")
   elseif choice == 4 then dog:set_hp(dog:get_hp_max())
-  elseif choice == 5 then dog:set_value("dogs_role", role(dog) == "guard" and "" or "guard")
+  elseif choice == 5 then roles.toggle(dog)
   else return nil end
   log.write("menu", "dog=" .. log.id(dog) .. " choice=" .. choice .. " trained=" .. tostring(on(dog, "dogs_trained")) ..
     " mode=" .. dog:get_value("dogs_attack_mode") .. " role=" .. role(dog) .. " hp=" .. dog:get_hp())
@@ -91,7 +90,7 @@ function M.open()
   menu:add(2, "Attack mode: " .. mode .. " (cycle auto / takedown / ankle)")
   menu:add(3, "State messages: " .. (messages_on(dog) and "ON" or "OFF") .. " (toggle)")
   menu:add(4, "Refill HP")
-  menu:add(5, "Role: " .. role(dog) .. " (toggle free / guard)")
+  menu:add(5, "Role: " .. role(dog) .. " (toggle guard / free)")
   local message = M.apply(dog, menu:query())
   if message then gapi.add_msg(MsgType.info, message) end
   return 0

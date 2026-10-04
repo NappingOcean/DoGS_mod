@@ -11,7 +11,7 @@
 - 외곽 적의 시각 유인, 추격 해제 후 안전한 복귀
 - 개체별 훈련 여부에 따른 DoGS AI 적용과 미훈련 개의 일반 AI 유지
 
-**현재 상태:** redhot BN(Lua API 2)용 실험 빌드이며 [`DoGS_mod/`](DoGS_mod/)에 있습니다. Labrador mutt의 기본 펫 AI 위에 얹는 판단층입니다. 안전 veto(플레이어 뒤로 물러나는 저체력 후퇴 포함), Takedown·Ankle Tear 제압 공격, 복귀 거리 제한, 선택적인 엄호 역할에서만 개입하고 나머지는 엔진에 맡깁니다. 훈련과 역할은 action_menu에서 개체별로 정합니다. 실험 E0~E5를 기록했으며 LURE, 견제 역할, 정식 훈련은 후속 작업입니다.
+**현재 상태:** redhot BN(Lua API 2)용 실험 빌드이며 [`DoGS_mod/`](DoGS_mod/)에 있습니다. Labrador mutt의 기본 펫 AI 위에 얹는 판단층입니다. 안전 veto(플레이어 뒤로 물러나는 저체력 후퇴 포함), Takedown·Ankle Tear 제압 공격, 복귀 거리 제한, 엄호 역할(기본값)에서만 개입하고 나머지는 엔진에 맡깁니다. 훈련과 역할은 action_menu에서 개체별로 정합니다. 실험 E0~E6을 기록했으며 LURE, 견제 역할, 정식 훈련은 후속 작업입니다.
 
 설치·검사·실험 결과: [실험 계획서](docs/claude/experiment-plan.ko.md).
 

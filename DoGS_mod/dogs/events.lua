@@ -3,6 +3,7 @@ local config = require("dogs.config")
 local policy = require("dogs.policy")
 local perception = require("dogs.perception")
 local log = require("dogs.log")
+local role = require("dogs.role")
 
 local M = {}
 
@@ -22,7 +23,7 @@ local function summarize(dog)
   local obs = perception.observe(dog, enemies)
   local pos = dog:get_pos_ms()
   log.write("summary", "dog=" .. log.id(dog) .. " trained=" .. (dog:get_value("dogs_trained") == "1" and "1" or "0") ..
-    " role=" .. (dog:get_value("dogs_role") == "guard" and "guard" or "free") ..
+    " role=" .. role.get(dog) ..
     " state=" .. (dog:get_value("dogs_state") == "" and "none" or dog:get_value("dogs_state")) ..
     " pos=" .. pos.x .. "," .. pos.y .. " hp=" .. dog:get_hp() .. "/" .. dog:get_hp_max() ..
     " player=" .. tostring(obs.player) .. " adjacent=" .. obs.adjacent .. " nearby=" .. obs.nearby ..

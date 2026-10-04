@@ -5,6 +5,7 @@ local policy = require("dogs.policy")
 local perception = require("dogs.perception")
 local movement = require("dogs.movement")
 local attacks = require("dogs.attacks")
+local role = require("dogs.role")
 local log = require("dogs.log")
 
 local M = {}
@@ -176,7 +177,7 @@ function M.turn(dog)
   end
 
   -- 4. Role. Guard replaces the leash with its own tighter one.
-  if dog:get_value("dogs_role") == "guard" then return guard(dog, obs, positions, now) end
+  if role.get(dog) == "guard" then return guard(dog, obs, positions, now) end
 
   -- 5. Leash (Free role).
   if state == "REGROUP" then return regroup(dog, positions, now) end

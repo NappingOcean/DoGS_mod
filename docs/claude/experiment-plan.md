@@ -40,7 +40,7 @@ Then even when DoGS judges wrongly or has nothing to say, the dog does not fall 
 
 ### Roles (Free and Guard implemented, Harass not yet)
 
-The player assigns a role to each dog (Role item in the action menu; Free by default). The role sets the intent (what to do); the dog judges how and when. Mission orders against groups (LURE etc.) come later as one-off commands. Survival (RETREAT) takes priority in every role.
+The player assigns a role to each dog (Role item in the action menu). Guard is the default, because in E6 a vanilla-like roaming dog ran toward distant zombies. Free must be chosen explicitly in the menu. The role sets the intent (what to do); the dog judges how and when. Mission orders against groups (LURE etc.) come later as one-off commands. Survival (RETREAT) takes priority in every role.
 
 | Role | Scope of the dog's judgment | Experiment metric |
 | --- | --- | --- |
@@ -110,7 +110,8 @@ Modules live under `dogs/` and are loaded as `require("dogs.ai")`. At the execut
 | [`DoGS_mod/dogs/movement.lua`](../../DoGS_mod/dogs/movement.lua) | One-tile retreat, disengage and regroup steps |
 | [`DoGS_mod/dogs/attacks.lua`](../../DoGS_mod/dogs/attacks.lua) | Value-based cooldowns and attack execution |
 | [`DoGS_mod/dogs/events.lua`](../../DoGS_mod/dogs/events.lua) | 10-turn summaries and normal melee records, untrained dogs included (E0) |
-| [`DoGS_mod/dogs/menu.lua`](../../DoGS_mod/dogs/menu.lua) | action_menu: training, attack mode, state messages (on by default), HP refill, role (Free/Guard) |
+| [`DoGS_mod/dogs/menu.lua`](../../DoGS_mod/dogs/menu.lua) | action_menu: training, attack mode, state messages (on by default), HP refill, role (Guard/Free) |
+| [`DoGS_mod/dogs/role.lua`](../../DoGS_mod/dogs/role.lua) | Per-dog role: Guard when unset, Free only when set to `free` |
 | [`DoGS_mod/dogs/tests.lua`](../../DoGS_mod/dogs/tests.lua) | Policy-function checks; not evidence of engine behavior |
 
 Not carried over from the Codex implementation: 3,000 HP, reach learning, the remote item, per-turn state dumps, engine cooldown compensation. `heavysnare` and `lightsnare` were removed from the restraint list: monster.cpp references them, but they have no JSON definition at `ef0eced`, and the finalize check failed on them.

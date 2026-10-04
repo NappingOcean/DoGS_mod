@@ -40,7 +40,7 @@ DoGS는 개의 턴을 통째로 대체하지 않는다. **기본은 `return fals
 
 ### 역할 (자유·엄호 구현, 견제 미구현)
 
-플레이어가 개체별로 역할을 지시한다(action_menu의 Role 항목, 기본은 자유). 역할은 무엇을 할지(의도)를 정하고, 어떻게·언제 할지는 개가 판단한다. 다수의 적에 대한 임무 지시(LURE 등)는 나중에 단발 명령으로 다룬다. 생존 판단(RETREAT)은 모든 역할에서 우선한다.
+플레이어가 개체별로 역할을 지시한다(action_menu의 Role 항목). 기본은 엄호다. E6에서 바닐라처럼 돌아다니는 개가 먼 좀비에게 달려가 위험했기 때문이다. 자유는 메뉴에서 명시적으로 고른다. 역할은 무엇을 할지(의도)를 정하고, 어떻게·언제 할지는 개가 판단한다. 다수의 적에 대한 임무 지시(LURE 등)는 나중에 단발 명령으로 다룬다. 생존 판단(RETREAT)은 모든 역할에서 우선한다.
 
 | 역할 | 개의 판단 범위 | 실험 지표 |
 | --- | --- | --- |
@@ -110,7 +110,8 @@ DoGS는 개의 턴을 통째로 대체하지 않는다. **기본은 `return fals
 | [`DoGS_mod/dogs/movement.lua`](../../DoGS_mod/dogs/movement.lua) | 후퇴·이탈·복귀용 한 칸 이동 |
 | [`DoGS_mod/dogs/attacks.lua`](../../DoGS_mod/dogs/attacks.lua) | value 기반 쿨다운과 공격 실행 |
 | [`DoGS_mod/dogs/events.lua`](../../DoGS_mod/dogs/events.lua) | 10턴 요약과 일반 근접공격 기록. 미훈련 개도 기록한다(E0) |
-| [`DoGS_mod/dogs/menu.lua`](../../DoGS_mod/dogs/menu.lua) | action_menu: 훈련, 공격 모드, 상태 메시지(기본 켜짐), HP 회복, 역할(자유/엄호) |
+| [`DoGS_mod/dogs/menu.lua`](../../DoGS_mod/dogs/menu.lua) | action_menu: 훈련, 공격 모드, 상태 메시지(기본 켜짐), HP 회복, 역할(엄호/자유) |
+| [`DoGS_mod/dogs/role.lua`](../../DoGS_mod/dogs/role.lua) | 개체별 역할. 값이 없으면 엄호, `free`일 때만 자유 |
 | [`DoGS_mod/dogs/tests.lua`](../../DoGS_mod/dogs/tests.lua) | 정책 함수 검사. 엔진 동작의 증거가 아니다 |
 
 Codex 구현에서 가져오지 않은 것: HP 3,000, 사거리 학습, 리모컨 아이템, 매 턴 상태 덤프, 엔진 쿨다운 보정. 이동 구속 효과 목록에서 `heavysnare`, `lightsnare`는 뺐다. C++에서 참조하지만 `ef0eced`의 JSON에 정의가 없어 finalize 검사에 실패했다.

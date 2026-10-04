@@ -6,6 +6,18 @@ local M = {}
 function M.disable(dog)
   for _, id in ipairs(config.attacks) do dog:set_special_attack_enabled(id,false) end
 end
+-- Own actors stay disabled outside explicit use; BN does not tick disabled cooldowns.
+---@param dog Monster
+---@param now integer
+function M.tick(dog,now)
+  local previous=tonumber(dog:get_value("dogs_cooldown_turn")) or now
+  local elapsed=math.max(0,now-previous)
+  for _,id in ipairs(config.attacks) do
+    local remaining=dog:get_special_attack_cooldown(id)
+    if remaining ~= nil then dog:set_special_attack_cooldown(id,math.max(0,remaining-elapsed)) end
+  end
+  dog:set_value("dogs_cooldown_turn",tostring(now))
+end
 ---@param dog Monster
 ---@param target Monster
 ---@return boolean
@@ -17,6 +29,11 @@ function M.try(dog,target)
   if id == "dogs_takedown" and target:get_type():str() ~= "mon_zombie" then
     if mode == "takedown" then return false end
     id = "dogs_ankle_tear"
+  end
+  -- Use the other eligible control attack when the preferred actor is cooling down.
+  if mode ~= "takedown" and mode ~= "ankle" and (dog:get_special_attack_cooldown(id) or 0)>0 then
+    local alternative=id == "dogs_takedown" and "dogs_ankle_tear" or "dogs_takedown"
+    if alternative ~= "dogs_takedown" or target:get_type():str() == "mon_zombie" then id=alternative end
   end
   telemetry.observe(target,"before_attack")
   dog:set_target(target)

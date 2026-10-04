@@ -26,6 +26,7 @@ function M.open()
   menu:add(6,"Attack mode: Takedown only")
   menu:add(7,"Attack mode: Ankle Tear only")
 
+  menu:add(8,"Refill experimental HP")
   local choice=menu:query()
   local message=M.apply(dog,choice)
   if message then gapi.add_msg(MsgType.info,message) end
@@ -40,9 +41,10 @@ function M.apply(dog,choice)
     dog:set_value("dogs_trained","1")
   elseif choice == 2 then dog:set_value("dogs_trained","0"); attacks.disable(dog)
   elseif choice == 4 then dog:set_value("dogs_messages",dog:get_value("dogs_messages") == "1" and "0" or "1")
+  elseif choice == 8 then dog:set_hp(dog:get_hp_max())
   elseif choice >= 5 and choice <= 7 then dog:set_value("dogs_attack_mode",({"auto","takedown","ankle"})[choice-4])
   end
-  if choice >= 1 and choice <= 7 then
+  if choice >= 1 and choice <= 8 then
     telemetry.observe(dog,"menu_change",true)
     return "DoGS: HP "..dog:get_hp().."/"..dog:get_hp_max()..", trained="..dog:get_value("dogs_trained")..", action="..dog:get_value("dogs_action")
   end

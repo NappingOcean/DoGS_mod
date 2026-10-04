@@ -16,3 +16,5 @@
 구조·구현 제약·개발 순서는 [한국어 설계 문서](docs/ko/index.md)와 [English documentation](docs/en/index.md)를 참조하세요.
 
 설치·검사: [MVP 실험실](docs/ko/mvp.md).
+
+지속 전투 실험을 위해 현재 실험용 빌드는 mon_dog의 기본 최대 HP를 3,000으로 설정합니다. 정식 밸런스가 아닌 임시 시험 설정입니다.

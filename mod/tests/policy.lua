@@ -1,7 +1,7 @@
 local M = {}
 function M.run()
   local p=require("lib.policy")
-  assert(p.choose(0.4,0,0,1,1,1)=="RETREAT")
+  assert(p.choose(0.4,0,0,1,1,1)=="RECOVER")
   assert(p.choose(1,2,2,1,1,1)=="RETREAT")
   assert(p.choose(1,0,4,1,2,2)=="RETREAT")
   assert(p.choose(1,0,0,7,1,1)=="REGROUP")

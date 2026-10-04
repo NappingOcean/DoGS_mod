@@ -1,3 +1,4 @@
+local laboratory=require("lib.laboratory")
 local config = require("lib.config")
 local policy = require("lib.policy")
 local perception = require("lib.perception")
@@ -12,6 +13,8 @@ function M.turn(dog)
   attacks.disable(dog)
   if dog:get_type():str() ~= config.dog_id or dog:get_value("dogs_trained") ~= "1" or dog.friendly == 0 then return false end
   if movement.blocked(dog) then log.transition(dog,"BLOCKED"); return false end
+  laboratory.prepare(dog)
+  attacks.tick(dog,gapi.current_turn():to_turn())
   local enemies = perception.enemies(dog)
   local target = perception.target(dog,enemies)
   local pos = dog:get_pos_ms()
@@ -21,6 +24,13 @@ function M.turn(dog)
     target and policy.distance(pos,target:get_pos_ms()), target and policy.distance(avatar,target:get_pos_ms()))
   log.transition(dog,action)
   dog:set_value("dog_mission","NORMAL")
+  if action == "RECOVER" then
+    if policy.distance(pos,avatar)>2 then
+      if movement.step(dog,avatar,enemies,false) then return true end
+    end
+    dog:mod_moves(-100)
+    return true
+  end
   if action == "RETREAT" then
     if not movement.step(dog,avatar,enemies,true) then dog:mod_moves(-100) end
     return true
@@ -37,7 +47,7 @@ function M.turn(dog)
     dog:mod_moves(-100)
     return true
   end
-  if movement.step(dog,target:get_pos_ms(),enemies,false) then return true end
+  if movement.step(dog,target:get_pos_ms(),enemies,false,true) then return true end
   dog:mod_moves(-100)
   return true
 end

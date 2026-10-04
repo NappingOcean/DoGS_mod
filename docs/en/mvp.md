@@ -4,11 +4,11 @@
 
 ## Scope
 
-The modular MVP supports **mon_dog (Labrador mutt)**, using a per-individual experimental training switch. DoGS does not raise base stats. Untrained dogs use stock AI after only the two DoGS attacks are disabled. This is a laboratory build, not the completed companion AI.
+The modular MVP supports **mon_dog (Labrador mutt)**, using a per-individual experimental training switch. This laboratory build temporarily sets mon_dog base maximum HP to 3,000; other base stats are unchanged. This applies to untrained dogs of that type too and is not a production balance decision. Untrained dogs use stock AI after only the two DoGS attacks are disabled. This is a laboratory build, not the completed companion AI.
 
 NORMAL labels: ASSIST when a target is adjacent to the avatar, INTERCEPT within three tiles, otherwise SKIRMISH. Target selection penalizes local clustering. These are provisional heuristics: ASSIST does not yet identify the player's current opponent, and INTERCEPT does not track approach velocity.
 
-RETREAT overrides attacks at half HP, two adjacent hostiles, or four within three tiles. REGROUP applies beyond six tiles from the avatar or when no target exists. Movement tries adjacent empty tiles with lower threat and uses native movement costs/collision checks. This is greedy local movement; walls and dead ends can stop it. It has no multi-turn route planning or encirclement prediction. If no acceptable step exists, the dog waits. Immobilization, riding, leash/harness, stun, and pacification defer to stock handling. Visible hostile **monsters** are considered within eight tiles on the same level; hostile NPCs are not covered yet.
+RETREAT overrides attacks at half HP, two adjacent hostiles, or four within three tiles. At low HP with no visible threats within three tiles, RECOVER approaches the avatar and waits within two tiles instead of continually retreating. REGROUP applies beyond six tiles from the avatar or when no target exists. Combat approach permits adjacency to one exposed enemy while rejecting two adjacent enemies or a nearby crowd. Regrouping still avoids increased risk. Movement tries adjacent empty tiles with lower threat and uses native movement costs/collision checks. This is greedy local movement; walls and dead ends can stop it. It has no multi-turn route planning or encirclement prediction. If no acceptable step exists, the dog waits. Immobilization, riding, leash/harness, stun, and pacification defer to stock handling. Visible hostile **monsters** are considered within eight tiles on the same level; hostile NPCs are not covered yet.
 
 ## Experimental attacks
 
@@ -49,7 +49,7 @@ Test environment: Windows x64 MSVC redhot **2026-10-04-0345**, commit `ef0eceda3
 .\scripts\Test-Mod.ps1 -GameDirectory ..\game_redhot
 ```
 
-The checker uses an isolated temporary user directory, runs `--check-mods DoGS`, retains stdout/stderr/debug.log, and requires exit zero plus Lua success markers. **Passed:** data/script loading, ten policy assertions using native coordinate objects, eight guard assertions and six telemetry/callback assertions with mock monsters, and finalized ID validity. Guard fixtures do not prove actual engine callback dispatch or combat.
+The checker uses an isolated temporary user directory, runs `--check-mods DoGS`, retains stdout/stderr/debug.log, and requires exit zero plus Lua success markers. **Passed:** data/script loading, ten policy assertions using native coordinate objects, eight guard assertions and seven telemetry/callback assertions with mock monsters, and finalized ID validity. Guard fixtures do not prove actual engine callback dispatch or combat.
 
 **Pending live playtests:** movement/terrain costs, actor hit/miss and armor/immunity cases, first-turn behavior of real untrained dogs, effect processing/expiration, actual save/load, and compatibility with other mods. LURE, production training, additional breeds, and full path planning are not implemented. No live combat success is claimed.
 
@@ -60,3 +60,9 @@ The checker uses an isolated temporary user directory, runs `--check-mods DoGS`,
 ## Callback regression
 
 BN clears the mod-scoped package.path after loading. Diagnostics, movement and attack callbacks now capture module references at load time. The regression fixture invokes menu setting logic and attack cooldown handling with package.path=nil; it restores the path even on failure. This verifies callback logic with mock monsters, not live menu selection or combat.
+
+## Sustained combat experiments
+
+Restart the game to load the 3,000 base maximum HP override. An existing trained dog is filled to its new maximum once on its next eligible AI action, marked per individual so damage is not continuously healed. Vanilla pet-training multipliers can raise its effective maximum further. Use action_menu / DoGS laboratory / Refill experimental HP to restart an experiment. This restores current HP to the actual maximum, not an over-maximum value.
+
+DoGS actors remain disabled except during explicitly selected attacks. Their cooldowns are now advanced manually by elapsed game turns, once per turn even when a fast dog acts several times. In automatic mode an eligible alternate control attack can be selected while the preferred attack cools down. Source evidence: monster.cpp's process_effects skips cooldown updates for disabled actors. Twelve mock regression assertions cover elapsed-turn ticking, repeated calls, clamping, one-time HP preparation, safe approach and strict retreat score improvement. Loading/fixture validation does not establish live hit rates or successful effects.

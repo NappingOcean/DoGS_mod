@@ -16,3 +16,5 @@ An experimental dog AI mod for **Cataclysm: Bright Nights**. DoGS turns trained 
 Install and test: [MVP laboratory](docs/en/mvp.md).
 
 See the [English design documentation](docs/en/index.md) or [한국어 설계 문서](docs/ko/index.md) for architecture, implementation constraints, and the roadmap.
+
+For sustained combat experiments, this laboratory build gives mon_dog 3,000 base maximum HP. This is temporary test configuration, not final balance.

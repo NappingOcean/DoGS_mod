@@ -39,4 +39,11 @@ Commit project-wide rules. Keep personal paths, credentials, environment-specifi
 
 ## Commit attribution
 
-Include `Assisted-by: OpenAI GPT` in commits containing GPT-assisted work.
+End each commit with trailers naming every assistant whose work it contains:
+
+| Assistant | Trailers |
+| --- | --- |
+| OpenAI GPT (Codex) | `Assisted-by: OpenAI GPT`<br>`Co-Authored-By: OpenAI GPT <noreply@openai.com>` |
+| Claude (Claude Code) | `Assisted-by: Claude`<br>`Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` |
+
+Use the model name actually in use for the `Co-Authored-By` line. Work on the shared mod goes to `main`; do not split it by assistant.

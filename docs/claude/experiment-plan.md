@@ -177,7 +177,7 @@ The engine's `plan()` recomputes target and destination on every action. Check:
 
 Implement the Guard, Harass and Free roles based on E3. Guard is implemented; Harass comes later.
 
-### E6 Guard
+### E6 Guard (first run partial pass; rerun planned)
 - Setup: two regular zombies, apart from each other, about 6 tiles from the player. The player fights them with a melee weapon. Repeat with a vanilla dog and a Guard-role dog.
 - Measure: damage taken by the player, turns until the player has killed both zombies, turns the dog spent more than 3 tiles from the player (`player` in `summary`).
 - Check: does the dog close on zombies approaching the player (`step kind=intercept`)? Does it avoid chasing distant zombies while guarding? Do control attacks turn into openings for the player?
@@ -201,9 +201,11 @@ Implement the Guard, Harass and Free roles based on E3. Guard is implemented; Ha
 | `disengage` | Whether the dog tried to break off on the action after a control attack |
 | `special` | Attack ID, target ID and type, actual HP damage, downed/bleed/ankle flags |
 | `melee` | The dog's normal attacks seen through the engine's normal melee hook: target type, hit roll, target HP after the attack |
-| `summary` | Every 10 turns for every friendly Labrador mutt: trained flag, role, state, position, HP, player distance, nearby enemy count and HP sum |
+| `summary` | Every 10 turns for every friendly Labrador mutt: trained flag, role, state, position, HP, player distance, nearby enemy count and HP sum, player HP |
 | `probe_result` | Logged only when the engine replaced a delegated REGROUP destination: the destination set and the replacement (absolute coordinates), player distance before/after. Once logged, delegation stops for 5 turns. During E3, `probe` and `kept=true` were logged too |
 | `death` | Deaths of dogs, monsters killed by dogs, and monsters DoGS has numbered (attack targets): victim and killer (monster type and number, `avatar`, or `none`) |
+| `player_melee` | The player's melee swings: target (numbered), hit roll, whether the target was downed, target HP |
+| `player_attacked` | Melee attacks on the player: attacker, hit roll, player HP afterwards |
 | `menu` | Menu changes |
 
 Every line written during play carries the game turn (`turn=`) and an entity number (`dog=`). The entity number is stored as a per-entity value and should survive save/load (checked in E4).
@@ -333,6 +335,21 @@ Observations:
 1. **The sawtooth remains.** DEFAULT spans had a median of 5 turns, and 10 were shorter than 3 turns. A walking player alone can hardly widen the gap from 4 to 9 in 2 turns, so the engine presumably moved the dog toward a distant target during DEFAULT. This follows from the Free role following the engine's target choice and is left to the Guard role.
 2. **Engine delegation is rarely used.** In open terrain a distant zombie is almost always visible, so the delegation condition (no enemy visible at any range) is seldom met. Whether DoGS's one-tile steps get stuck among obstacles was not tested.
 3. **Play-style data.** Both low-HP retreats (HP 0.37, 0.33) waited within 2 tiles of the player and released after the player killed the zombie, matching E2. Zombie #31's `killer=none` is the run-2 debug cleanup (confirmed by the experimenter).
+
+### 2026-10-05 E6 (Guard), first run
+
+Log: `config/debug.log` 01:23–01:29. Dog #10, first in the Guard role against 7 zombies (#32–#38), then with training OFF (vanilla) against 3 zombies. The player fought alongside with a melee weapon.
+
+| Condition | Zombies | Killer | Damage taken by the dog | Player distance (`summary`, while fighting) |
+| --- | --- | --- | --- | --- |
+| Guard | 7 | all 7 avatar | 0 (HP stayed 30) | 1–4 |
+| Vanilla | 3 | all 3 the dog | 10 (30→20) | 4–7 |
+
+- **Guard:** every zombie was killed by the player within 1–5 turns after a Takedown (#32 4 turns, #33 3, #34 5, #35 1, #36 2, #37 1, #38 4). `step kind=intercept` 17 times. No REGROUP or low-HP retreat. Distance 4 appeared once, apparently while returning.
+- **Vanilla:** the dog fought and killed on its own, drifting up to 7 tiles from the player. The experimenter observed the vanilla dog ignoring the guard duty and running toward distant zombies.
+- **Experimenter's observation:** while a zombie was downed, its attacks were easier to dodge and the player's attacks landed more often. This matches the source finding that a downed monster's dodge is 0 (`src/monster.cpp`).
+
+**Verdict: partial pass.** The dog stayed within the radius, and control turned into kills by the player. The success criterion "damage taken by the player" is not in the log and could not be compared. Logging was added for the player's melee swings (`player_melee`, including whether the target was downed), melee attacks on the player (`player_attacked`), and player HP in `summary`; E6 will be rerun with it. With training turned off in the menu, the role still reads guard but the dog behaves as vanilla.
 
 ## 7. Working rules
 

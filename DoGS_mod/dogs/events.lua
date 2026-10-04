@@ -6,6 +6,8 @@ local log = require("dogs.log")
 
 local M = {}
 
+local downed = EffectTypeId.new("downed")
+
 ---@param mon Monster
 ---@return boolean
 local function is_dog(mon)
@@ -24,12 +26,35 @@ local function summarize(dog)
     " state=" .. (dog:get_value("dogs_state") == "" and "none" or dog:get_value("dogs_state")) ..
     " pos=" .. pos.x .. "," .. pos.y .. " hp=" .. dog:get_hp() .. "/" .. dog:get_hp_max() ..
     " player=" .. tostring(obs.player) .. " adjacent=" .. obs.adjacent .. " nearby=" .. obs.nearby ..
-    " enemies=" .. #enemies .. " enemy_hp=" .. enemy_hp)
+    " enemies=" .. #enemies .. " enemy_hp=" .. enemy_hp .. " player_hp=" .. gapi.get_avatar():get_hp())
 end
 
 function M.summary()
   for _, mon in ipairs(gapi.get_all_monsters()) do
     if is_dog(mon) and mon.friendly ~= 0 then summarize(mon) end
+  end
+end
+
+---Numbers the monster so later events (death, special) can be matched to it.
+---@param mon Monster
+---@return string
+local function label(mon)
+  return mon:get_type():str() .. "#" .. log.id(mon)
+end
+
+---Player-side melee near the fight (E6): the player's swings, with whether the target was downed,
+---and enemy swings at the player, with the player's HP afterwards. Fired after the hit resolves.
+---@param attacker Creature
+---@param target Creature
+---@param hit boolean
+local function player_melee(attacker, target, hit)
+  if attacker:is_avatar() and target:is_monster() then
+    local mon = target:as_monster()
+    log.write("player_melee", "target=" .. label(mon) .. " hit=" .. tostring(hit) ..
+      " downed=" .. tostring(mon:has_effect(downed)) .. " target_hp=" .. mon:get_hp())
+  elseif target:is_avatar() and attacker:is_monster() then
+    log.write("player_attacked", "attacker=" .. label(attacker:as_monster()) .. " hit=" .. tostring(hit) ..
+      " player_hp=" .. target:get_hp())
   end
 end
 
@@ -39,7 +64,9 @@ end
 function M.on_melee(params)
   local attacker = params.char
   local target = params.target
-  if attacker == nil or target == nil or not attacker:is_monster() then return end
+  if attacker == nil or target == nil then return end
+  player_melee(attacker, target, params.success)
+  if not attacker:is_monster() then return end
   local dog = attacker:as_monster()
   if dog == nil or not is_dog(dog) or dog.friendly == 0 then return end
   local target_type = target:is_monster() and target:as_monster():get_type():str() or "character"

@@ -1,3 +1,4 @@
+local telemetry = require("lib.telemetry")
 local config = require("lib.config")
 local log = require("lib.log")
 local M = {}
@@ -17,7 +18,6 @@ function M.try(dog,target)
     if mode == "takedown" then return false end
     id = "dogs_ankle_tear"
   end
-  local telemetry=require("lib.telemetry")
   telemetry.observe(target,"before_attack")
   dog:set_target(target)
   dog:set_special_attack_enabled(id,true)

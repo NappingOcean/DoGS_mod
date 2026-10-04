@@ -59,10 +59,12 @@ Windows 저장소 루트에서 실행한다.
 .\scripts\Test-Mod.ps1 -GameDirectory ..\game_redhot
 ```
 
-검사기는 별도 임시 사용자 디렉터리에서 `--check-mods DoGS`를 실행하고 stdout·stderr·debug.log를 보존한다. 종료 코드 0과 Lua 성공 표식을 확인한다. **통과:** 데이터·스크립트 로딩, 엔진 좌표 객체를 사용하는 정책 assertion 10개, 모의 몬스터를 사용하는 가드 assertion 8개와 자동 로그 assertion 4개, 로딩 완료 후 ID 유효성. 모의 검사는 실제 엔진 callback 호출·전투의 증명이 아니다.
+검사기는 별도 임시 사용자 디렉터리에서 `--check-mods DoGS`를 실행하고 stdout·stderr·debug.log를 보존한다. 종료 코드 0과 Lua 성공 표식을 확인한다. **통과:** 데이터·스크립트 로딩, 엔진 좌표 객체를 사용하는 정책 assertion 10개, 모의 몬스터를 사용하는 가드 assertion 8개와 자동 로그 assertion 6개, 로딩 완료 후 ID 유효성. 모의 검사는 실제 엔진 callback 호출·전투의 증명이 아니다.
 
 **실제 플레이 검사 미완료:** 이동·지형 비용, 공격 명중·회피와 방어구·면역, 실제 미훈련 개의 첫 행동, 효과 처리·만료, 저장 후 복원, 다른 모드와의 호환성. LURE, 정식 훈련, 다른 견종, 본격적인 경로 탐색은 아직 구현하지 않았다. 실제 전투 성공을 주장하지 않는다.
 
 ## 파일 구성
+
+런타임 callback에서는 `require`를 호출하지 않는다. BN은 로딩 종료 후 모드 전용 `package.path`를 비우므로 필요한 모듈은 로딩 단계에서 지역 참조로 확보한다. 회귀 검사는 `package.path=nil` 상태에서 메뉴 설정 처리와 공격 쿨다운 처리를 모의 개체로 호출하며 실패해도 기존 경로를 복원한다. 이는 실제 메뉴 선택·전투의 검증과는 구분한다. 자동 로그·callback assertion은 기존 4개에서 6개로 늘었다.
 
 `mod/json/`은 개 override·효과·기존 진단 아이템 호환 정의를 담는다. `mod/lib/`는 설정·로그·정책·탐색·이동·공격·AI·진단·자동 로그를 나눈다. `mod/tests/`는 로딩 중 검사 fixture다. `preload.lua`에서 JSON 사용 전에 callback과 action_menu를 등록하며 `finalize.lua`에서 정의를 검사한다. 엔진 동작 근거는 [소스 감사](source-verification.md)를 참조한다.

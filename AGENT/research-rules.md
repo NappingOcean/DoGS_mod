@@ -27,6 +27,8 @@ Keep concrete findings in docs, and keep reusable working rules here. When corre
 
 ## Validate changes
 
+BN clears the mod-scoped `package.path` after loading. Resolve modules while loading and capture them as local references; do not call `require` inside gameplay callbacks. Exercise callback regressions with `package.path = nil`, restoring the previous value after the test.
+
 Run checks appropriate to the change. For documentation, verify links and formatting. For JSON or Lua implementation, validate loading and the relevant behavior in BN. Document unperformed or blocked runtime checks without presenting them as completed.
 
 ## Shared and local context

@@ -49,10 +49,14 @@ Test environment: Windows x64 MSVC redhot **2026-10-04-0345**, commit `ef0eceda3
 .\scripts\Test-Mod.ps1 -GameDirectory ..\game_redhot
 ```
 
-The checker uses an isolated temporary user directory, runs `--check-mods DoGS`, retains stdout/stderr/debug.log, and requires exit zero plus Lua success markers. **Passed:** data/script loading, ten policy assertions using native coordinate objects, eight guard assertions and four telemetry assertions with mock monsters, and finalized ID validity. Guard fixtures do not prove actual engine callback dispatch or combat.
+The checker uses an isolated temporary user directory, runs `--check-mods DoGS`, retains stdout/stderr/debug.log, and requires exit zero plus Lua success markers. **Passed:** data/script loading, ten policy assertions using native coordinate objects, eight guard assertions and six telemetry/callback assertions with mock monsters, and finalized ID validity. Guard fixtures do not prove actual engine callback dispatch or combat.
 
 **Pending live playtests:** movement/terrain costs, actor hit/miss and armor/immunity cases, first-turn behavior of real untrained dogs, effect processing/expiration, actual save/load, and compatibility with other mods. LURE, production training, additional breeds, and full path planning are not implemented. No live combat success is claimed.
 
 ## Files
 
 `mod/json/` contains dog overrides, effects, and legacy debug items and action-menu controls. `mod/lib/` separates configuration, logging, policy, perception, movement, attacks, AI, and diagnostics, and automatic telemetry. `mod/tests/` contains load-time fixtures. `preload.lua` registers callbacks before JSON use; `finalize.lua` checks loaded definitions. See the [source audit](source-verification.md) for native behavior.
+
+## Callback regression
+
+BN clears the mod-scoped package.path after loading. Diagnostics, movement and attack callbacks now capture module references at load time. The regression fixture invokes menu setting logic and attack cooldown handling with package.path=nil; it restores the path even on failure. This verifies callback logic with mock monsters, not live menu selection or combat.

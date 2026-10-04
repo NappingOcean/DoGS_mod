@@ -1,3 +1,4 @@
+local telemetry = require("lib.telemetry")
 local config = require("lib.config")
 local attacks = require("lib.attacks")
 local M = {}
@@ -11,7 +12,7 @@ function M.open()
     return 0
   end
   if dog:get_type():str() ~= config.dog_id then
-    require("lib.telemetry").observe(dog,"menu_target",true)
+    telemetry.observe(dog,"menu_target",true)
     gapi.add_msg(MsgType.info,"DoGS: select a Labrador mutt to configure training.")
     return 0
   end
@@ -26,18 +27,25 @@ function M.open()
   menu:add(7,"Attack mode: Ankle Tear only")
 
   local choice=menu:query()
+  local message=M.apply(dog,choice)
+  if message then gapi.add_msg(MsgType.info,message) end
+  return 0
+end
+---@param dog Monster
+---@param choice integer
+---@return string|nil
+function M.apply(dog,choice)
   if choice == 1 then
-    if dog.friendly == 0 then gapi.add_msg(MsgType.info,"DoGS: tame the dog first."); return 0 end
+    if dog.friendly == 0 then return "DoGS: tame the dog first." end
     dog:set_value("dogs_trained","1")
   elseif choice == 2 then dog:set_value("dogs_trained","0"); attacks.disable(dog)
   elseif choice == 4 then dog:set_value("dogs_messages",dog:get_value("dogs_messages") == "1" and "0" or "1")
   elseif choice >= 5 and choice <= 7 then dog:set_value("dogs_attack_mode",({"auto","takedown","ankle"})[choice-4])
   end
   if choice >= 1 and choice <= 7 then
-    require("lib.telemetry").observe(dog,"menu_change",true)
-    gapi.add_msg(MsgType.info,"DoGS: HP "..dog:get_hp().."/"..dog:get_hp_max()..", trained="..dog:get_value("dogs_trained")..", action="..dog:get_value("dogs_action"))
+    telemetry.observe(dog,"menu_change",true)
+    return "DoGS: HP "..dog:get_hp().."/"..dog:get_hp_max()..", trained="..dog:get_value("dogs_trained")..", action="..dog:get_value("dogs_action")
   end
-  return 0
 end
 -- Keep old saved remote items usable; the action menu is the normal entry point.
 ---@param _who Character|nil

@@ -1,3 +1,5 @@
+local diagnostics=require("lib.diagnostics")
+local attacks=require("lib.attacks")
 local M={}
 ---@param real_storage table
 function M.run(real_storage)
@@ -17,6 +19,9 @@ function M.run(real_storage)
     function mon:get_moves() return 0 end
     function mon:has_effect(_id) return false end
     function mon:has_special_attack(_id) return false end
+    function mon:special_attack_ready(_id) return false end
+    function mon:set_special_attack_enabled(_id,_enabled) end
+    function mon:set_target(_target) end
     return mon
   end
   local a,b=fixture(),fixture()
@@ -28,7 +33,16 @@ function M.run(real_storage)
   t.configure(fixture_storage)
   assert(t.id(a)==id)
   t.observe(a,"fixture_reload")
+  -- Simulate BN's post-load callback environment, restoring it on failure.
+  local saved_path=package.path
+  package.path=nil
+  local ok,err=pcall(function()
+    assert(diagnostics.apply(a,3) ~= nil)
+    assert(attacks.try(a,b) == false)
+  end)
+  package.path=saved_path
   t.configure(real_storage)
-  gdebug.log_info("[DoGS] event=selftest telemetry_assertions=4 result=pass fixture=mock")
+  if not ok then error(err) end
+  gdebug.log_info("[DoGS] event=selftest telemetry_assertions=6 result=pass fixture=mock")
 end
 return M

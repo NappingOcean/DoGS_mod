@@ -1,3 +1,4 @@
+local telemetry = require("lib.telemetry")
 local config = require("lib.config")
 local policy = require("lib.policy")
 local perception = require("lib.perception")
@@ -46,7 +47,7 @@ function M.step(dog, goal, enemies, retreat)
       local moves=dog:get_moves()
       if dog:move_to(candidate.pos,false,false,1.0) then
         do
-          log.write("move", "entity="..require("lib.telemetry").id(dog).." from="..origin.x..","..origin.y..","..origin.z..
+          log.write("move", "entity="..telemetry.id(dog).." from="..origin.x..","..origin.y..","..origin.z..
             " to="..candidate.pos.x..","..candidate.pos.y..","..candidate.pos.z..
             " cost="..tostring(moves-dog:get_moves()).." retreat="..tostring(retreat))
         end
@@ -56,7 +57,7 @@ function M.step(dog, goal, enemies, retreat)
       if dog:get_moves() ~= moves then return true end
     end
   end
-  log.write("move_blocked","entity="..require("lib.telemetry").id(dog).." retreat="..tostring(retreat).." candidates="..#candidates)
+  log.write("move_blocked","entity="..telemetry.id(dog).." retreat="..tostring(retreat).." candidates="..#candidates)
   return false
 end
 return M

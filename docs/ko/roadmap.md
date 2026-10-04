@@ -15,15 +15,11 @@
 7. LURE multi-turn mission
 8. 실제 플레이에서 필요한 Lua binding만 최소 추가
 
-## 구현 전 확인할 사항
+## 검사 상태
 
-- 대상 BN 버전에서 same-ID override, lua_ai, extend.special_attacks가 지원되는지
-- 특수공격 enable 상태와 개체별 값의 저장·불러오기 동작
-- 미훈련 개의 fallback과 DoGS 공격 비활성화 시점
-- Lua의 이동·타겟·공격 함수 서명과 턴 처리
-- 추격 대상 식별 가능 여부
-- melee effects의 피해 조건, downed·bleed·SPEED modifier의 몬스터 적용
-- 다른 모드의 개 override와 함께 쓰는 경우의 동작
+소스로 확인할 항목은 모두 조사했다. [검사 결과](source-verification.md)에 적용·저장·callback·공격·효과의 근거와 추격 식별·waypoint 이동의 제약을 기록했다. 다른 모드의 같은 정의 덮어쓰기로 호환성은 조건부다.
+
+실행 검사는 남아 있다: DoGS JSON 로드, 미훈련 fallback과 첫 행동 비활성화, 임무 저장/복원, 방어구·면역별 효과, waypoint 이동, LURE와 구체적 타 모드 조합. 현재 DoGS 구현이 없어 해당 검사를 실행할 수 없다.
 
 ## 아직 정하지 않은 설계
 
@@ -34,3 +30,5 @@
 개가 무리 중심으로 들어가지 않는지, 포위 전에 빠지는지, 플레이어를 보조하고 안전하게 복귀하는지 확인한다. LURE는 외곽 적을 실제로 분리하고 추격을 해제한 뒤 복귀해야 한다. 공격은 피해량보다 제압과 이동 방해의 플레이 가치로 평가한다.
 
 관련: [00 DoGS 목차](index.md)
+
+근거와 남은 실행 검사는 [BN 소스 검사 결과](source-verification.md)를 참조한다.

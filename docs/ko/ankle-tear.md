@@ -17,9 +17,9 @@
 
 짧은 지속시간과 `speed_mod` 감소, 필요 시 중첩 제한을 고려한다.
 
-## 대화에서 보고된 기술 사항 — 재확인 필요
+## 확인된 효과
 
-몬스터에도 SPEED modifier가 적용되고, bleed가 주기적으로 피해를 주며 혈흔을 남긴다고 설명됐다. 실제 BN 버전에서 확인한다.
+speed_mod는 SPEED로 로드되어 몬스터 speed bonus에 적용된다. 출혈 피해·혈흔 처리가 있지만 면역 조건은 WARM과 flesh를 요구한다. JSON의 iflesh는 곤충의 살이며 mon_zombie는 flesh와 WARM을 가져 면역이 아니다. 변종은 개별 정의를 확인한다. 전용 감속과 출혈의 후보 구성을 유지한다. generic melee는 두 효과 모두 실제 피해가 양수일 때 적용한다.
 
 ## Takedown과 역할 분담
 
@@ -29,3 +29,5 @@
 | Ankle Tear | 추격·복귀·이탈을 방해하는 지속적 이동 저하 |
 
 관련: [05 Takedown 제압 공격](takedown.md), [01 목표와 설계 철학](philosophy.md)
+
+근거와 남은 실행 검사는 [BN 소스 검사 결과](source-verification.md)를 참조한다.

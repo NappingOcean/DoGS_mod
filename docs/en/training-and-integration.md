@@ -11,12 +11,12 @@ Add attacks through `extend.special_attacks`. Store training and AI state per in
 - Enable or disable only attack IDs added by DoGS.
 - Preserve vanilla and other mods' special attacks.
 
-## Reported technical findings — verify in BN
+## Confirmed integration constraints
 
-- `lua_ai` is a type-level JSON setting, not a callback assignable solely through runtime instance values.
-- Special-attack enabled state is per instance and survives save/load.
-- An initial attack JSON `enabled=false` field was not confirmed.
+lua_ai is type-level. Instance values are strings and persist across save/load. Attacks start enabled with randomized cooldown; the actor loader has no initial enabled field. Enabled state and cooldown persist in saves.
 
-Manage DoGS attack activation in the callback. Verify untrained-dog behavior and save/load persistence.
+Disable only DoGS IDs in the callback, then return false for untrained fallback. If normal AI is invoked explicitly, return true afterward. Other mods may overwrite lua_ai or replace/clear attacks; load order must be tested with named combinations.
 
 Related: [Lua and movement](lua-and-movement.md), [Roadmap](roadmap.md).
+
+Source evidence and remaining runtime checks: [BN source verification](source-verification.md).

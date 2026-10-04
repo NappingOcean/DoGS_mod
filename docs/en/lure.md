@@ -25,3 +25,7 @@ A straight return after gaining distance is insufficient. A **BREAK_CONTACT** ph
 Survival takes priority over mission completion; switch to ESCAPE / RETREAT. Numerical thresholds remain undecided.
 
 Related: [Risk and positioning](risk-and-positioning.md), [pursuit identification and movement constraints](lua-and-movement.md).
+
+Implementation constraint: set_target stores a position, not a persistent target. Use enemy move_target and observed motion only as pursuit evidence, and validate waypoint execution rather than assuming destination setters move the dog.
+
+Source evidence and remaining runtime checks: [BN source verification](source-verification.md).

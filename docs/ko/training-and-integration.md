@@ -13,12 +13,12 @@
 - 모드가 추가한 attack ID만 enable / disable한다.
 - vanilla와 다른 모드의 special attack은 건드리지 않는다.
 
-## 대화에서 보고된 기술 사항 — 재확인 필요
+## 확인된 적용 제약
 
-- `lua_ai`는 JSON 타입 수준의 설정이며 개체별 runtime value만으로 callback 자체를 부여할 수 없다.
-- special attack의 enabled 상태는 개체별이며 save / load된다.
-- 공격 JSON의 초기 `enabled=false` 필드는 확인되지 않았다.
+lua_ai는 타입 수준 설정이다. 개체별 값은 문자열이며 저장/복원된다. 공격은 기본 활성 상태와 무작위 초기 쿨다운을 갖고, actor 로더에는 초기 enabled 필드가 없다. 활성 상태와 쿨다운은 저장된다.
 
-callback에서 DoGS 공격의 활성 상태를 관리하고, 미훈련 개와 저장·불러오기 동작을 확인한다.
+callback에서 DoGS ID만 끄고 미훈련 개는 false로 fallback한다. 일반 AI를 직접 실행했으면 이후 true를 반환한다. 타 모드가 lua_ai나 공격 정의·목록을 교체할 수 있으므로 구체적인 조합과 순서를 실행 검사해야 한다.
 
 관련: [08 Lua API와 이동 구현](lua-and-movement.md), [09 구현 순서와 확인 과제](roadmap.md)
+
+근거와 남은 실행 검사는 [BN 소스 검사 결과](source-verification.md)를 참조한다.

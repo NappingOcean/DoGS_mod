@@ -35,3 +35,7 @@ LURE는 개체별 임무·단계 상태를 유지하는 multi-turn state machine
 추격 대상 식별과 우회 이동의 구현 제약은 [Lua API와 이동 구현](lua-and-movement.md)을 참조한다.
 
 관련: [03 위험 평가와 위치 선정](risk-and-positioning.md), [08 Lua API와 이동 구현](lua-and-movement.md)
+
+구현 제약: set_target은 지속 대상 대신 위치만 설정한다. 적의 move_target과 이동 변화는 추격의 근거로만 사용한다. 목적지 설정이 곧 이동이라고 가정하지 말고 waypoint 실행을 검증한다.
+
+근거와 남은 실행 검사는 [BN 소스 검사 결과](source-verification.md)를 참조한다.

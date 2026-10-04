@@ -13,15 +13,11 @@ The project is in the design stage. Implementation is not yet verified. Check te
 7. Multi-turn LURE mission
 8. Minimal extra Lua bindings justified by playtesting
 
-## Verification tasks
+## Verification status
 
-- same-ID overrides, lua_ai, and extend.special_attacks support
-- Instance values and attack activation across save/load
-- Untrained fallback and attack-disable timing
-- Lua movement, target, attack signatures, and turn handling
-- Stable pursuit-target identification
-- Melee effect damage requirements and monster downed, bleed, and SPEED behavior
-- Compatibility with other dog overrides
+All source-level items were inspected; see [the audit](source-verification.md). Integration, persistence, callback dispatch, attacks, and effects are confirmed in source. Pursuit identity and waypoint execution have documented limits. Other mods can replace the same definitions, so compatibility remains conditional.
+
+Runtime checks remain: load DoGS JSON, verify untrained fallback and first-action disabling, save/load mission state, exercise attack/effect immunity and armor, waypoint movement, LURE, and named mod combinations. No DoGS implementation exists to run these checks yet.
 
 ## Open design questions
 
@@ -32,3 +28,5 @@ Training and UI, supported dog types, risk scores and transition thresholds, att
 Dogs avoid group centers, withdraw before encirclement, support the player, and return safely. LURE separates an edge enemy and breaks pursuit before returning. Judge attacks by control and mobility-disruption value.
 
 [Documentation index](index.md).
+
+Source evidence and remaining runtime checks: [BN source verification](source-verification.md).

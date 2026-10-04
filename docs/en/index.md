@@ -1,6 +1,6 @@
 # DoGS design documentation
 
-Design snapshot based on the curated Korean Obsidian notes, updated 2026-10-04. Technical findings are discussion reports, not verified implementation claims. Check APIs, JSON fields, and effects against the target BN version.
+Design snapshot based on the curated Korean Obsidian notes, updated 2026-10-04. Technical claims were checked against BN commit `e0e25e9`; runtime behavior of DoGS remains untested.
 
 [한국어](../ko/index.md)
 
@@ -13,3 +13,5 @@ Design snapshot based on the curated Korean Obsidian notes, updated 2026-10-04. 
 - [Training and integration](training-and-integration.md)
 - [Lua and movement](lua-and-movement.md)
 - [Roadmap and open questions](roadmap.md)
+
+Source evidence and remaining runtime checks: [BN source verification](source-verification.md).

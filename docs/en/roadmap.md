@@ -16,6 +16,7 @@
 | Per-entity state save/restore | [runtime E4] |
 | Firing-line avoidance | decided (approach 2), not implemented |
 | Role: Harass (delaying the next enemy) | planned |
+| Command device (DoGS whistle) | decided, not implemented |
 | Production training, other dog types, hostile NPCs | undecided |
 
 ## Next steps
@@ -27,11 +28,12 @@ In order; each step moves on only after its experiment meets the success criteri
 3. **Firing-line avoidance: implement and test.** Remember shot trajectories from `on_shoot` and step off them ([behavior design](design.md) section 7). Decide how many turns to remember and how wide to avoid.
 4. **Harass probe.** How long does a zombie chase the dog, and does it switch to the player as the player gets closer? Also set the holding distance (2–3 tiles).
 5. **Harass role: implement and test.** Picking the next enemy, holding it up after control, deciding when to finish. Metric: the maximum number of enemies on the player at once ([Harass role](harass.md)).
-6. **Production training and UI.** Currently an experimental menu switch.
+6. **Command device (DoGS whistle) and production training.** Build the command whistle that replaces the experimental menu, and a training method ([behavior design](design.md) section 7).
 7. **Wider coverage.** Other dog types, hostile NPC perception, compatibility checks with other mods.
 
 ## Open questions
 
+- When and how to fix DoGS ignoring `docile` (the existing whistle's stop-attacking order).
 - Takedown: are 50% for large targets and 2 turns of knockdown right?
 - Ankle Tear: effect stacking and actual application by armor and immunity (not checked in play).
 - Do a Guard distance of 3 and an engage distance of 2 hold in other situations (indoors, crowds)?
@@ -60,5 +62,7 @@ In order; each step moves on only after its experiment meets the success criteri
 | 2026-10-05 | Revise the whole document set | Changes during experiments broke consistency between documents |
 | 2026-10-05 | Shelve cutting enemies out of a group by luring (formerly LURE) | Risk of the dog and player being picked off separately; scent tracking brings enemies back anyway (user decision) |
 | 2026-10-05 | Harass means controlling the next enemy within 7–8 tiles of the player and holding it up so it chases the dog alone and arrives later | User decision |
+| 2026-10-05 | Harass ends both automatically and on recall | User decision |
+| 2026-10-05 | The release command device is a command dog whistle (a new item) | The existing whistle is hardcoded; the experimental menu does not suit release (user decision) |
 | 2026-10-05 | Raise the ankle wound from 10 to 60 turns | A real bite healing in 10 seconds is implausible and shorter than one Harass cycle (user decision) |
 | 2026-10-05 | "It survives" includes moving out without hesitation when encirclement looms | User decision |

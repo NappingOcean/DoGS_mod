@@ -105,6 +105,22 @@ Numbers and resolution: [control attacks](attacks.md).
 - [design] Use the `on_shoot` hook to receive the shooter and aim position right after a shot, remember that trajectory for a few turns, and step off its axis. Do not avoid by reading the weapon in advance: the dog does not know what a gun is, but it can remember a trajectory after a shot. If the player then shoots another target, the dog may be in the way; this is accepted as a dog's limitation.
 - To decide at implementation: how many turns to remember, and how many tiles either side of the trajectory to avoid (shot spread, dispersion).
 
+### Command device: the DoGS whistle (decided, not implemented)
+
+[design, 2026-10-05] Training and roles are set from an experimental action-menu entry for now. The release version uses a **command dog whistle** instead.
+
+- A new item, separate from the existing dog whistle. Its description says a tongue-stopped hole cut into the mouthpiece lets it produce more kinds of signals than the ordinary whistle.
+- Candidate signals: role orders (Guard, Harass, Free) and recalling a harassing dog. The exact list is undecided.
+- Being a signal the dog can actually hear, it fits the principle that the dog judges only by what it can perceive.
+
+**Findings about the existing whistle.**
+
+- [source] The existing whistles (`dog_whistle`, `dog_whistle_wood`) use the hardcoded C++ `DOG_WHISTLE` action. It toggles the `docile` effect on every friendly dog (`DOGFOOD` or `DOG_WHISTLE` flag): docile dogs follow closely and stop attacking; otherwise they resume attacking. It applies to all such dogs on the current map, with no distance or sound check ([iuse.cpp:4314](https://github.com/cataclysmbn/Cataclysm-BN/blob/ef0eceda391d4d291b366e3bf2833b04c7342d72/src/iuse.cpp#L4314)).
+- [runtime] Registering an item-use function from Lua (`game.iuse_functions`) worked for the earlier implementation's remote item.
+- **Known defect:** DoGS does not check `docile` yet. Even after the player stops attacks with the existing whistle, a trained dog may still use control attacks or Guard attacks.
+
+**To decide:** the signal list, audible range (the whole map like the existing whistle, or a distance limit), how to obtain it (recipe, spawn locations), and how it relates to production training.
+
 ### Harass role
 
 The flow, the difference from Guard, open points, and the shelved "cut enemies out of a group" idea are in [Harass role](harass.md).

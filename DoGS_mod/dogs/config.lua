@@ -23,6 +23,12 @@ return {
   -- or of the dog itself, without leaving `radius`.
   guard = { radius = 3, engage = 2 },
 
+  -- Harass role v0 (docs/en/harass.md): while the player is engaged, hold up the next enemy within
+  -- `range` of the player, keeping `hold_min`..`hold_max` tiles from it. `crowd`: at most this many
+  -- other enemies within 2 tiles of a target (exposed). `finish`: turns with no enemy on the player
+  -- before harassing stops. `recall`: turns the menu recall keeps the dog guarding.
+  harass = { range = 8, hold_min = 2, hold_max = 3, crowd = 1, finish = 3, recall = 10 },
+
   -- Control attacks need a lone target: at most this many enemies within 3 tiles.
   control_nearby = 2,
 

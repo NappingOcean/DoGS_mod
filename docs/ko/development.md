@@ -36,7 +36,7 @@
 | [`dogs/ai.lua`](../../DoGS_mod/dogs/ai.lua) | 판단 순서([행동 설계](design.md) 2절), 엄호, 복귀 위임 |
 | [`dogs/policy.lua`](../../DoGS_mod/dogs/policy.lua) | 순수 함수: 상태 전환, 제압 조건, 공격 선택, Takedown 확률, 엄호 표적, 이동 후보 순위 |
 | [`dogs/perception.lua`](../../DoGS_mod/dogs/perception.lua) | 적 탐색과 관측값 |
-| [`dogs/movement.lua`](../../DoGS_mod/dogs/movement.lua) | 한 칸 이동: retreat, flee, disengage, regroup, intercept |
+| [`dogs/movement.lua`](../../DoGS_mod/dogs/movement.lua) | 한 칸 이동: retreat, flee, disengage, regroup, intercept, kite |
 | [`dogs/attacks.lua`](../../DoGS_mod/dogs/attacks.lua) | 공격 선택·실행, 개체 값 쿨다운, Takedown 판정, 회피 훅 |
 | [`dogs/role.lua`](../../DoGS_mod/dogs/role.lua) | 역할 읽기·전환. 값이 없으면 엄호 |
 | [`dogs/events.lua`](../../DoGS_mod/dogs/events.lua) | 10턴 요약, 근접공격 기록(개·플레이어), 사망 기록 |
@@ -62,7 +62,7 @@
 | --- | --- |
 | `dogs_id` | 로그용 개체 번호. 개와, 기록에 등장한 몬스터에 붙는다 |
 | `dogs_trained` | `"1"`이면 DoGS 훈련 |
-| `dogs_role` | `"free"`면 자유, 그 밖에는 엄호 |
+| `dogs_role` | `"harass"`면 견제, `"free"`면 자유, 그 밖에는 엄호 |
 | `dogs_attack_mode` | `auto`(빈 값 포함), `takedown`, `ankle` |
 | `dogs_messages` | `"0"`이면 상태 메시지 끔. 기본은 켜짐 |
 | `dogs_state`, `dogs_state_turn` | 현재 상태와 진입한 게임 턴 |
@@ -72,6 +72,10 @@
 | `dogs_docile` | 마지막으로 기록한 docile 상태(변화를 한 번만 기록하기 위함) |
 | `dogs_next_<공격 ID>` | 다음 사용 가능 게임 턴 |
 | `dogs_delegate_block` | 이 게임 턴까지 복귀를 엔진에 맡기지 않음 |
+| `dogs_harass_target` | 견제 중인 표적의 개체 번호 |
+| `dogs_engaged_turn` | 플레이어에게 적이 붙어 있던 마지막 게임 턴(견제 자동 종료) |
+| `dogs_recall_until` | 이 게임 턴까지 견제를 멈춘다(메뉴 호출) |
+| `dogs_track_turn` | `track`을 턴마다 한 번만 남기기 위한 표식 |
 | `dogs_probe_dest`, `dogs_probe_player` | 엔진에 맡긴 복귀 목적지(절대 좌표)와 그때의 플레이어 거리 |
 
 모드 저장소(`game.mod_storage`)의 `next_id`는 다음 개체 번호다.
@@ -89,6 +93,8 @@
 | `retreat.memory` | 5 | 존재 영속성(턴) |
 | `regroup.enter` / `exit` / `hold` / `block` | 8 / 4 / 3 / 5 | 복귀 진입·해제 거리, 최소 유지, 위임 중지 턴 |
 | `guard.radius` / `engage` | 3 / 2 | 엄호 거리 / 상대할 적의 거리 |
+| `harass.range` / `hold_min` / `hold_max` | 8 / 2 / 3 | 견제 범위 / 표적과 유지할 거리 |
+| `harass.crowd` / `finish` / `recall` | 1 / 3 / 10 | 노출 기준(주변 다른 적 수) / 자동 종료 턴 / 호출 지속 턴 |
 | `control_nearby` | 2 | 제압 공격 시 3타일 안 적 수 상한 |
 | `attacks.*.cooldown` | 8 | 공격 쿨다운(턴) |
 | `takedown.duration` / `chance` | 2 / 크기별 | 넘어짐 턴 / 크기별 확률 |
@@ -102,7 +108,7 @@
 | --- | --- |
 | `load`, `finalize`, `selftest` | 로딩 표식 |
 | `decide` | 상태 전환과 근거: HP 비율, 인접 수, 3타일 수, 가장 가까운 적, 플레이어 거리 |
-| `step` / `step_failed` | 한 칸 이동(종류: retreat, flee, disengage, regroup, intercept)과 위험 점수 전후 |
+| `step` / `step_failed` | 한 칸 이동(종류: retreat, flee, disengage, regroup, intercept, kite)과 위험 점수 전후 |
 | `hold` | 저체력 후퇴 중 대기 시작(대기마다 한 번) |
 | `disengage` | 제압 후속의 이탈 시도 |
 | `docile` | docile 상태가 바뀜(`on=true/false`) |
@@ -111,9 +117,11 @@
 | `melee` | 개의 일반 공격: 표적 타입, 명중, 공격 뒤 표적 HP |
 | `player_melee` | 플레이어의 근접 공격: 대상(번호), 명중, 대상이 넘어져 있었는지, 대상 HP |
 | `player_attacked` | 플레이어가 받은 근접 공격: 공격자, 명중, 공격 뒤 플레이어 HP(신체 부위 합) |
-| `summary` | 10턴마다 우호적인 Labrador mutt 전부: 훈련, 역할, 상태, 위치, HP, 플레이어 거리, 주변 적 수·HP 합, 플레이어 HP |
+| `summary` | 10턴마다 우호적인 Labrador mutt 전부: 훈련, 역할, 상태, 위치, HP, 플레이어 거리, 주변 적 수·HP 합, 플레이어 HP, 플레이어에게 붙은 적 수(`on_player`) |
 | `probe_result` | 엔진에 맡긴 복귀 목적지를 엔진이 바꾼 경우에만 |
 | `death` | 개, 개가 처치한 몬스터, 번호가 붙은 몬스터의 사망. 처치자는 몬스터, `avatar`, `none`(출혈이나 디버그 처치) |
+| `harass_target`, `harass_end` | 견제 표적 선택과 종료 |
+| `track` | 견제 중 턴마다: 표적과 개·플레이어 거리, 표적 목적지가 누구 쪽인지(`toward`), 플레이어에게 붙은 적 수 |
 | `menu` | 메뉴 변경 |
 
 ## 메뉴
@@ -126,7 +134,8 @@ action_menu → 기타 → **DoGS laboratory**. 보이는 Labrador mutt가 여�
 | 2 | 공격 모드 순환: auto → takedown → ankle |
 | 3 | 상태 메시지 켜기·끄기 |
 | 4 | HP 회복(실험용) |
-| 5 | 역할 전환: 엄호 ↔ 자유 |
+| 5 | 역할 순환: 엄호 → 견제 → 자유 |
+| 6 | 호출: 10턴 동안 견제를 멈추고 엄호로 |
 
 ## 실험 진행
 

@@ -30,7 +30,7 @@ A separate test world, open terrain, daytime, at least 3 runs per experiment. Pl
 | E5 Leash and oscillation | done (second run passed) | cleanup if needed | allowed mid-run |
 | E6 Guard | done (second run passed) | fights alongside | between runs only |
 | E7 New Takedown resolution | done (largely passed) | fights alongside | between runs only |
-| E8 Harass probe | planned | cleanup only | allowed mid-run |
+| E8 Harass v0 probe | first attempt invalid; rerun planned | fights the zombie the dog is not holding | allowed mid-run |
 | E9 Multiple enemies | planned | fights alongside | between runs only |
 
 ## Procedures
@@ -88,16 +88,13 @@ Roles were implemented after E3 (Guard implemented, Harass planned). The experim
 - Check: when `outcome=dodged` appears, did the game message also show a miss?
 - Success: the fat zombie goes down on a Takedown hit (`knocked_MEDIUM`), and `dodged` matches the misses in the game messages.
 
-### E8 Harass probe (planned)
-- Purpose: confirm the engine behavior the Harass role needs before implementing it. Harass is not implemented yet, so observe with current behavior.
-- Setup: one or two regular zombies. Let a trained dog (Free role) engage, while the player stands 4–8 tiles from the zombie at varying distances.
-- Measure: how many turns the zombie chases the dog; within how many tiles of the player the zombie turns toward the player; whether the zombie keeps following at each dog–zombie distance. Judge from `summary`, `step` and `player_attacked`.
-- Decides: the holding distance, the player-distance band for harassing (7–8 tiles), and conditions where harassing does not work.
-- Also check: the docile stop order.
-
-### (Harass role implementation)
-
-Implement the Harass role from E8's results.
+### E8 Harass v0 probe (first attempt invalid; rerun planned)
+- Purpose: does Harass v0 actually hold an enemy up, and how long does a zombie chase a dog that keeps its distance?
+- Setup: two regular zombies. The dog in the Harass role. The player fights one with a melee weapon (the player must be engaged for harassing to start) and leaves the other to the dog.
+- Measure: `toward` in `track` (is the target's destination nearer the dog or the player) and how long it lasts, the change in target–player distance, `on_player` (enemies on the player at once), time until `harass_end`, damage taken by the dog.
+- Decides: the holding distance (2–3 tiles now), the harass range (8 tiles now), and conditions where harassing does not work.
+- Also check: the docile stop order and the menu Call back.
+- The first attempt ran in the Free role before Harass existed and was invalid (see Results).
 
 ### E9 Multiple enemies: Guard versus Harass (planned)
 - Setup: 3–4 regular zombies approach the player. The player fights alongside with a melee weapon. Repeat with a Guard-role dog, a Harass-role dog and a vanilla dog.
@@ -292,3 +289,15 @@ Observations:
 4. **Player hits on downed targets:** regular zombies 2/2, fat zombie 1/2; 8/9 together with E6.
 5. **Docile:** `docile on/off` was logged with each whistle, and DoGS used no control attacks while docile. But the engine kept the docile dog biting the adjacent zombie (19 normal attacks across two windows, killing zombie #55). Vanilla docile only stops picking new targets; it does not stop a fight already in contact.
 6. **Knockdown on a dead target.** When Takedown's damage killed the target, it still applied the knockdown and logged `knocked`. Fixed: a dead target is logged `killed` and not knocked down.
+
+### 2026-10-05 E8 (Harass probe), first attempt, invalid
+
+Log: `config/debug.log` 17:21–17:27. Dog #10, Free role, fighting two or so zombies (#56–#61) continuously.
+
+**Verdict: invalid.** The experiment design was at fault. The log had no zombie positions or destinations, so "whom does the zombie pursue" could not be judged, and with Harass not yet implemented the dog fought in contact instead of keeping distance. Harass v0 and the `track` log were implemented first, and E8 will be rerun as a v0 probe.
+
+Salvaged:
+
+1. **Docile stop order checked.** While docile (turns 1336062–1336070) the dog stepped away from the adjacent zombie twice (`docile_disengage moved=true`), with no normal attacks logged; it resumed attacking once docile ended. One sample.
+2. **Encirclement timing.** Fighting two zombies, the dog entered RETREAT four times, each time already adjacent to 2 enemies; its HP fell from 30 to 15. This looks later than "without hesitation before encirclement"; E9 will judge it.
+3. **Wait-log noise.** During the low-HP wait, a moving player made flee steps and waits alternate, so `hold` was logged almost every action. A logging issue, not a behavior one.

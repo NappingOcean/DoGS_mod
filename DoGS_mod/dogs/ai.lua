@@ -112,6 +112,66 @@ local function guard(dog, obs, positions, now)
   return true -- by the player: wait
 end
 
+---Harass log, once per game turn: whom the held-up enemy is heading for. `toward` compares its
+---destination with the dog and the player; `move_target` is only evidence, not its attack target.
+---@param dog Monster
+---@param target Monster
+---@param now integer
+---@param positions TripointBubMs[]
+local function track(dog, target, now, positions)
+  if dog:get_value("dogs_track_turn") == tostring(now) then return end
+  dog:set_value("dogs_track_turn", tostring(now))
+  local here, player, pos = dog:get_pos_ms(), gapi.get_avatar():get_pos_ms(), target:get_pos_ms()
+  local dest = target:move_target()
+  local to_dog, to_player = policy.distance(dest, here), policy.distance(dest, player)
+  local toward = to_dog < to_player and "dog" or (to_player < to_dog and "player" or "tie")
+  log.write("track", "dog=" .. log.id(dog) .. " target=" .. log.id(target) .. " dog_dist=" .. policy.distance(pos, here) ..
+    " player_dist=" .. policy.distance(pos, player) .. " toward=" .. toward ..
+    " on_player=" .. policy.adjacent(player, positions))
+end
+
+---Harass role v0 (docs/en/harass.md): while the player is engaged, hold up the next enemy to
+---arrive: control it when an attack is ready, otherwise keep hold_min..hold_max tiles from it so it
+---chases the dog. Ends automatically after `finish` turns with no enemy on the player, or on recall.
+---@param dog Monster
+---@param obs DogsObservation
+---@param enemies Monster[]
+---@param positions TripointBubMs[]
+---@param now integer
+---@return boolean handled
+local function harass(dog, obs, enemies, positions, now)
+  local h = config.harass
+  local player = gapi.get_avatar():get_pos_ms()
+  if obs.player > h.range then return regroup(dog, positions, now) end
+  if policy.adjacent(player, positions) > 0 then dog:set_value("dogs_engaged_turn", tostring(now)) end
+  local engaged = tonumber(dog:get_value("dogs_engaged_turn"))
+  local recalled = (tonumber(dog:get_value("dogs_recall_until")) or 0) > now
+  local current = nil
+  for i, enemy in ipairs(enemies) do
+    if enemy:get_value("dogs_id") ~= "" and enemy:get_value("dogs_id") == dog:get_value("dogs_harass_target") then current = i end
+  end
+  local index = (not recalled and engaged and now - engaged < h.finish) and policy.harass_target(positions, player, current) or nil
+  if index == nil then
+    if dog:get_value("dogs_harass_target") ~= "" then
+      dog:set_value("dogs_harass_target", "")
+      log.write("harass_end", "dog=" .. log.id(dog) .. " recalled=" .. tostring(recalled))
+    end
+    return guard(dog, obs, positions, now)
+  end
+  local target, goal = enemies[index], positions[index]
+  if dog:get_value("dogs_harass_target") ~= log.id(target) then
+    dog:set_value("dogs_harass_target", log.id(target))
+    log.write("harass_target", "dog=" .. log.id(dog) .. " target=" .. log.id(target) ..
+      " player_dist=" .. policy.distance(goal, player))
+  end
+  track(dog, target, now, positions)
+  local ready = attacks.choose(dog, target, now) ~= nil
+  if ready and obs.adjacent == 0 and movement.step(dog, "intercept", positions, false, goal, h.range) then return true end
+  if movement.step(dog, "kite", positions, true, goal, h.range) then return true end
+  if obs.adjacent > 0 then return false end -- cornered in contact: defend
+  return true -- holding position at the right distance
+end
+
 ---@param dog Monster
 ---@return boolean handled
 function M.turn(dog)
@@ -172,7 +232,10 @@ function M.turn(dog)
   end
 
   -- 2. After a control attack: bite while a neighbor is down, break off once it stands.
-  if dog:get_value("dogs_disengage") == "1" then
+  -- Harass does not fight in contact, so it skips the bite and goes straight to holding distance.
+  if dog:get_value("dogs_disengage") == "1" and role.get(dog) == "harass" then
+    dog:set_value("dogs_disengage", "")
+  elseif dog:get_value("dogs_disengage") == "1" then
     if obs.adjacent == 0 then
       dog:set_value("dogs_disengage", "")
     elseif perception.adjacent_with(dog, enemies, downed) then
@@ -195,8 +258,9 @@ function M.turn(dog)
     end
   end
 
-  -- 4. Role. Guard replaces the leash with its own tighter one.
+  -- 4. Role. Guard and Harass replace the leash with their own.
   if role.get(dog) == "guard" then return guard(dog, obs, positions, now) end
+  if role.get(dog) == "harass" then return harass(dog, obs, enemies, positions, now) end
 
   -- 5. Leash (Free role).
   if state == "REGROUP" then return regroup(dog, positions, now) end

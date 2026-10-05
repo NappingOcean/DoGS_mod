@@ -36,7 +36,7 @@ What you need to change the code or run an experiment. Paths are relative to the
 | [`dogs/ai.lua`](../../DoGS_mod/dogs/ai.lua) | Decision order ([behavior design](design.md) section 2), Guard, delegated return |
 | [`dogs/policy.lua`](../../DoGS_mod/dogs/policy.lua) | Pure functions: state transitions, control window, attack choice, Takedown chance, Guard target, step ranking |
 | [`dogs/perception.lua`](../../DoGS_mod/dogs/perception.lua) | Enemy scan and observations |
-| [`dogs/movement.lua`](../../DoGS_mod/dogs/movement.lua) | One-tile steps: retreat, flee, disengage, regroup, intercept |
+| [`dogs/movement.lua`](../../DoGS_mod/dogs/movement.lua) | One-tile steps: retreat, flee, disengage, regroup, intercept, kite |
 | [`dogs/attacks.lua`](../../DoGS_mod/dogs/attacks.lua) | Attack choice and execution, per-entity cooldowns, Takedown resolution, dodge hook |
 | [`dogs/role.lua`](../../DoGS_mod/dogs/role.lua) | Reading and toggling the role; Guard when unset |
 | [`dogs/events.lua`](../../DoGS_mod/dogs/events.lua) | 10-turn summaries, melee records (dog and player), death records |
@@ -62,7 +62,7 @@ All are strings, saved and restored; missing keys read as an empty string.
 | --- | --- |
 | `dogs_id` | Entity number for logs, on dogs and on monsters that appear in records |
 | `dogs_trained` | `"1"` means DoGS-trained |
-| `dogs_role` | `"free"` means Free; anything else means Guard |
+| `dogs_role` | `"harass"` means Harass, `"free"` means Free; anything else means Guard |
 | `dogs_attack_mode` | `auto` (or empty), `takedown`, `ankle` |
 | `dogs_messages` | `"0"` silences state messages; on by default |
 | `dogs_state`, `dogs_state_turn` | Current state and the game turn it was entered |
@@ -72,6 +72,10 @@ All are strings, saved and restored; missing keys read as an empty string.
 | `dogs_docile` | Last logged docile state (so changes are logged once) |
 | `dogs_next_<attack ID>` | Next usable game turn |
 | `dogs_delegate_block` | Do not delegate the return to the engine until this game turn |
+| `dogs_harass_target` | Entity number of the harassed target |
+| `dogs_engaged_turn` | Last game turn an enemy was on the player (Harass auto-finish) |
+| `dogs_recall_until` | Harassing stops until this game turn (menu recall) |
+| `dogs_track_turn` | Marker so `track` is logged once per turn |
 | `dogs_probe_dest`, `dogs_probe_player` | Delegated return destination (absolute) and the player distance at that time |
 
 `next_id` in the mod storage (`game.mod_storage`) is the next entity number.
@@ -89,6 +93,8 @@ Values in [`config.lua`](../../DoGS_mod/dogs/config.lua). Change them only throu
 | `retreat.memory` | 5 | Object permanence (turns) |
 | `regroup.enter` / `exit` / `hold` / `block` | 8 / 4 / 3 / 5 | Return entry and exit distances, minimum hold, delegation pause |
 | `guard.radius` / `engage` | 3 / 2 | Guard distance / distance of enemies to engage |
+| `harass.range` / `hold_min` / `hold_max` | 8 / 2 / 3 | Harass range / distance to keep from the target |
+| `harass.crowd` / `finish` / `recall` | 1 / 3 / 10 | Exposure limit (other enemies nearby) / auto-finish turns / recall duration |
 | `control_nearby` | 2 | Maximum enemies within 3 tiles for a control attack |
 | `attacks.*.cooldown` | 8 | Attack cooldown (turns) |
 | `takedown.duration` / `chance` | 2 / by size | Knockdown turns / chance by size |
@@ -102,7 +108,7 @@ Lines tagged `[DoGS]` in `config/debug.log` in the game user directory. Every li
 | --- | --- |
 | `load`, `finalize`, `selftest` | Load markers |
 | `decide` | State transition and basis: HP ratio, adjacent count, count within 3 tiles, nearest enemy, player distance |
-| `step` / `step_failed` | One-tile step (kind: retreat, flee, disengage, regroup, intercept) and risk score before/after |
+| `step` / `step_failed` | One-tile step (kind: retreat, flee, disengage, regroup, intercept, kite) and risk score before/after |
 | `hold` | Start of a wait during the low-HP retreat (once per wait) |
 | `disengage` | Break-off attempt in the control follow-up |
 | `docile` | Docile state changed (`on=true/false`) |
@@ -111,9 +117,11 @@ Lines tagged `[DoGS]` in `config/debug.log` in the game user directory. Every li
 | `melee` | The dog's normal attacks: target type, hit, target HP after |
 | `player_melee` | The player's melee swings: target (numbered), hit, whether the target was downed, target HP |
 | `player_attacked` | Melee attacks on the player: attacker, hit, player HP after (sum of body parts) |
-| `summary` | Every 10 turns for every friendly Labrador mutt: trained, role, state, position, HP, player distance, nearby enemy count and HP sum, player HP |
+| `summary` | Every 10 turns for every friendly Labrador mutt: trained, role, state, position, HP, player distance, nearby enemy count and HP sum, player HP, enemies on the player (`on_player`) |
 | `probe_result` | Only when the engine replaced a delegated return destination |
 | `death` | Deaths of dogs, monsters killed by dogs, and numbered monsters. Killer is a monster, `avatar`, or `none` (bleeding or debug kill) |
+| `harass_target`, `harass_end` | Harass target picked; harassing finished |
+| `track` | Each turn while harassing: target–dog and target–player distance, whom the target's destination is nearer (`toward`), enemies on the player |
 | `menu` | Menu changes |
 
 ## Menu
@@ -126,7 +134,8 @@ action_menu → Misc → **DoGS laboratory**. With several Labrador mutts in sig
 | 2 | Attack mode cycle: auto → takedown → ankle |
 | 3 | State messages on/off |
 | 4 | Refill HP (for experiments) |
-| 5 | Role toggle: Guard ↔ Free |
+| 5 | Role cycle: Guard → Harass → Free |
+| 6 | Call back: stop harassing for 10 turns and guard |
 
 ## Running experiments
 

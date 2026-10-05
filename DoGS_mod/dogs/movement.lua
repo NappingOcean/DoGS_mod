@@ -24,15 +24,16 @@ end
 ---One engine-costed step chosen by policy.rank_steps.
 ---Returns true when the action was spent (moved, or a failed move still cost moves).
 ---@param dog Monster
----@param kind string "retreat" | "flee" | "disengage" | "regroup"
+---@param kind string "retreat" | "flee" | "disengage" | "regroup" | "intercept" | "kite"
 ---@param enemies TripointBubMs[]
 ---@param quiet boolean|nil caller logs the no-step case itself
----@param goal TripointBubMs|nil target tile for "intercept"
+---@param goal TripointBubMs|nil target tile for "intercept" and "kite"
+---@param radius number|nil limit around the player for "intercept" and "kite"
 ---@return boolean
-function M.step(dog, kind, enemies, quiet, goal)
+function M.step(dog, kind, enemies, quiet, goal, radius)
   local origin = dog:get_pos_ms()
   local player = gapi.get_avatar():get_pos_ms()
-  local ranked = policy.rank_steps(kind, origin, free_neighbors(origin), enemies, player, goal)
+  local ranked = policy.rank_steps(kind, origin, free_neighbors(origin), enemies, player, goal, radius)
   for _, pos in ipairs(ranked) do
     local moves = dog:get_moves()
     if dog:move_to(pos, false, false, 1.0) then

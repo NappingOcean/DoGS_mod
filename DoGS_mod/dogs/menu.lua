@@ -69,6 +69,8 @@ function M.apply(dog, choice)
   elseif choice == 3 then dog:set_value("dogs_messages", messages_on(dog) and "0" or "1")
   elseif choice == 4 then dog:set_hp(dog:get_hp_max())
   elseif choice == 5 then roles.toggle(dog)
+  elseif choice == 6 then
+    dog:set_value("dogs_recall_until", tostring(gapi.current_turn():to_turn() + config.harass.recall))
   else return nil end
   log.write("menu", "dog=" .. log.id(dog) .. " choice=" .. choice .. " trained=" .. tostring(on(dog, "dogs_trained")) ..
     " mode=" .. dog:get_value("dogs_attack_mode") .. " role=" .. role(dog) .. " hp=" .. dog:get_hp())
@@ -90,7 +92,8 @@ function M.open()
   menu:add(2, "Attack mode: " .. mode .. " (cycle auto / takedown / ankle)")
   menu:add(3, "State messages: " .. (messages_on(dog) and "ON" or "OFF") .. " (toggle)")
   menu:add(4, "Refill HP")
-  menu:add(5, "Role: " .. role(dog) .. " (toggle guard / free)")
+  menu:add(5, "Role: " .. role(dog) .. " (cycle guard / harass / free)")
+  menu:add(6, "Call back (stop harassing for a while)")
   local message = M.apply(dog, menu:query())
   if message then gapi.add_msg(MsgType.info, message) end
   return 0

@@ -83,6 +83,18 @@ function M.run()
   assert(t.x == 0 and t.y == 5)
   assert(policy.guard_target(p(0, 0), { p(9, 9) }, p(0, 4)) == nil)
   assert(policy.guard_target(p(0, 0), { p(2, 0) }, p(0, -6)).x == 2)
+  -- Harass target: not yet on the player, within 8, exposed; closest to the player; current kept.
+  local h = { p(1, 0), p(4, 0), p(6, 6) }
+  assert(policy.harass_target(h, p(0, 0)) == 2)
+  assert(policy.harass_target(h, p(0, 0), 3) == 3)
+  local crowded = { p(1, 0), p(4, 0), p(6, 6), p(4, 1), p(5, 1) }
+  assert(policy.harass_target(crowded, p(0, 0)) == 3)
+  assert(policy.harass_target({ p(9, 0) }, p(0, 0)) == nil)
+  -- Kite: break contact to 2-3 tiles; at 3 tiles with no risk there is nothing better.
+  local away = policy.rank_steps("kite", p(0, 0), { p(-1, 0), p(1, 1) }, { p(1, 0) }, p(-5, 0), p(1, 0), 8)
+  assert(#away == 1 and away[1].x == -1)
+  local hold = policy.rank_steps("kite", p(0, 0), { p(-1, 0), p(1, 0), p(0, 1), p(-1, 1), p(0, -1) }, { p(3, 0) }, p(-2, 0), p(3, 0), 8)
+  assert(#hold == 0)
   -- Intercept closes on the goal but never leaves 3 tiles of the player.
   local go = policy.rank_steps("intercept", p(0, 0), { p(1, 0), p(-1, 0) }, { p(3, 0) }, p(-2, 0), p(3, 0))
   assert(#go == 1 and go[1].x == 1)

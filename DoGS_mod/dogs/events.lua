@@ -20,14 +20,15 @@ local function summarize(dog)
   local enemies = perception.enemies(dog)
   local enemy_hp = 0
   for _, enemy in ipairs(enemies) do enemy_hp = enemy_hp + enemy:get_hp() end
-  local obs = perception.observe(dog, enemies)
+  local obs, positions = perception.observe(dog, enemies)
   local pos = dog:get_pos_ms()
   log.write("summary", "dog=" .. log.id(dog) .. " trained=" .. (dog:get_value("dogs_trained") == "1" and "1" or "0") ..
     " role=" .. role.get(dog) ..
     " state=" .. (dog:get_value("dogs_state") == "" and "none" or dog:get_value("dogs_state")) ..
     " pos=" .. pos.x .. "," .. pos.y .. " hp=" .. dog:get_hp() .. "/" .. dog:get_hp_max() ..
     " player=" .. tostring(obs.player) .. " adjacent=" .. obs.adjacent .. " nearby=" .. obs.nearby ..
-    " enemies=" .. #enemies .. " enemy_hp=" .. enemy_hp .. " player_hp=" .. gapi.get_avatar():get_hp())
+    " enemies=" .. #enemies .. " enemy_hp=" .. enemy_hp .. " player_hp=" .. gapi.get_avatar():get_hp() ..
+    " on_player=" .. policy.adjacent(gapi.get_avatar():get_pos_ms(), positions))
 end
 
 function M.summary()

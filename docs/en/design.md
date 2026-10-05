@@ -19,9 +19,9 @@ Implementation: `M.turn` in [`ai.lua`](../../DoGS_mod/dogs/ai.lua).
 | 0 | Other type, untrained, not friendly, restrained/ridden/leashed etc., hallucination | Disable DoGS attacks and leave the action to the engine | false |
 | 1 | State RETREAT | Safety veto (section 4) | true / false |
 | 1a | `docile` (the existing whistle's stop-attacking order) | With an enemy adjacent, step to a tile out of contact; otherwise leave it to the engine (following) | true / false |
-| 2 | A control attack was just used | While a downed enemy is adjacent, let the engine bite; once it stands, step away (section 5) | false / true |
+| 2 | A control attack was just used | While a downed enemy is adjacent, let the engine bite; once it stands, step away (section 5). The Harass role skips the bite and goes to step 4 | false / true |
 | 3 | State DEFAULT, exactly one adjacent enemy, at most 2 within 3 tiles | Control attack (section 5) | true |
-| 4 | Guard role | Guard behavior (section 6) | true / false |
+| 4 | Guard or Harass role | Guard behavior (section 6), Harass behavior ([Harass role](harass.md)) | true / false |
 | 5 | Free role, state REGROUP | Return to the player (section 6) | false / true |
 | 6 | Otherwise | Do not intervene | false |
 
@@ -72,12 +72,12 @@ Numbers and resolution: [control attacks](attacks.md).
 
 ## 6. Roles
 
-[design] The player sets each dog's role (Role in the menu); the dog judges within it. The default is **Guard**; Free must be chosen in the menu. Survival (RETREAT) takes priority in every role.
+[design] The player sets each dog's role (Role in the menu, cycling Guard → Harass → Free); the dog judges within it. The default is **Guard**; Harass and Free must be chosen in the menu. Survival (RETREAT) takes priority in every role.
 
 | Role | Status | Scope of the dog's judgment |
 | --- | --- | --- |
 | Guard | implemented, [runtime E6] | Keeps within 3 tiles of the player; takes on only enemies approaching the player or the dog |
-| Harass | planned | While the player is engaged, controls the next enemy within 7–8 tiles and holds it up, leading it to chase the dog alone so it arrives later ([Harass role](harass.md)) |
+| Harass | v0 implemented, not checked in play | While the player is engaged, controls the next enemy within 8 tiles and holds it up at 2–3 tiles so it chases the dog alone and arrives later ([Harass role](harass.md)) |
 | Free | implemented, [runtime E0–E5] | Mixes control attacks into the engine's fighting; only the 8-tile leash applies |
 
 ### Guard

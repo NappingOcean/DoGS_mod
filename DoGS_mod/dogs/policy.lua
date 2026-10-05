@@ -149,20 +149,68 @@ function M.guard_target(dog, enemies, player)
   return best
 end
 
+---Harass role: index of the enemy to hold up. Candidates are within harass.range of the player but
+---not yet on the player, and exposed (at most harass.crowd others within 2 tiles). The current
+---target is kept while it qualifies; otherwise the one closest to the player (next to arrive).
+---@param enemies {x:integer,y:integer,z:integer}[]
+---@param player {x:integer,y:integer,z:integer}
+---@param current integer|nil index of the current target in `enemies`
+---@return integer|nil
+function M.harass_target(enemies, player, current)
+  local h = config.harass
+  local function ok(i)
+    local e = enemies[i]
+    local d = M.distance(e, player)
+    if d <= 1 or d > h.range then return false end
+    local crowd = 0
+    for j, o in ipairs(enemies) do
+      if j ~= i and M.distance(e, o) <= 2 then crowd = crowd + 1 end
+    end
+    return crowd <= h.crowd
+  end
+  if current and enemies[current] and ok(current) then return current end
+  local best, best_d = nil, math.huge
+  for i, e in ipairs(enemies) do
+    local d = M.distance(e, player)
+    if ok(i) and d < best_d then best, best_d = i, d end
+  end
+  return best
+end
+
+---Kite key: distance band to the target first (0 inside hold_min..hold_max), then risk, then
+---preferring tiles farther from the player so the target is drawn away rather than toward it.
+---@return number, number, number
+local function kite_key(pos, goal, enemies, player)
+  local h = config.harass
+  local d = M.distance(pos, goal)
+  local band = d < h.hold_min and (h.hold_min - d) or (d > h.hold_max and (d - h.hold_max) or 0)
+  return band, M.risk(pos, enemies), -M.distance(pos, player)
+end
+
+---@return boolean
+local function key_less(a1, a2, a3, b1, b2, b3)
+  if a1 ~= b1 then return a1 < b1 end
+  if a2 ~= b2 then return a2 < b2 end
+  return a3 < b3
+end
+
 ---Orders candidate tiles for a step; returns only acceptable ones, best first.
 ---kind: "retreat" lowers risk (ties broken toward the player),
 ---"flee" heads for the point behind the player without touching an enemy
 ---(from an adjacent start, any step that breaks contact is accepted),
 ---"disengage" leaves every enemy's reach, "regroup" closes on the player without new contact,
----"intercept" closes on `goal` without leaving the guard radius around the player.
+---"intercept" closes on `goal` without leaving `radius` around the player,
+---"kite" keeps hold_min..hold_max tiles from `goal` without contact or leaving `radius`.
 ---@param kind string
 ---@param origin {x:integer,y:integer,z:integer}
 ---@param candidates {x:integer,y:integer,z:integer}[] free neighbor tiles
 ---@param enemies {x:integer,y:integer,z:integer}[]
 ---@param player {x:integer,y:integer,z:integer}
----@param goal {x:integer,y:integer,z:integer}|nil target tile for "intercept"
+---@param goal {x:integer,y:integer,z:integer}|nil target tile for "intercept" and "kite"
+---@param radius number|nil limit around the player for "intercept" and "kite" (default guard radius)
 ---@return {x:integer,y:integer,z:integer}[]
-function M.rank_steps(kind, origin, candidates, enemies, player, goal)
+function M.rank_steps(kind, origin, candidates, enemies, player, goal, radius)
+  radius = radius or config.guard.radius
   local here_risk = M.risk(origin, enemies)
   local here_player = M.distance(origin, player)
   local here_adjacent = M.adjacent(origin, enemies)
@@ -179,7 +227,11 @@ function M.rank_steps(kind, origin, candidates, enemies, player, goal)
     elseif kind == "flee" then
       ok = M.adjacent(c, enemies) == 0 and (to_safe < here_safe or here_adjacent > 0)
     elseif kind == "intercept" then
-      ok = to_goal < M.distance(origin, goal) and to_player <= config.guard.radius
+      ok = to_goal < M.distance(origin, goal) and to_player <= radius
+    elseif kind == "kite" then
+      local c1, c2, c3 = kite_key(c, goal, enemies, player)
+      local o1, o2, o3 = kite_key(origin, goal, enemies, player)
+      ok = M.adjacent(c, enemies) == 0 and to_player <= radius and key_less(c1, c2, c3, o1, o2, o3)
     elseif kind == "disengage" then
       ok = M.adjacent(c, enemies) == 0
     else
@@ -193,6 +245,11 @@ function M.rank_steps(kind, origin, candidates, enemies, player, goal)
     if kind == "regroup" and a.to_player ~= b.to_player then return a.to_player < b.to_player end
     if kind == "flee" and a.to_safe ~= b.to_safe then return a.to_safe < b.to_safe end
     if kind == "intercept" and a.to_goal ~= b.to_goal then return a.to_goal < b.to_goal end
+    if kind == "kite" then
+      local a1, a2, a3 = kite_key(a.pos, goal, enemies, player)
+      local b1, b2, b3 = kite_key(b.pos, goal, enemies, player)
+      if a1 ~= b1 or a2 ~= b2 or a3 ~= b3 then return key_less(a1, a2, a3, b1, b2, b3) end
+    end
     if kind == "flee" and a.nearest ~= b.nearest then return a.nearest > b.nearest end
     if a.risk ~= b.risk then return a.risk < b.risk end
     return a.to_player < b.to_player

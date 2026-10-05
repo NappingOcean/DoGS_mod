@@ -8,7 +8,15 @@ This page holds the principles the user set. When implementation choices diverge
 
 **DoGS — Dogs of Good Sense** turns dogs in Cataclysm: Bright Nights (BN) into tactical companions that read the situation, adjust their position and disrupt enemies. The name stands for good judgment and discernment. The lowercase o comes from "of."
 
-Combat roles: skirmisher / controller / tactical support.
+## The dog's place
+
+A DoGS dog is a companion that fights alongside the player, not a combatant that finishes enemies on its own.
+
+- **It protects the player.** It stays by the player and takes on enemies that approach the player.
+- **It ties enemies down.** It knocks them down and bites their ankles, creating openings for the player and disrupting other enemies' attacks.
+- **It survives.** When wounded, it leaves the fight and returns to the player.
+
+Which of these comes first is set by the player through the role (Guard, Harass, Free).
 
 ## Design principles
 

@@ -30,7 +30,8 @@ A separate test world, open terrain, daytime, at least 3 runs per experiment. Pl
 | E5 Leash and oscillation | done (second run passed) | cleanup if needed | allowed mid-run |
 | E6 Guard | done (second run passed) | fights alongside | between runs only |
 | E7 New Takedown resolution | done (largely passed) | fights alongside | between runs only |
-| E8 Crowd | planned | kills only zombies adjacent to the player | between runs only |
+| E8 Harass probe | planned | cleanup only | allowed mid-run |
+| E9 Multiple enemies | planned | fights alongside | between runs only |
 
 ## Procedures
 
@@ -87,11 +88,24 @@ Roles were implemented after E3 (Guard implemented, Harass planned). The experim
 - Check: when `outcome=dodged` appears, did the game message also show a miss?
 - Success: the fat zombie goes down on a Takedown hit (`knocked_MEDIUM`), and `dodged` matches the misses in the game messages.
 
-### E8 Crowd (per role, planned)
-- Setup: a group of 5 regular zombies 6 tiles away. Repeat the same setup with a vanilla dog, a Free-role dog and a Guard-role dog.
-- The player kills only zombies adjacent to the player; the verdict covers the dog's behavior up to then.
-- Check: does the dog avoid the crowd center? Does the veto keep the dog from staying adjacent to 2+ enemies for more than one turn? Does the wounded dog fall back behind the player?
-- Success: the dog survives, and cumulative turns adjacent to 2+ enemies are fewer than the vanilla dog. For the Guard role, also compare damage taken by the player.
+### E8 Harass probe (planned)
+- Purpose: confirm the engine behavior the Harass role needs before implementing it. Harass is not implemented yet, so observe with current behavior.
+- Setup: one or two regular zombies. Let a trained dog (Free role) engage, while the player stands 4–8 tiles from the zombie at varying distances.
+- Measure: how many turns the zombie chases the dog; within how many tiles of the player the zombie turns toward the player; whether the zombie keeps following at each dog–zombie distance. Judge from `summary`, `step` and `player_attacked`.
+- Decides: the holding distance, the player-distance band for harassing (7–8 tiles), and conditions where harassing does not work.
+- Also check: the docile stop order.
+
+### (Harass role implementation)
+
+Implement the Harass role from E8's results.
+
+### E9 Multiple enemies: Guard versus Harass (planned)
+- Setup: 3–4 regular zombies approach the player. The player fights alongside with a melee weapon. Repeat with a Guard-role dog, a Harass-role dog and a vanilla dog.
+- Measure: the maximum number of enemies on the player at once; hits and HP the player takes; turns the dog spent adjacent to 2+ enemies; adjacent count and count within 3 tiles when encirclement avoidance (RETREAT) starts.
+- Success: with the Harass dog, the maximum number of enemies on the player at once is lower than with the Guard or vanilla dog, and the dog never stays adjacent to 2+ enemies for more than one turn.
+- To judge: does encirclement avoidance start early enough to count as "without hesitation"? If late, change the entry thresholds.
+
+The old E8 (a 5-zombie crowd, per role) is not run; E9 replaces it, because Guard and Harass never enter a group by design.
 
 ## Results
 

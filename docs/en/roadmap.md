@@ -23,13 +23,14 @@
 
 In order; each step moves on only after its experiment meets the success criteria.
 
-1. **Check the docile stop order.** When the whistle is blown, does the dog step away from an adjacent enemy and stop biting (`docile_disengage`)?
-2. **E8 crowd (per role).** Compare vanilla, Free and Guard dogs against a group of 5 zombies.
-3. **Firing-line avoidance: implement and test.** Remember shot trajectories from `on_shoot` and step off them ([behavior design](design.md) section 7). Decide how many turns to remember and how wide to avoid.
-4. **Harass probe.** How long does a zombie chase the dog, and does it switch to the player as the player gets closer? Also set the holding distance (2–3 tiles).
-5. **Harass role: implement and test.** Picking the next enemy, holding it up after control, deciding when to finish. Metric: the maximum number of enemies on the player at once ([Harass role](harass.md)).
-6. **Command device (DoGS whistle) and production training.** Build the command whistle that replaces the experimental menu, and a training method ([behavior design](design.md) section 7).
-7. **Wider coverage.** Other dog types, hostile NPC perception, compatibility checks with other mods.
+1. **E8 Harass probe.** How long does a zombie chase the dog, does it switch to the player as the player gets closer, and is a 2–3 tile holding distance right ([experiments](experiments.md))?
+2. **Implement the Harass role.** Picking the next enemy, holding it up after control, and finishing (automatic and recall), built from E8's results ([Harass role](harass.md)).
+3. **E9 multiple enemies: Guard versus Harass.** With 3–4 zombies approaching, compare how many enemies are on the player at once, and judge whether encirclement avoidance starts early enough.
+4. **Firing-line avoidance: implement and test.** Remember shot trajectories from `on_shoot` and step off them ([behavior design](design.md) section 7). Decide how many turns to remember and how wide to avoid.
+5. **Command device (DoGS whistle) and production training.** Build the command whistle that replaces the experimental menu, and a training method ([behavior design](design.md) section 7).
+6. **Wider coverage.** Other dog types, hostile NPC perception, compatibility checks with other mods.
+
+The docile stop order (does the dog step away from an adjacent enemy and stop biting when the whistle is blown, `docile_disengage`) is checked in any run of E8 or E9.
 
 ## Open questions
 
@@ -67,6 +68,7 @@ In order; each step moves on only after its experiment meets the success criteri
 | 2026-10-05 | Harass ends both automatically and on recall | User decision |
 | 2026-10-05 | The release command device is a command dog whistle (a new item) | The existing whistle is hardcoded; the experimental menu does not suit release (user decision) |
 | 2026-10-05 | Respect `docile` (the existing whistle's stop-attacking order), keeping only the safety veto | A command in BN proper (user decision) |
+| 2026-10-05 | Replace the crowd experiment (old E8) with a Harass probe (E8) and a multiple-enemy comparison (E9) | Guard and Harass never enter a group by design; how each role performs when several enemies come, and when encirclement avoidance starts, is closer to real play (user decision) |
 | 2026-10-05 | A docile dog steps away from an adjacent enemy to complete the stop order | E7: the engine keeps a docile dog biting an adjacent enemy (user decision) |
 | 2026-10-05 | Flying enemies: Takedown allowed (struck down), Ankle Tear not (no ankle in reach) | User decision |
 | 2026-10-05 | Raise the ankle wound from 10 to 60 turns | A real bite healing in 10 seconds is implausible and shorter than one Harass cycle (user decision) |

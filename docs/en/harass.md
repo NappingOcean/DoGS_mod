@@ -41,7 +41,7 @@ Labels: [design] decision, [source] confirmed in BN source (`ef0eced`), [runtime
 ## Open points and risks
 
 - **Finishing.** [design, 2026-10-05] Both are used. Automatic: return after several turns (number undecided) with no enemy on the player. Recall: the player calls the dog back with the command device ([behavior design](design.md) section 7, command device).
-- **Does the zombie keep chasing the dog?** [source] Monsters re-pick their target every action; if the player gets closer to the zombie, it may switch to the player. How long a zombie chases the dog is unverified; a small probe experiment is needed before implementing.
+- **Does the zombie keep chasing the dog?** [source] Monsters re-pick their target every action; if the player gets closer to the zombie, it may switch to the player. How long a zombie chases the dog is unverified; a small probe experiment is needed before implementing (E8).
 - **Distance to keep.** The distance that keeps the dog out of reach yet still chased (e.g. 2–3 tiles) is to be set by experiment.
 - **Movement.** [runtime E3, E5] While enemies are visible, movement is DoGS's one-tile steps. Over short distances this is fine, but cluttered terrain needs checking.
 - **Measures.** The maximum number of enemies on the player at once; turns until the harassed enemy reaches the player.

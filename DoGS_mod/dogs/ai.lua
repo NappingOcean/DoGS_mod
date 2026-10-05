@@ -153,8 +153,9 @@ function M.turn(dog)
     return false -- cornered: let the engine fight
   end
 
-  -- Docile is the stock dog whistle's "follow closely and stop attacking". Respect it: keep only
-  -- the safety veto above and leave the rest to the engine, which picks no target while docile.
+  -- Docile is the stock dog whistle's "follow closely and stop attacking". Keep only the safety veto
+  -- above. The engine picks no new target while docile but keeps biting an adjacent enemy (E7), so
+  -- a trained dog completes the order by stepping out of contact first.
   local is_docile = dog:has_effect(docile)
   if is_docile ~= (dog:get_value("dogs_docile") == "1") then
     dog:set_value("dogs_docile", is_docile and "1" or "")
@@ -162,7 +163,12 @@ function M.turn(dog)
   end
   if is_docile then
     dog:set_value("dogs_disengage", "")
-    return false
+    if obs.adjacent > 0 then
+      local moved = movement.step(dog, "disengage", positions)
+      log.write("docile_disengage", "dog=" .. log.id(dog) .. " moved=" .. tostring(moved))
+      if moved then return true end
+    end
+    return false -- out of contact: the engine follows; cornered: it defends itself
   end
 
   -- 2. After a control attack: bite while a neighbor is down, break off once it stands.

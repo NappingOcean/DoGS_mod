@@ -106,6 +106,7 @@ Lines tagged `[DoGS]` in `config/debug.log` in the game user directory. Every li
 | `hold` | Start of a wait during the low-HP retreat (once per wait) |
 | `disengage` | Break-off attempt in the control follow-up |
 | `docile` | Docile state changed (`on=true/false`) |
+| `docile_disengage` | A step out of contact while docile (`moved`) |
 | `special` | Attack ID, target, result (`outcome`), actual damage, downed/bleed/ankle flags |
 | `melee` | The dog's normal attacks: target type, hit, target HP after |
 | `player_melee` | The player's melee swings: target (numbered), hit, whether the target was downed, target HP |

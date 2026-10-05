@@ -18,7 +18,7 @@ Implementation: `M.turn` in [`ai.lua`](../../DoGS_mod/dogs/ai.lua).
 | --- | --- | --- | --- |
 | 0 | Other type, untrained, not friendly, restrained/ridden/leashed etc., hallucination | Disable DoGS attacks and leave the action to the engine | false |
 | 1 | State RETREAT | Safety veto (section 4) | true / false |
-| 1a | `docile` (the existing whistle's stop-attacking order) | Leave everything else to the engine, which picks no target for a docile dog | false |
+| 1a | `docile` (the existing whistle's stop-attacking order) | With an enemy adjacent, step to a tile out of contact; otherwise leave it to the engine (following) | true / false |
 | 2 | A control attack was just used | While a downed enemy is adjacent, let the engine bite; once it stands, step away (section 5) | false / true |
 | 3 | State DEFAULT, exactly one adjacent enemy, at most 2 within 3 tiles | Control attack (section 5) | true |
 | 4 | Guard role | Guard behavior (section 6) | true / false |
@@ -118,7 +118,8 @@ Numbers and resolution: [control attacks](attacks.md).
 
 - [source] The existing whistles (`dog_whistle`, `dog_whistle_wood`) use the hardcoded C++ `DOG_WHISTLE` action. It toggles the `docile` effect on every friendly dog (`DOGFOOD` or `DOG_WHISTLE` flag): docile dogs follow closely and stop attacking; otherwise they resume attacking. It applies to all such dogs on the current map, with no distance or sound check ([iuse.cpp:4314](https://github.com/cataclysmbn/Cataclysm-BN/blob/ef0eceda391d4d291b366e3bf2833b04c7342d72/src/iuse.cpp#L4314)).
 - [runtime] Registering an item-use function from Lua (`game.iuse_functions`) worked for the earlier implementation's remote item.
-- [design, 2026-10-05] DoGS respects `docile`. While docile, it keeps only the safety veto (step 1) and leaves the rest to the engine (decision step 1a). The docile behavior itself is not especially graceful, but it is a command in BN proper, so it is followed. Not checked in play.
+- [design, 2026-10-05] DoGS respects and completes `docile`. While docile it keeps the safety veto (step 1); with an enemy adjacent it steps out of contact, then leaves the rest to the engine (decision step 1a). With nowhere to step, it leaves the engine to defend itself.
+- [runtime E7] The engine picks no new target for a docile dog but keeps biting an enemy already adjacent (19 normal attacks across two windows). So a trained dog completes the stop order by breaking contact first. This behavior is not checked in play.
 
 **To decide:** the signal list, audible range (the whole map like the existing whistle, or a distance limit), how to obtain it (recipe, spawn locations), and how it relates to production training.
 

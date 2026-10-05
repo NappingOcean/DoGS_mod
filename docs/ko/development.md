@@ -106,6 +106,7 @@
 | `hold` | 저체력 후퇴 중 대기 시작(대기마다 한 번) |
 | `disengage` | 제압 후속의 이탈 시도 |
 | `docile` | docile 상태가 바뀜(`on=true/false`) |
+| `docile_disengage` | docile인 동안 붙은 적에게서 물러난 시도(`moved`) |
 | `special` | 공격 ID, 표적, 결과(`outcome`), 실제 피해, 넘어짐·출혈·발목 상처 |
 | `melee` | 개의 일반 공격: 표적 타입, 명중, 공격 뒤 표적 HP |
 | `player_melee` | 플레이어의 근접 공격: 대상(번호), 명중, 대상이 넘어져 있었는지, 대상 HP |

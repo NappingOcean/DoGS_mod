@@ -2,22 +2,28 @@
 
 [English](README.md)
 
-**Cataclysm: Bright Nights**용 실험적인 개 AI 모드입니다. 위치 선정, 위험 판단, 적 분리와 이탈 시점을 개선해 훈련된 개를 전술 동료로 만듭니다.
+**Cataclysm: Bright Nights**용 실험적인 개 AI 모드입니다. DoGS는 개를 더 강하게 만들지 않습니다. 훈련된 개에게 위치, 위험, 개입 시점에 대한 판단을 더해 전술 동료로 만듭니다.
 
-## 계획한 행동
+## 하는 일
 
-- 플레이어 보조, 접근하는 적 차단, 무리 외곽 교전, 후퇴와 재집결
-- **Takedown**을 통한 즉시 제압과 **Ankle Tear**를 통한 이동 방해
-- 외곽 적의 시각 유인, 추격 해제 후 안전한 복귀
-- 개체별 훈련 여부에 따른 DoGS AI 적용과 미훈련 개의 일반 AI 유지
+- Labrador mutt의 기본 펫 AI 위에 얹는 판단층으로 동작합니다. 미훈련 개는 일반 AI를 그대로 씁니다.
+- **역할**을 개마다 정합니다. **엄호**(기본)는 플레이어 3타일 안을 지키며 다가오는 적을 상대합니다. **자유**는 일반 펫처럼 싸우면서 제압 공격을 섞습니다.
+- **Takedown**으로 적을 넘어뜨려 플레이어와 개가 쉽게 치게 하고, **Ankle Tear**로 다리에 상처를 내 느리게 만듭니다.
+- **안전 veto:** 포위를 피하고, 저체력이면 계속 싸우지 않고 플레이어 뒤로 물러납니다.
 
-**현재 상태:** redhot BN(Lua API 2)용 실험 빌드이며 [`DoGS_mod/`](DoGS_mod/)에 있습니다. Labrador mutt의 기본 펫 AI 위에 얹는 판단층입니다. 안전 veto(플레이어 뒤로 물러나는 저체력 후퇴 포함), Takedown·Ankle Tear 제압 공격, 복귀 거리 제한, 엄호 역할(기본값)에서만 개입하고 나머지는 엔진에 맡깁니다. 훈련과 역할은 action_menu에서 개체별로 정합니다. 실험 E0~E6을 기록했으며 LURE, 견제 역할, 정식 훈련은 후속 작업입니다.
+계획: 사선 회피, 견제 역할, LURE 임무.
 
-설치·검사·실험 결과: [실험 계획서](docs/claude/experiment-plan.ko.md).
+**현재 상태:** redhot BN(Lua API 2)용 실험 빌드이며 [`DoGS_mod/`](DoGS_mod/)에 있습니다. 실험 E0~E6을 기록했습니다.
+
+## 설치
 
 ```powershell
 .\scripts\Install-Mod.ps1 -GameDirectory <BN 게임 디렉터리>
 .\scripts\Test-Mod.ps1 -GameDirectory <BN 게임 디렉터리>
 ```
 
-구조·구현 제약·개발 순서는 [한국어 설계 문서](docs/ko/index.md)와 [English documentation](docs/en/index.md)를 참조하세요.
+시험 월드에서 **DoGS — Dogs of Good Sense (rebuild)**를 켜고, Labrador mutt를 길들인 뒤 action_menu → 기타 → **DoGS laboratory**에서 훈련과 역할을 정합니다.
+
+## 문서
+
+[문서 목차](docs/ko/index.md)([English](docs/en/index.md))부터 읽으세요. 설계 철학, 행동 설계, 로드맵, 개발 안내, 실험 결과가 있습니다.

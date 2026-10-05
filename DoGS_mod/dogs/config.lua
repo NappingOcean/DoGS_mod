@@ -1,4 +1,4 @@
--- Initial values from docs/claude/experiment-plan.md. Tune from play logs only.
+-- Values are documented in docs/en/development.md. Tune from play logs only.
 return {
   dog_id = "mon_dog",
   radius = 8,

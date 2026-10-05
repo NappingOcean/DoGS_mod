@@ -1,13 +1,10 @@
-# DoGS Rebuild Experiment Plan
+# Experiments
 
-[한국어](experiment-plan.ko.md)
+[한국어](../ko/experiments.md) · [Contents](index.md)
 
-> **Written by Claude Code (Claude Opus 5.5), 2026-10-04.**
-> Documents in this directory (`docs/claude/`) are written by Claude Code and are separate from the existing documents in `docs/en` and `docs/ko` (written by Codex). The design philosophy follows [01 Goals and Design Philosophy](../en/philosophy.md) and is not repeated here. This document covers only **what will change and how it will be verified**.
+Procedures and results of the experiments. Results come from analyzing play logs (`config/debug.log`); log events are listed in the [development guide](development.md). Numbers are the order of execution.
 
-Basis: executable redhot 2026-10-04-0345 (`ef0eced`); source checks against a local BN checkout at `e569e75`. The pre-rebuild code is commit `1c1ac60`.
-
-## 1. Starting point
+## Background: state before the rebuild
 
 Observed in an actual play log of the pre-rebuild code (2026-10-04 22:03–22:06, state before commit `9316c3e`):
 
@@ -17,134 +14,25 @@ Observed in an actual play log of the pre-rebuild code (2026-10-04 22:03–22:06
 - The custom one-tile movement has no pathfinding and repeatedly logged `move_blocked` (21:46).
 - A base max HP of 3,000 effectively never triggers the 50% retreat threshold, which invalidates survival-judgment experiments.
 
-## 2. Approach: a judgment layer on top of the engine AI
+From this diagnosis, the implementation that took over the dog's turn was dropped and rebuilt as a judgment layer over the stock pet AI ([behavior design](design.md) section 1). The earlier code is in commit `1c1ac60`.
 
-DoGS does not replace the dog's whole turn. **By default it returns `false` and the engine's pet AI** (target selection, pathfinding, following, normal bites) acts. DoGS intercepts only when a judgment the engine cannot make is needed.
+## Common conditions
 
-Then even when DoGS judges wrongly or has nothing to say, the dog does not fall below vanilla, and improvement can be measured against vanilla.
+A separate test world, open terrain, daytime, at least 3 runs per experiment. Player attacks and HP healing are set per experiment.
 
-### Per-action decision order
-
-| Order | Condition | DoGS action | Return |
+| Experiment | Status | Player attacks | HP healing |
 | --- | --- | --- | --- |
-| 0 | Untrained, not friendly, movement-restrained, ridden, leashed, etc. | Disable DoGS attacks | false |
-| 1 | **Safety veto**: imminent encirclement, or low HP with an enemy within 5 tiles | Encirclement: one risk-reducing retreat step. Low HP: move through tiles not adjacent to enemies to behind the player, then wait. If impossible with an enemy adjacent, defer to the engine | true / false |
-| 2 | **Control follow-up**: after a control attack | While an adjacent enemy is downed, let the engine bite; once it stands, step away | false / true |
-| 3 | **Control opportunity**: adjacent to one exposed enemy, attack ready, safe | Takedown / Ankle Tear | true |
-| 4 | **Guard role** | Acts per "Guard role specification" instead of step 5 | true / false |
-| 5 | **Leash** (Free role): in REGROUP | If no hostile monster is visible at any range and the engine has not replaced a destination in the last 5 turns, set the player as the destination and leave pathing to the engine. Otherwise DoGS steps one tile at a time (E3, E5) | false / true |
-| 6 | Otherwise | Do not intervene | false |
+| E0 Baseline | done | none | between runs only |
+| E1 Solo control | done (failed) | none | between runs only |
+| E2 Low-HP retreat | done | kills the zombie once the dog is behind the player | between runs only |
+| E3 Engine delegation probe | done | cleanup if needed | allowed mid-run |
+| E4 State persistence | done | cleanup if needed | allowed mid-run |
+| E5 Leash and oscillation | done (second run passed) | cleanup if needed | allowed mid-run |
+| E6 Guard | done (second run passed) | fights alongside | between runs only |
+| E7 New Takedown resolution | planned | fights alongside | between runs only |
+| E8 Crowd | planned | kills only zombies adjacent to the player | between runs only |
 
-- Step 2 is "knock down → bite → break off once it stands". E1 showed that disengaging right after Takedown throws away the chance to bite a downed enemy (dodge 0), so it was changed.
-- Low HP with no visible enemy: do not intervene; leave following to the engine.
-
-### Roles (Free and Guard implemented, Harass not yet)
-
-The player assigns a role to each dog (Role item in the action menu). Guard is the default, because in E6 a vanilla-like roaming dog ran toward distant zombies. Free must be chosen explicitly in the menu. The role sets the intent (what to do); the dog judges how and when. Mission orders against groups (LURE etc.) come later as one-off commands. Survival (RETREAT) takes priority in every role.
-
-| Role | Scope of the dog's judgment | Experiment metric |
-| --- | --- | --- |
-| Guard | Stays within 2–3 tiles of the player. Engages only enemies on or approaching the player. Uses Takedown to create openings for the player | Damage taken by the player, player's time to kill |
-| Harass | Holds off enemies not engaged with the player. Slows them with Ankle Tear, hits and runs | Enemies reaching the player |
-| Free | Current behavior: control attacks mixed into stock engagement | E0/E1 metrics |
-
-Control attacks exist to support the player's attacks and disrupt other enemies, not to let the dog kill alone. E0/E1, where the player does not attack, are therefore read only as solo survival tests of the Free role. ASSIST and INTERCEPT in the earlier design were tactics the dog chose; with the Guard role the player chooses.
-
-### Guard role specification (implemented)
-
-- **Distance:** stay within 3 tiles of the player. While an enemy is visible, DoGS moves the dog itself (E3).
-- **Enemies to engage:** enemies on the player or within 2 tiles of the player. Enemies approaching the dog itself are engaged as long as the dog stays within 3 tiles of the player.
-- **Attacks:** both control attacks and the engine's normal bites are allowed; with an enemy right there, quick removal matters. A knocked-down enemy is also open to the player.
-- **Other enemies:** ignored; the dog stays by the player. The round trips seen in E5, where the engine chased distant targets, should not occur in the Guard role.
-- **Survival:** the low-HP retreat and encirclement avoidance take priority.
-
-Implementation (decision step 4): farther than 3 tiles from the player, return (same method as the Free role's regroup). With an enemy adjacent, let the engine bite. With a threat (the enemy closest to the player among those within 2 tiles of the player or the dog), approach only through tiles within 3 tiles of the player (`step kind=intercept`). Otherwise wait in place. Control attacks and the control follow-up are the same as in the Free role.
-
-### Firing-line avoidance (approach 2 chosen, not implemented)
-
-Explored whether the dog can keep out of the line of fire when the player holds a gun. Basis: `ef0eced`.
-
-- **Need (source-confirmed):** projectiles skip friendly creatures only within 1 tile of the shooter (projectile_attack in `src/ballistics.cpp`). A friendly dog farther along the line gets an unintentional-hit roll. A dog adjacent to the player cannot be hit.
-- **Reacting to the moment of aiming is impossible.** Aiming and firing finish within one player action, and monsters do not act in between. The player's last target (`Character::last_target`) is not exposed to Lua either.
-- **Possible approach 1, prevention:** when the player wields a gun (scan `all_items`, check `is_wielding` and `is_gun`), avoid tiles on the lines from the player to visible enemies, plus one tile either side. Tiles within 1 tile of the player or behind the player are safe. This fits into the Guard role's positioning as one condition.
-- **Possible approach 2, reaction:** the `on_shoot` hook reports the shooter and aim position right after firing. Remember recent firing directions for a few turns and step off that axis, against follow-up shots in a burst.
-- **Limits:** the player may shoot an enemy the dog cannot see, or another target. Whether one tile either side covers shot spread and dispersion needs testing. The inventory scan can be computed once per game turn and reused.
-- **Decision:** implement approach 2 (reaction). A dog does not really know what a gun or bow is, but after a shot it can remember that things fly along that path. So approach 1, which reads the weapon in advance, is not used. If the player then shoots another target, the dog may be in the way; the player can be expected to accept this as a dog's limitation. To be implemented after the Guard role.
-
-### Takedown resolution (decided, implemented)
-
-In E6 the fat zombie (bash armor 5) absorbed all of Takedown's bash 2, so it never went down: the generic melee actor applies JSON effects only after positive damage (melee_actor::call in `src/mattack_actors.cpp`, `ef0eced`). Downed is therefore removed from the JSON and applied from Lua.
-
-- **Hit:** the actor returns a miss when `hit_spread < 0`. The target's `on_dodge` fires the `on_creature_dodged` hook when `hit_spread <= 0` (`src/creature.cpp`), and monsters do not override `on_dodge`. A dodge event from the target during the attack is read as a miss. An exact 0 is a hit for the actor but a miss here, erring toward no knockdown.
-- **Knockdown:** on a hit, unless the target is immune (`is_immune_effect`), apply `downed` for 2 turns with a size chance: tiny/small/medium 100%, large 50%, huge 0%. Huge targets are not Takedown targets. Size comes from `get_size()` (`MonsterSize`).
-- **Targets:** the regular-zombie-only restriction is gone; anything not huge is a target.
-- **Logging:** `special` carries `outcome` (dodged, immune, resisted_SIZE, knocked_SIZE; hit/dodged for Ankle Tear).
-
-### End state of the low-HP retreat
-
-The dog's HP effectively does not recover: natural regeneration for flesh monsters is 0.25 HP per hour (`src/monster.cpp`, `ef0eced`). A low-HP retreat therefore takes the dog out of the fight. The dog survives; the player ends the situation.
-
-- The dog moves through tiles not adjacent to any enemy to a point **behind the player**: two tiles past the player, away from the enemy nearest the dog. It waits there.
-- The pursuer meets the player. The retreat ends after 5 turns without perceiving an enemy (object permanence: an enemy that leaves sight or the perception radius is remembered briefly).
-- This brings the enemy to the player, against LURE's rule of not dragging enemies to the player. It is a deliberate choice for wounded dogs only.
-- Shaking off the pursuer (BREAK_CONTACT) is handled with LURE.
-
-### Hysteresis
-
-Entry and exit thresholds are separate, with a minimum hold time. Initial values below are tuned from results.
-
-| State | Enter | Exit | Minimum hold |
-| --- | --- | --- | --- |
-| REGROUP | More than 8 tiles from the player | 4 tiles or fewer | 3 turns |
-| RETREAT (veto) | 2+ adjacent enemies, or 4+ enemies within 3 tiles, or HP ≤ 40% with an enemy within 5 tiles | 0 adjacent and 2 or fewer within 3 tiles; at HP ≤ 40%, only after 5 turns without perceiving an enemy | 2 turns |
-
-### Cooldowns
-
-Do not rely on engine attack cooldowns. After use, store the `next usable game turn` in a per-entity value. Enable the attack and set its cooldown to 0 only at the moment of use, execute, then disable it immediately. Remove the elapsed-turn compensation code.
-
-## 3. Code layout
-
-Paths are relative to the repository (DoGS_mod) root. The rebuild is written fresh in [`DoGS_mod/`](../../DoGS_mod/). Codex's earlier `mod/` and its documents (`docs/*/mvp.md`) were deleted after E5 and remain in commit `1c1ac60`. The game's `mods/DoGS` junction points to `DoGS_mod/` through [`scripts/Install-Mod.ps1`](../../scripts/Install-Mod.ps1).
-
-Modules live under `dogs/` and are loaded as `require("dogs.ai")`. At the executable's revision the loader (`src/catalua_loader.cpp`) maps `lib.*` to `data/lua/lib/`, and `package.loaded` is shared by all mods, so a mod-specific prefix is required.
-
-| File | Role |
-| --- | --- |
-| [`DoGS_mod/preload.lua`](../../DoGS_mod/preload.lua) | Loads modules; registers the AI callback, hook, menu and periodic log; runs policy checks |
-| [`DoGS_mod/finalize.lua`](../../DoGS_mod/finalize.lua) | Validates the dog type and effect IDs |
-| [`DoGS_mod/json/dogs.json`](../../DoGS_mod/json/dogs.json) | mon_dog override: adds the two attacks only; HP stays vanilla |
-| [`DoGS_mod/dogs/ai.lua`](../../DoGS_mod/dogs/ai.lua) | Decision order from section 2 |
-| [`DoGS_mod/dogs/policy.lua`](../../DoGS_mod/dogs/policy.lua) | Pure functions: state transitions (hysteresis), control window, attack choice, step ranking |
-| [`DoGS_mod/dogs/perception.lua`](../../DoGS_mod/dogs/perception.lua) | Enemy scan and observations |
-| [`DoGS_mod/dogs/movement.lua`](../../DoGS_mod/dogs/movement.lua) | One-tile retreat, disengage and regroup steps |
-| [`DoGS_mod/dogs/attacks.lua`](../../DoGS_mod/dogs/attacks.lua) | Value-based cooldowns and attack execution |
-| [`DoGS_mod/dogs/events.lua`](../../DoGS_mod/dogs/events.lua) | 10-turn summaries and normal melee records, untrained dogs included (E0) |
-| [`DoGS_mod/dogs/menu.lua`](../../DoGS_mod/dogs/menu.lua) | action_menu: training, attack mode, state messages (on by default), HP refill, role (Guard/Free) |
-| [`DoGS_mod/dogs/role.lua`](../../DoGS_mod/dogs/role.lua) | Per-dog role: Guard when unset, Free only when set to `free` |
-| [`DoGS_mod/dogs/tests.lua`](../../DoGS_mod/dogs/tests.lua) | Policy-function checks; not evidence of engine behavior |
-
-Not carried over from the Codex implementation: 3,000 HP, reach learning, the remote item, per-turn state dumps, engine cooldown compensation. `heavysnare` and `lightsnare` were removed from the restraint list: monster.cpp references them, but they have no JSON definition at `ef0eced`, and the finalize check failed on them.
-
-### Existing saves
-
-- The mod ID is unchanged, so existing test worlds still load.
-- Existing dogs return to vanilla max HP; use **Refill HP** in the menu.
-- The old remote item (`dogs_debug_remote`) is no longer defined; if a save contains one, BN treats it as an unknown item.
-- Old per-entity values (`dogs_action` etc.) remain but are not read.
-
-## 4. Experiments
-
-Numbers are the order of execution. E0 and E1 are done (section 6); the rest follow from E2 in this order. E6 and E7 come after the roles are implemented.
-
-Common conditions: a separate test world, open terrain, daytime, at least 3 runs per experiment. Player attacks and HP healing are set per experiment.
-
-| Experiment | Player attacks | HP healing |
-| --- | --- | --- |
-| E0, E1 | None | Between runs only |
-| E2 | Kills the zombie once the dog is behind the player | Between runs only |
-| E3, E4, E5 | For cleanup if needed | Allowed mid-run |
-| E6 | Fights alongside | Between runs only |
-| E7 | Kills only zombies adjacent to the player | Between runs only |
+## Procedures
 
 ### E0 Baseline — vanilla dog (done)
 - Setup: a tamed Labrador mutt; one regular zombie spawned 5 tiles away.
@@ -183,9 +71,7 @@ The engine's `plan()` recomputes target and destination on every action. Check:
 - Success: no round trip between the same two states shorter than the minimum hold.
 - The result also informs the Guard role's distance limits.
 
-### (Role implementation)
-
-Implement the Guard, Harass and Free roles based on E3. Guard is implemented; Harass comes later.
+Roles were implemented after E3 (Guard implemented, Harass planned). The experiments below come after role implementation.
 
 ### E6 Guard (done: first run partial pass, second passed)
 - Setup: two regular zombies, apart from each other, about 6 tiles from the player. The player fights them with a melee weapon. Repeat with a vanilla dog and a Guard-role dog.
@@ -193,36 +79,20 @@ Implement the Guard, Harass and Free roles based on E3. Guard is implemented; Ha
 - Check: does the dog close on zombies approaching the player (`step kind=intercept`)? Does it avoid chasing distant zombies while guarding? Do control attacks turn into openings for the player?
 - Success: the player takes less damage than with the vanilla dog, and the dog stays within 3 tiles of the player except while returning.
 
-### E7 Crowd (per role)
+### E7 New Takedown resolution check (planned)
+- Background: Takedown's knockdown moved to Lua with size resistance ([control attacks](attacks.md)). Not yet checked in play.
+- Setup: a Guard-role dog, the player fighting alongside with a melee weapon. Fight a regular zombie and a fat zombie separately. Include a large (LARGE) monster if available (check in JSON which monsters are LARGE).
+- Measure: the distribution of `outcome` in `special` (knocked, resisted, dodged, immune); `player_melee downed=true` hits on downed targets.
+- Check: when `outcome=dodged` appears, did the game message also show a miss?
+- Success: the fat zombie goes down on a Takedown hit (`knocked_MEDIUM`), and `dodged` matches the misses in the game messages.
+
+### E8 Crowd (per role, planned)
 - Setup: a group of 5 regular zombies 6 tiles away. Repeat the same setup with a vanilla dog, a Free-role dog and a Guard-role dog.
 - The player kills only zombies adjacent to the player; the verdict covers the dog's behavior up to then.
 - Check: does the dog avoid the crowd center? Does the veto keep the dog from staying adjacent to 2+ enemies for more than one turn? Does the wounded dog fall back behind the player?
 - Success: the dog survives, and cumulative turns adjacent to 2+ enemies are fewer than the vanilla dog. For the Guard role, also compare damage taken by the player.
 
-## 5. Logging
-
-`[DoGS]` lines in `config/debug.log`. Record decision events instead of per-turn state dumps.
-
-| Event | Content |
-| --- | --- |
-| `decide` | State transition (before→after) and basis: HP ratio, adjacent count, count within 3 tiles, player distance |
-| `step` / `step_failed` | One-tile retreat, flee, disengage, regroup or intercept (Guard) result, with risk score before/after |
-| `hold` | Start of a wait during the low-HP retreat (e.g. behind the player); once per wait |
-| `disengage` | Whether the dog tried to break off on the action after a control attack |
-| `special` | Attack ID, target ID and type, result (`outcome`), actual HP damage, downed/bleed/ankle flags |
-| `melee` | The dog's normal attacks seen through the engine's normal melee hook: target type, hit roll, target HP after the attack |
-| `summary` | Every 10 turns for every friendly Labrador mutt: trained flag, role, state, position, HP, player distance, nearby enemy count and HP sum, player HP |
-| `probe_result` | Logged only when the engine replaced a delegated REGROUP destination: the destination set and the replacement (absolute coordinates), player distance before/after. Once logged, delegation stops for 5 turns. During E3, `probe` and `kept=true` were logged too |
-| `death` | Deaths of dogs, monsters killed by dogs, and monsters DoGS has numbered (attack targets): victim and killer (monster type and number, `avatar`, or `none`) |
-| `player_melee` | The player's melee swings: target (numbered), hit roll, whether the target was downed, target HP |
-| `player_attacked` | Melee attacks on the player: attacker, hit roll, player HP afterwards |
-| `menu` | Menu changes |
-
-Every line written during play carries the game turn (`turn=`) and an entity number (`dog=`). The entity number is stored as a per-entity value and should survive save/load (checked in E4).
-
-Experiment verdicts are drawn from analysis of this log and recorded in section 6.
-
-## 6. Results
+## Results
 
 ### 2026-10-04 E0 and E1 (3 runs each)
 
@@ -244,7 +114,7 @@ Observations:
 1. **Low-HP retreat oscillation.** #4 and #8, at or below 40% HP, cycled roughly every 3 turns: enter RETREAT → step back 2–3 tiles → return to DEFAULT once no enemy is adjacent → engine re-approaches → takes a hit → RETREAT. HP fell 0.40→0.20 and 0.33→0.17→0.03 meanwhile. The exit condition ignores HP; this is a design flaw. The dog (speed 150) is faster than the zombie (70) yet never got away.
 2. **Control attacks reduce damage contribution.** A special attack deals 2–4 damage; a stock bite deals 5–10. Disengaging right after Takedown throws away the window when the zombie is downed (dodge 0). #4 attempted only one stock bite during the whole engagement (missed).
 3. **Regroup/engagement round trips.** #4 cycled DEFAULT↔REGROUP four times with a 5–7 turn period: the engine chases a zombie more than 8 tiles from the player and DoGS drags the dog back. Each state's minimum hold was respected, but the same round trip appeared at a longer period.
-4. **Coordinates.** `get_pos_ms` is reality-bubble local and shifts when the map shifts (#4 appears to move 11 tiles in one turn). This is harmless within one decision, but the probe destination stored across turns (now E3) needs `abs_pos`.
+4. **Coordinates.** `get_pos_ms` is reality-bubble local and shifts when the map shifts (#4 appears to move 11 tiles in one turn). This is harmless within one decision, but E3's probe destination stored across turns needs `abs_pos`.
 
 The stock melee hook (`melee`) and special-attack records (`special`) worked as intended. The hook makes stock bite damage measurable.
 
@@ -384,12 +254,5 @@ The player's melee hit rate (`player_melee`):
 Observations:
 
 1. **Downed zombies were always hit:** 5/5 against 86% (24/28) for standing ones. Same direction as the experimenter's observation, on a small sample.
-2. **Without Takedown, guarding helps little.** Fat zombies are not Takedown targets (only `mon_zombie` is), so they got only Ankle Tear (1 damage). The player took 3 hits from the two of them, and the dog took 17 damage. The Takedown target range (size and resistance rules) is still an open design question.
+2. **Without Takedown, guarding helps little.** Fat zombies are not Takedown targets (only `mon_zombie` is), so they got only Ankle Tear (1 damage). The player took 3 hits from the two of them, and the dog took 17 damage. The Takedown target range (size and resistance rules) is still an open design question. (Later decision: apply the knockdown from Lua and resist it by size; see [control attacks](attacks.md). Checked in E7.)
 3. **Downed flag on the killing blow.** Some killing swings logged `downed=false` (#39). Whether the zombie had stood up or death processing cleared it was not checked.
-
-## 7. Working rules
-
-- Every change cycle starts by analyzing the previous play log. No feature is added without reading the log.
-- Loading success or mock-check passes are not reported as play verification.
-- Do not move on to the next feature (LURE etc.) before an experiment meets its success criteria.
-- This document records plans and results, not work journals or assertion counts.

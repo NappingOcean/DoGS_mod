@@ -1,32 +1,61 @@
-# Roadmap and open questions
+# Roadmap
 
-The current implementation is a judgment layer over the stock pet AI in `DoGS_mod/`. Its decisions and play experiments are recorded in the [experiment plan](../claude/experiment-plan.md), which supersedes the earlier MVP.
+[한국어](../ko/roadmap.md) · [Contents](index.md)
 
-## Implementation order
+## Status (2026-10-05)
 
-1. Vanilla dog overrides and lua_ai connection
-2. Per-instance training state
-3. Local enemy detection and risk assessment
-4. NORMAL: ASSIST / INTERCEPT / SKIRMISH / RETREAT / REGROUP
-5. Custom Takedown
-6. Ankle Tear and dedicated leg-wound effect
-7. Multi-turn LURE mission
-8. Minimal extra Lua bindings justified by playtesting
+| Area | Status |
+| --- | --- |
+| Judgment layer over the engine's pet AI | implemented, [runtime E0–E6] |
+| Safety veto: encirclement avoidance, low-HP retreat behind the player, object permanence | implemented, [runtime E2, E3, E5] |
+| Return (REGROUP) and engine delegation | implemented, [runtime E3, E5] |
+| Control attacks and follow-up (knock down → bite → break off) | implemented, [runtime E2, E6] |
+| New Takedown resolution (Lua application, size resistance) | implemented, not checked in play |
+| Role: Guard (default) | implemented, [runtime E6] |
+| Role: Free | implemented, [runtime E0–E5] |
+| Per-entity state save/restore | [runtime E4] |
+| Firing-line avoidance | decided (approach 2), not implemented |
+| Role: Harass | planned |
+| LURE mission | planned |
+| Production training, other dog types, hostile NPCs | undecided |
 
-## Verification status
+## Next steps
 
-All source-level items were inspected; see [the audit](source-verification.md). Integration, persistence, callback dispatch, attacks, and effects are confirmed in source. Pursuit identity and waypoint execution have documented limits. Other mods can replace the same definitions, so compatibility remains conditional.
+In order; each step moves on only after its experiment meets the success criteria.
 
-Runtime checks remain: verify untrained fallback and first-action disabling, save/load mission state, exercise attack/effect immunity and armor, waypoint movement, LURE, and named mod combinations. Untrained first-action disabling and save/load of per-entity state were checked in play (experiment E4); the other items remain.
+1. **E7 new Takedown resolution check.** Does the fat zombie go down, and does miss detection match the game messages ([experiments](experiments.md))?
+2. **E8 crowd (per role).** Compare vanilla, Free and Guard dogs against a group of 5 zombies.
+3. **Firing-line avoidance: implement and test.** Remember shot trajectories from `on_shoot` and step off them ([behavior design](design.md) section 7). Decide how many turns to remember and how wide to avoid.
+4. **Harass role: implement and test.** Slow enemies not engaged with the player with Ankle Tear, hit and run. Metric: enemies reaching the player.
+5. **LURE: refine and implement.** Decide BREAK_CONTACT, pursuit detection, and the relation to the low-HP retreat ([LURE](lure.md)).
+6. **Production training and UI.** Currently an experimental menu switch.
+7. **Wider coverage.** Other dog types, hostile NPC perception, compatibility checks with other mods.
 
-## Open design questions
+## Open questions
 
-Training and UI, supported dog types, risk scores and transition thresholds, attack values/resistance/cooldowns, wound IDs and stacking, and detailed LURE phases/contact-breaking conditions remain undecided.
+- Takedown: are 50% for large targets and 2 turns of knockdown right?
+- Ankle Tear: effect stacking and actual application by armor and immunity (not checked in play).
+- Do a Guard distance of 3 and an engage distance of 2 hold in other situations (indoors, crowds)?
+- Leave the Free role's sawtooth (distance 4↔9) as is?
+- Do one-tile steps get stuck among obstacles while enemies are visible (unverified)?
+- Do attack cooldown values persist across save and reload (not observed directly in E4)?
+- A log flag for "the player stands between the dog and the enemy" during the low-HP retreat, and a "set HP to 35%" menu item (add when needed).
 
-## Gameplay criteria
+## Decision log
 
-Dogs avoid group centers, withdraw before encirclement, support the player, and return safely. LURE separates an edge enemy and breaks pursuit before returning. Judge attacks by control and mobility-disruption value.
-
-[Documentation index](index.md).
-
-Source evidence and remaining runtime checks: [BN source verification](source-verification.md).
+| Date | Decision | Basis |
+| --- | --- | --- |
+| 2026-10-04 | Drop the implementation that took over the dog's turn; rebuild as a judgment layer over the engine's pet AI | Pre-rebuild play log ([experiments](experiments.md) background) |
+| 2026-10-04 | Remove the 3,000 max HP, reach learning and the remote | They invalidated survival experiments or had nothing to do with the philosophy |
+| 2026-10-04 | Load modules with the `dogs.` prefix | `lib.*` is BN's shared library; `package.loaded` is shared |
+| 2026-10-04 | Keep the low-HP retreat on HP and fall back behind the player | E1: 2 of 3 dogs died; dogs barely regenerate |
+| 2026-10-04 | Control follow-up: bite the downed enemy, break off once it stands | E1 |
+| 2026-10-05 | Three roles (Guard, Harass, Free); control attacks exist to support the player | User decision |
+| 2026-10-05 | Object permanence of 5 turns | E3 retreat oscillation |
+| 2026-10-05 | Delegate the return to the engine only with no enemy visible; pause 5 turns when it replaces the destination | E3, E5 |
+| 2026-10-05 | Guard: distance 3, normal bites allowed, enemies approaching the dog engaged within distance 3 | User decision |
+| 2026-10-05 | Firing-line avoidance by remembering post-shot trajectories (approach 2) | A dog does not know guns but can remember a trajectory (user decision) |
+| 2026-10-05 | Delete `mod/` (Codex's implementation); `DoGS_mod/` is the only implementation | The two implementations had diverged too far |
+| 2026-10-05 | Guard is the default role | E6: a free-roaming dog runs toward distant enemies and is easily lost |
+| 2026-10-05 | Apply Takedown's knockdown from Lua, resisted by size | E6: JSON effects do not apply when armor stops the damage |
+| 2026-10-05 | Revise the whole document set | Changes during experiments broke consistency between documents |

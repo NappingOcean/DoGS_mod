@@ -1,5 +1,7 @@
 # BN source verification
 
+
+> **Historical record.** A source audit by Codex at revision `e0e25e9`, kept as written. For the facts the current implementation relies on, see [engine notes](engine-notes.md) (at `ef0eced`).
 Baseline: official Cataclysm-BN main, commit `e0e25e9d8b3cf0d3b663882a7faf5a44d8ace800` (2026-10-04). This audit inspected source, JSON loaders, bindings, examples, and existing test definitions. It did not build BN, run those tests, or run a DoGS mod. Source confirmation is not gameplay validation.
 
 ## Integration and persistence
@@ -51,6 +53,6 @@ Working rules: [research and verification](../../AGENT/research-rules.md).
 
 ## MVP follow-up
 
-The current implementation and its play experiments are recorded in the [experiment plan](../claude/experiment-plan.md), checked against executable revision `ef0eced`. The source findings above retain their original pinned revision.
+The current implementation and its play experiments are recorded in the [experiments](experiments.md), checked against executable revision `ef0eced`. The source findings above retain their original pinned revision.
 
 Combat-path and hook coverage audit: [Combat hooks](combat-hooks.md).

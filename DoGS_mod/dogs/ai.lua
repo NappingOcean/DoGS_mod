@@ -1,4 +1,4 @@
--- Judgment layer over the stock pet AI (docs/claude/experiment-plan.md, section 2).
+-- Judgment layer over the stock pet AI (docs/en/design.md, section 2).
 -- Returning false hands the action to the engine: targeting, pathing, following, normal bites.
 local config = require("dogs.config")
 local policy = require("dogs.policy")

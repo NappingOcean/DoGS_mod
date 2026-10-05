@@ -1,5 +1,7 @@
 # BN 소스 검사 결과
 
+
+> **역사 기록.** Codex가 리비전 `e0e25e9` 기준으로 작성한 소스 감사다. 내용은 당시 그대로 둔다. 현재 구현이 기대는 사실은 [엔진 사실](engine-notes.md)(`ef0eced` 기준)을 참조한다.
 기준: 공식 Cataclysm-BN main의 `e0e25e9d8b3cf0d3b663882a7faf5a44d8ace800` (2026-10-04). 소스·JSON 로더·바인딩·예제·기존 테스트 정의를 검사했다. BN 빌드, 테스트 실행, DoGS 게임 실행은 하지 않았다. 소스 확인과 실제 플레이 검증을 구분한다.
 
 ## 적용과 저장
@@ -53,4 +55,4 @@ materials.json의 flesh/iflesh, effects.json의 downed·bleed·grabbed·bite·in
 
 훅 선언·실제 호출 위치·공통 피해 함수의 관계는 [전투 호출 경로와 훅 조사](combat-hooks.md)에 별도로 기록했다. 특히 `on_creature_attacked_by_character`의 투사체 처리 경로를 확인했다.
 
-현재 구현과 플레이 실험은 실행 파일 리비전 `ef0eced` 기준으로 [실험 계획서](../claude/experiment-plan.ko.md)에 기록했다. 위 소스 조사 결과는 원래 고정 리비전 기준을 유지한다.
+현재 구현과 플레이 실험은 실행 파일 리비전 `ef0eced` 기준으로 [실험 기록](experiments.md)에 기록했다. 위 소스 조사 결과는 원래 고정 리비전 기준을 유지한다.

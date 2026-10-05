@@ -1,25 +1,53 @@
-# DoGS — Dogs of Good Sense
+# DoGS 문서
 
-Cataclysm: Bright Nights에서 개의 판단력과 전술 행동을 개선하는 모드의 설계 문서다.
+[English](../en/index.md)
 
-## 주제별 문서
+**DoGS — Dogs of Good Sense**는 Cataclysm: Bright Nights(BN)의 개를 상황을 판단하는 전술 동료로 만드는 모드다. 개를 더 강하게 만들지 않고, 위치·위험·개입 시점에 대한 판단을 더한다.
 
-- [실험 계획서와 결과 (Claude Code)](../claude/experiment-plan.ko.md) — 현재 구현, 실험 E0~E5
+## 현재 상태 (2026-10-05)
 
-- [01 목표와 설계 철학](philosophy.md) — 역할, 세계관, 범위
-- [02 AI 계층과 기본 전술](ai-architecture.md) — 임무·전술·원자 행동
-- [03 위험 평가와 위치 선정](risk-and-positioning.md) — 생존 우선 판단과 성능
-- [04 LURE 유인 임무](lure.md) — 시각 유인, 추격 해제, 안전 복귀
-- [05 Takedown 제압 공격](takedown.md) — 넘어뜨리기와 공격 actor 선택
-- [06 Ankle Tear와 이동 저하](ankle-tear.md) — 물리적 상처, 출혈, 전용 효과
-- [07 기존 개 적용과 훈련 상태](training-and-integration.md) — 타입 override와 개체별 상태
-- [08 Lua API와 이동 구현](lua-and-movement.md) — 대화에서 보고된 기능과 제약
-- [09 구현 순서와 확인 과제](roadmap.md) — 구현 우선순위와 미결 사항
+- 구현: [`DoGS_mod/`](../../DoGS_mod/). 대상은 Labrador mutt(`mon_dog`) 한 종류다. BN의 기본 펫 AI 위에 얹는 판단층으로 동작한다.
+- 동작: 안전 veto(포위 회피, 저체력이면 플레이어 뒤로 후퇴), Takedown·Ankle Tear 제압 공격, 역할(엄호가 기본, 자유 선택 가능). 훈련과 역할은 action_menu에서 개체별로 정한다.
+- 검증: 실험 E0~E6 완료. Takedown의 새 판정(Lua 적용, 크기 저항)은 아직 플레이로 확인하지 않았다.
+- 다음 단계: [로드맵](roadmap.md).
 
-## 문서의 기준
+## 새 세션에서 읽는 순서
 
-출처는 「사냥개 AI 설계」 대화의 최종 설계 요약이다. 기술 사항은 BN 커밋 `e0e25e9`의 소스와 JSON에서 확인했다. 현재 구현과 플레이 실험은 실험 계획서에 있다.
+1. 이 문서
+2. [설계 철학](philosophy.md): 사용자가 정한 원칙. 모든 결정의 기준이다.
+3. [행동 설계](design.md): 지금 개가 어떻게 판단하는가
+4. [로드맵](roadmap.md): 무엇이 끝났고 무엇이 다음인가
+5. 작업 주제에 따라: [제압 공격](attacks.md), [엔진 사실](engine-notes.md), [개발 안내](development.md), [실험 기록](experiments.md), [LURE](lure.md)
+6. 조사·구현 규칙: [AGENT/research-rules.md](../../AGENT/research-rules.md)
 
-근거와 남은 실행 검사는 [BN 소스 검사 결과](source-verification.md)를 참조한다.
+## 문서 지도
 
-공격별 실제 호출 경로와 훅 범위는 [전투 훅 조사](combat-hooks.md)를 참조한다.
+| 문서 | 내용 |
+| --- | --- |
+| [philosophy.md](philosophy.md) | 목표, 설계 원칙, 훈련된 개다운 행동 |
+| [design.md](design.md) | 판단 순서, 상태와 전환, 안전 veto, 역할, 계획된 행동, 알려진 한계 |
+| [attacks.md](attacks.md) | Takedown과 Ankle Tear의 의도·수치·판정 |
+| [lure.md](lure.md) | LURE 유인 임무(미구현)와 구현 제약 |
+| [engine-notes.md](engine-notes.md) | 구현이 기대는 BN 동작. 소스 위치와 실행 확인 여부 |
+| [development.md](development.md) | 코드 구조, 코드 규칙, 개체 값, 설정값, 로그, 설치·검사, 실험 절차 |
+| [experiments.md](experiments.md) | 실험 목록, 절차, 결과 |
+| [roadmap.md](roadmap.md) | 현재 상태, 다음 단계, 미결 질문, 결정 기록 |
+| [source-verification.md](source-verification.md), [combat-hooks.md](combat-hooks.md) | Codex의 이전 소스 감사(리비전 `e0e25e9`). 역사 기록으로 보존한다 |
+
+## 표기 규칙
+
+AGENTS.md에 따라 근거의 종류를 구분해 적는다.
+
+- **[설계]** 사용자와 정한 결정이다. 실험 결과로 바뀔 수 있다.
+- **[소스]** BN 소스로 확인한 동작이다. 기준 리비전은 아래에 있다.
+- **[실행 E#]** 플레이 로그로 확인한 동작이다. 실험 번호는 [실험 기록](experiments.md)을 가리킨다.
+- **미확인** 아직 소스나 플레이로 확인하지 않은 것이다.
+
+## 기준
+
+- 게임: redhot 빌드 `2026-10-04-0345`, BN 커밋 `ef0eceda391d4d291b366e3bf2833b04c7342d72`(AGENTS.md의 기준 리비전).
+- 이전 감사 문서는 당시 리비전 `e0e25e9`를 유지한다.
+
+## 문서 이력
+
+2026-10-05 Claude Code가 문서 전체를 개정했다. Codex가 작성했던 설계 문서(ai-architecture, risk-and-positioning, takedown, ankle-tear, training-and-integration, lua-and-movement, mvp)와 `docs/claude/experiment-plan`은 이 문서들로 통합되었다. 이전 내용은 커밋 `ebd2650`까지의 git 기록에 남아 있다.

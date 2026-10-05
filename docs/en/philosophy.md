@@ -1,17 +1,40 @@
 # Goals and philosophy
 
-DoGS — Dogs of Good Sense improves dogs' tactical judgment in Cataclysm: Bright Nights. The lowercase o comes from “of.” Dogs act as skirmishers, controllers, and tactical support.
+[한국어](../ko/philosophy.md) · [Contents](index.md)
 
-## Principles
+This page holds the principles the user set. When implementation choices diverge, this page decides.
 
-- Prioritize positioning, risk avoidance, enemy separation, intervention timing, and retreat decisions over increased stats or damage.
-- Choose when to act as carefully as what to do.
-- Keep attacks plausible for a dog's anatomy.
-- Avoid features whose implementation cost exceeds their gameplay value.
-- Target BN; do not assume DDA implementations transfer unchanged.
+## Goal and name
 
-Dogs should make short, understandable decisions with a strong survival instinct. They can abandon plans when conditions worsen. Control actions include takedowns, body checks, ankle disruption, and brief bites followed by withdrawal. Bites cause physical wounds and mobility disruption.
+**DoGS — Dogs of Good Sense** turns dogs in Cataclysm: Bright Nights (BN) into tactical companions that read the situation, adjust their position and disrupt enemies. The name stands for good judgment and discernment. The lowercase o comes from "of."
 
-Current mission scope: NORMAL and LURE.
+Combat roles: skirmisher / controller / tactical support.
 
-Related: [AI architecture](ai-architecture.md), [LURE](lure.md).
+## Design principles
+
+- Prioritize positioning, risk avoidance, enemy separation, intervention timing and disengagement over increased stats or damage.
+- When an action is chosen matters more than what the dog can do.
+- Do not add attacks that a normal dog's anatomy cannot explain.
+- Do not add features whose implementation cost outweighs their play value.
+- Target BN; do not assume DDA implementations carry over unchanged.
+
+## Trained-dog behavior
+
+Prefer short decisions and understandable, repeatable patterns over an AI that predicts the future perfectly. The dog has a strong survival instinct and can abandon a plan when things go badly.
+
+Control actions are takedowns, body checks, ankle disruption, and brief bites followed by withdrawal. Bites are for physical wounds and mobility disruption.
+
+## Principles set on 2026-10-05
+
+Principles the user set during the experiments.
+
+- **Control attacks are support.** Their purpose is not for the dog to kill alone but to support the player's attacks and disrupt other enemies. Their value is judged with the player fighting alongside.
+- **The player directs the role; the dog judges the method.** The player assigns each dog a role (Guard, Harass, Free). Within it, the dog decides when and how to act.
+- **Not losing the dog comes first.** A trained dog guards by default. A dog that runs off toward distant enemies is easily lost.
+- **Remove the enemy in front of you quickly.** Even while guarding, the dog fights an enemy right in front of it with normal attacks.
+- **The dog judges only by what it can perceive and remember.** A dog does not know what a gun or bow is, but after a shot it can remember that something flies along that path. Mistakes from this limit are acceptable to the player as a dog's limitation.
+- **A wounded dog returns to its handler.** At low HP the dog leaves the fight and falls back behind the player; ending the situation is the player's job.
+
+## Scope
+
+The dog judges within the role the player assigns. LURE, which draws an enemy away from the edge of a group, is a separate mission order. Current designs: [behavior design](design.md) and [LURE](lure.md).

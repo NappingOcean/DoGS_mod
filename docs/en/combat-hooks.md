@@ -1,6 +1,8 @@
 # Combat paths and Lua hook coverage
 
-[???](../ko/combat-hooks.md)
+[한국어](../ko/combat-hooks.md)
+
+> **Historical record.** A source audit by Codex at revision `e0e25e9`, kept as written. For the facts the current implementation relies on, see [engine notes](engine-notes.md) (at `ef0eced`).
 
 Source audit, 2026-10-04. Revision: `e0e25e9d8b3cf0d3b663882a7faf5a44d8ace800`. The installed executable is `ef0eced`; this audit does not claim binary-level tracing of that other revision. Hook declarations were checked against actual emitters and shared callees, not treated as proof of coverage. No gameplay experiment was run for this audit.
 

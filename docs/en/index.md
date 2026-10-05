@@ -27,7 +27,7 @@
 | [philosophy.md](philosophy.md) | Goals, design principles, trained-dog behavior |
 | [design.md](design.md) | Decision order, states and transitions, safety veto, roles, planned behavior, known limits |
 | [attacks.md](attacks.md) | Intent, numbers and resolution of Takedown and Ankle Tear |
-| [harass.md](harass.md) | The Harass role: lure and straggle (not implemented); strengths, limits, implementation proposal |
+| [harass.md](harass.md) | The Harass role: delaying the next enemy (not implemented); difference from Guard, open points, shelved idea |
 | [engine-notes.md](engine-notes.md) | BN behavior the implementation relies on, with source locations and runtime status |
 | [development.md](development.md) | Code layout, coding rules, per-entity values, configuration, logging, install and check, experiment procedure |
 | [experiments.md](experiments.md) | Experiment list, procedures and results |

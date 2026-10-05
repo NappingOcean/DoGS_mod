@@ -60,7 +60,7 @@ Implementation: `M.turn` in [`ai.lua`](../../DoGS_mod/dogs/ai.lua).
 
 [runtime E2, E3, E5] In all 6 low-HP retreats, the dog took no further damage after entry, waited within 2 tiles of the player, and released once the player killed the enemy. [runtime E1] Before this rule, the retreat ended whenever no enemy was adjacent, so the dog re-engaged, got hit, and died.
 
-This brings the enemy to the player, against the Harass role's rule of not dragging enemies to the player. It is a deliberate choice for wounded dogs only. Shaking off the pursuer belongs to the Harass role's BREAK_CONTACT.
+This brings the enemy to the player; it is a deliberate choice for wounded dogs only.
 
 ## 5. Control attacks and follow-up
 
@@ -76,7 +76,7 @@ Numbers and resolution: [control attacks](attacks.md).
 | Role | Status | Scope of the dog's judgment |
 | --- | --- | --- |
 | Guard | implemented, [runtime E6] | Keeps within 3 tiles of the player; takes on only enemies approaching the player or the dog |
-| Harass | planned | Lures the outermost enemies of a group away, bites their ankles to leave them straggling, and returns ([Harass role](harass.md)) |
+| Harass | planned | While the player is engaged, controls the next enemy within 7–8 tiles and holds it up, leading it to chase the dog alone so it arrives later ([Harass role](harass.md)) |
 | Free | implemented, [runtime E0–E5] | Mixes control attacks into the engine's fighting; only the 8-tile leash applies |
 
 ### Guard
@@ -107,7 +107,7 @@ Numbers and resolution: [control attacks](attacks.md).
 
 ### Harass role
 
-The lure-and-straggle flow, strengths and limits, and a staged implementation proposal are in [Harass role](harass.md).
+The flow, the difference from Guard, open points, and the shelved "cut enemies out of a group" idea are in [Harass role](harass.md).
 
 ## 8. Known limits
 

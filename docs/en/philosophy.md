@@ -45,4 +45,4 @@ Principles the user set during the experiments.
 
 ## Scope
 
-The dog judges within the role the player assigns. Against a zombie group, it lures the outermost enemy first, separates it, leaves it straggling and returns (the Harass role). Current designs: [behavior design](design.md) and [Harass role](harass.md).
+The dog judges within the role the player assigns. Even against a group, it does not stray far from the player; it holds up the next enemy to arrive to buy time (the Harass role). Current designs: [behavior design](design.md) and [Harass role](harass.md).

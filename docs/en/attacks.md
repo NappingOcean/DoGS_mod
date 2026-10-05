@@ -48,10 +48,11 @@ Labels: [design] decision, [source] confirmed in BN source, [runtime E#] confirm
 | --- | --- |
 | Damage | cut 4 |
 | Move cost / cooldown | 100 / 8 turns |
-| Effects | bleed 20 turns, `dogs_ankle_wound` 10 turns |
-| `dogs_ankle_wound` | speed bonus -20 (not a 20% reduction), max intensity 1, max 10 turns |
+| Effects | bleed 20 turns, `dogs_ankle_wound` 60 turns (one BN turn is one second) |
+| `dogs_ankle_wound` | speed bonus -20 (not a 20% reduction), max intensity 1, max 60 turns; a new bite refreshes it |
 
 - [design] A dedicated effect expresses wound-related mobility loss; unrelated slowing effects are not reused.
+- [design, 2026-10-05] It was 10 turns at first. A real bite healing in 10 seconds was implausible and shorter than one Harass cycle (the player dealing with one enemy and regrouping), so it was raised to 60 turns. Not checked in play.
 - [source] `speed_mod` applies as a monster speed bonus, not a ratio.
 - [source, earlier audit `e0e25e9`] Bleed immunity checks require the WARM flag and flesh material. `mon_zombie` has both and bleeds. JSON `iflesh` is insect flesh, not a zombie material. Other zombies need their own definitions checked.
 - The effects come from JSON, so they do not apply at 0 damage. [runtime E6] The fat zombie took 1 damage.

@@ -6,10 +6,10 @@
       "Ankle wound"
     ],
     "desc": [
-      "A dog bite temporarily impairs movement."
+      "A deep dog bite to the ankle impairs movement for a while."
     ],
     "max_intensity": 1,
-    "max_duration": 10,
+    "max_duration": 60,
     "base_mods": {
       "speed_mod": [
         -20

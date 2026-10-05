@@ -27,7 +27,7 @@
 | [philosophy.md](philosophy.md) | 목표, 설계 원칙, 훈련된 개다운 행동 |
 | [design.md](design.md) | 판단 순서, 상태와 전환, 안전 veto, 역할, 계획된 행동, 알려진 한계 |
 | [attacks.md](attacks.md) | Takedown과 Ankle Tear의 의도·수치·판정 |
-| [harass.md](harass.md) | 견제 역할: 유인과 낙오(미구현). 강점, 한계, 구현 제안 |
+| [harass.md](harass.md) | 견제 역할: 다음 적의 도착 늦추기(미구현). 엄호와의 차이, 미결 사항, 보류한 안 |
 | [engine-notes.md](engine-notes.md) | 구현이 기대는 BN 동작. 소스 위치와 실행 확인 여부 |
 | [development.md](development.md) | 코드 구조, 코드 규칙, 개체 값, 설정값, 로그, 설치·검사, 실험 절차 |
 | [experiments.md](experiments.md) | 실험 목록, 절차, 결과 |

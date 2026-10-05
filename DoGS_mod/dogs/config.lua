@@ -32,7 +32,9 @@ return {
     dogs_ankle_tear = { cooldown = 8, label = "Ankle Tear" },
   },
   attack_ids = { "dogs_takedown", "dogs_ankle_tear" },
-  takedown_targets = { mon_zombie = true },
+  -- Takedown knocks down in Lua after a hit, whatever the armor (E6: bash 2 never got through the
+  -- fat zombie's armor, so the JSON effect never applied). Percent chance by creature size.
+  takedown = { duration = 2, chance = { TINY = 100, SMALL = 100, MEDIUM = 100, LARGE = 50, HUGE = 0 } },
 
   -- Restraints and riding states the engine must handle itself. finalize.lua checks each ID.
   -- heavysnare/lightsnare are referenced in monster.cpp but have no JSON definition at ef0eced.

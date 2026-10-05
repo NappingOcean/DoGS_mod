@@ -61,6 +61,13 @@ end
 ---@field wounded boolean target already has dogs_ankle_wound
 ---@field ready table<string, boolean>
 
+---Takedown chance in percent for a creature size name ("TINY" .. "HUGE").
+---@param size string
+---@return integer
+function M.takedown_chance(size)
+  return config.takedown.chance[size] or 0
+end
+
 ---@param ctx DogsAttackContext
 ---@return string|nil attack id; nil leaves the turn to the stock AI
 function M.choose_attack(ctx)

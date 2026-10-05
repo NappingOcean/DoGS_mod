@@ -18,12 +18,6 @@
               "damage_type": "bash",
               "amount": 2
             }
-          ],
-          "effects": [
-            {
-              "id": "downed",
-              "duration": 2
-            }
           ]
         },
         {

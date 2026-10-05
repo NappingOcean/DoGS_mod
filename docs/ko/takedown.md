@@ -19,9 +19,9 @@
 - downed 몬스터의 dodge는 0이며 일반 AI의 기립 시도는 남은 moves를 종료한다. 회복은 melee dice/sides에 좌우된다.
 - bite_actor에는 grabbed 상처 감염과 toxic flesh에 의한 공격자 중독 로직이 있다.
 
-## 남은 결정
+## 결정 (2026-10-05)
 
-custom actor 또는 generic melee actor 확장이 필요한지 조사한다. 성공·저항 기준, 피해량, 지속시간, 쿨다운은 미정이다.
+generic melee actor를 유지하고, 넘어짐은 명중 뒤 Lua에서 직접 적용한다. 방어구로 피해가 0이어도 넘어진다. 저항은 크기로 판정한다(작음·중간 100%, 큼 50%, 거대 0%). 피해는 타격 2, 넘어짐 2턴, 쿨다운 8턴이다. 근거와 구현은 [실험 계획서](../claude/experiment-plan.ko.md)의 "Takedown 판정"을 참조한다.
 
 관련: [06 Ankle Tear와 이동 저하](ankle-tear.md), [09 구현 순서와 확인 과제](roadmap.md)
 

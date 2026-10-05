@@ -53,6 +53,10 @@ function M.run()
   assert(policy.choose_attack(ctx("ankle", true, false, true, both)) == "dogs_ankle_tear")
   assert(policy.choose_attack(ctx("auto", true, false, false, { dogs_ankle_tear = true })) == "dogs_ankle_tear")
 
+  -- Takedown resistance by size.
+  assert(policy.takedown_chance("MEDIUM") == 100 and policy.takedown_chance("LARGE") == 50)
+  assert(policy.takedown_chance("HUGE") == 0 and policy.takedown_chance("UNKNOWN") == 0)
+
   -- Step ranking.
   local zombie = { p(1, 0) }
   local retreat = policy.rank_steps("retreat", p(0, 0), { p(-1, 0), p(1, 1), p(0, 1) }, zombie, p(-5, 0))

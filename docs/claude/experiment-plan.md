@@ -71,6 +71,15 @@ Explored whether the dog can keep out of the line of fire when the player holds 
 - **Limits:** the player may shoot an enemy the dog cannot see, or another target. Whether one tile either side covers shot spread and dispersion needs testing. The inventory scan can be computed once per game turn and reused.
 - **Decision:** implement approach 2 (reaction). A dog does not really know what a gun or bow is, but after a shot it can remember that things fly along that path. So approach 1, which reads the weapon in advance, is not used. If the player then shoots another target, the dog may be in the way; the player can be expected to accept this as a dog's limitation. To be implemented after the Guard role.
 
+### Takedown resolution (decided, implemented)
+
+In E6 the fat zombie (bash armor 5) absorbed all of Takedown's bash 2, so it never went down: the generic melee actor applies JSON effects only after positive damage (melee_actor::call in `src/mattack_actors.cpp`, `ef0eced`). Downed is therefore removed from the JSON and applied from Lua.
+
+- **Hit:** the actor returns a miss when `hit_spread < 0`. The target's `on_dodge` fires the `on_creature_dodged` hook when `hit_spread <= 0` (`src/creature.cpp`), and monsters do not override `on_dodge`. A dodge event from the target during the attack is read as a miss. An exact 0 is a hit for the actor but a miss here, erring toward no knockdown.
+- **Knockdown:** on a hit, unless the target is immune (`is_immune_effect`), apply `downed` for 2 turns with a size chance: tiny/small/medium 100%, large 50%, huge 0%. Huge targets are not Takedown targets. Size comes from `get_size()` (`MonsterSize`).
+- **Targets:** the regular-zombie-only restriction is gone; anything not huge is a target.
+- **Logging:** `special` carries `outcome` (dodged, immune, resisted_SIZE, knocked_SIZE; hit/dodged for Ankle Tear).
+
 ### End state of the low-HP retreat
 
 The dog's HP effectively does not recover: natural regeneration for flesh monsters is 0.25 HP per hour (`src/monster.cpp`, `ef0eced`). A low-HP retreat therefore takes the dog out of the fight. The dog survives; the player ends the situation.
@@ -200,7 +209,7 @@ Implement the Guard, Harass and Free roles based on E3. Guard is implemented; Ha
 | `step` / `step_failed` | One-tile retreat, flee, disengage, regroup or intercept (Guard) result, with risk score before/after |
 | `hold` | Start of a wait during the low-HP retreat (e.g. behind the player); once per wait |
 | `disengage` | Whether the dog tried to break off on the action after a control attack |
-| `special` | Attack ID, target ID and type, actual HP damage, downed/bleed/ankle flags |
+| `special` | Attack ID, target ID and type, result (`outcome`), actual HP damage, downed/bleed/ankle flags |
 | `melee` | The dog's normal attacks seen through the engine's normal melee hook: target type, hit roll, target HP after the attack |
 | `summary` | Every 10 turns for every friendly Labrador mutt: trained flag, role, state, position, HP, player distance, nearby enemy count and HP sum, player HP |
 | `probe_result` | Logged only when the engine replaced a delegated REGROUP destination: the destination set and the replacement (absolute coordinates), player distance before/after. Once logged, delegation stops for 5 turns. During E3, `probe` and `kept=true` were logged too |

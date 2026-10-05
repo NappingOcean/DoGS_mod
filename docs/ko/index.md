@@ -17,7 +17,7 @@
 2. [설계 철학](philosophy.md): 사용자가 정한 원칙. 모든 결정의 기준이다.
 3. [행동 설계](design.md): 지금 개가 어떻게 판단하는가
 4. [로드맵](roadmap.md): 무엇이 끝났고 무엇이 다음인가
-5. 작업 주제에 따라: [제압 공격](attacks.md), [엔진 사실](engine-notes.md), [개발 안내](development.md), [실험 기록](experiments.md), [LURE](lure.md)
+5. 작업 주제에 따라: [제압 공격](attacks.md), [엔진 사실](engine-notes.md), [개발 안내](development.md), [실험 기록](experiments.md), [견제 역할](harass.md)
 6. 조사·구현 규칙: [AGENT/research-rules.md](../../AGENT/research-rules.md)
 
 ## 문서 지도
@@ -27,7 +27,7 @@
 | [philosophy.md](philosophy.md) | 목표, 설계 원칙, 훈련된 개다운 행동 |
 | [design.md](design.md) | 판단 순서, 상태와 전환, 안전 veto, 역할, 계획된 행동, 알려진 한계 |
 | [attacks.md](attacks.md) | Takedown과 Ankle Tear의 의도·수치·판정 |
-| [lure.md](lure.md) | LURE 유인 임무(미구현)와 구현 제약 |
+| [harass.md](harass.md) | 견제 역할: 유인과 낙오(미구현). 강점, 한계, 구현 제안 |
 | [engine-notes.md](engine-notes.md) | 구현이 기대는 BN 동작. 소스 위치와 실행 확인 여부 |
 | [development.md](development.md) | 코드 구조, 코드 규칙, 개체 값, 설정값, 로그, 설치·검사, 실험 절차 |
 | [experiments.md](experiments.md) | 실험 목록, 절차, 결과 |

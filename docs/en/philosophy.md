@@ -14,7 +14,7 @@ A DoGS dog is a companion that fights alongside the player, not a combatant that
 
 - **It protects the player.** It stays by the player and takes on enemies that approach the player.
 - **It ties enemies down.** It knocks them down and bites their ankles, creating openings for the player and disrupting other enemies' attacks.
-- **It survives.** When wounded, it leaves the fight and returns to the player.
+- **It survives.** When encirclement looms, it moves out without hesitation. When wounded, it leaves the fight and returns to the player.
 
 Which of these comes first is set by the player through the role (Guard, Harass, Free).
 
@@ -45,4 +45,4 @@ Principles the user set during the experiments.
 
 ## Scope
 
-The dog judges within the role the player assigns. LURE, which draws an enemy away from the edge of a group, is a separate mission order. Current designs: [behavior design](design.md) and [LURE](lure.md).
+The dog judges within the role the player assigns. Against a zombie group, it lures the outermost enemy first, separates it, leaves it straggling and returns (the Harass role). Current designs: [behavior design](design.md) and [Harass role](harass.md).

@@ -15,8 +15,7 @@
 | Role: Free | implemented, [runtime E0–E5] |
 | Per-entity state save/restore | [runtime E4] |
 | Firing-line avoidance | decided (approach 2), not implemented |
-| Role: Harass | planned |
-| LURE mission | planned |
+| Role: Harass (lure and straggle) | planned |
 | Production training, other dog types, hostile NPCs | undecided |
 
 ## Next steps
@@ -26,8 +25,8 @@ In order; each step moves on only after its experiment meets the success criteri
 1. **E7 new Takedown resolution check.** Does the fat zombie go down, and does miss detection match the game messages ([experiments](experiments.md))?
 2. **E8 crowd (per role).** Compare vanilla, Free and Guard dogs against a group of 5 zombies.
 3. **Firing-line avoidance: implement and test.** Remember shot trajectories from `on_shoot` and step off them ([behavior design](design.md) section 7). Decide how many turns to remember and how wide to avoid.
-4. **Harass role: implement and test.** Slow enemies not engaged with the player with Ankle Tear, hit and run. Metric: enemies reaching the player.
-5. **LURE: refine and implement.** Decide BREAK_CONTACT, pursuit detection, and the relation to the low-HP retreat ([LURE](lure.md)).
+4. **Harass stage 1 (straggling only).** Ankle Tear the outermost or trailing members of an approaching group and break off. Metrics: the time spread of the group's arrival and the maximum number of enemies on the player at once ([Harass role](harass.md)).
+5. **Harass stage 2 (lure and separate).** Decide pursuit detection, BREAK_CONTACT, detour return, and the relation to the low-HP retreat during Harass.
 6. **Production training and UI.** Currently an experimental menu switch.
 7. **Wider coverage.** Other dog types, hostile NPC perception, compatibility checks with other mods.
 
@@ -59,3 +58,5 @@ In order; each step moves on only after its experiment meets the success criteri
 | 2026-10-05 | Guard is the default role | E6: a free-roaming dog runs toward distant enemies and is easily lost |
 | 2026-10-05 | Apply Takedown's knockdown from Lua, resisted by size | E6: JSON effects do not apply when armor stops the damage |
 | 2026-10-05 | Revise the whole document set | Changes during experiments broke consistency between documents |
+| 2026-10-05 | The Harass role is luring the outermost enemies away, leaving them straggling, and returning (formerly LURE). Ankle Tear serves the straggling | User decision |
+| 2026-10-05 | "It survives" includes moving out without hesitation when encirclement looms | User decision |

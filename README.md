@@ -11,7 +11,7 @@ An experimental dog AI mod for **Cataclysm: Bright Nights**. DoGS does not make 
 - **Takedown** knocks enemies down so the player and dog hit them easily; **Ankle Tear** slows them with a leg wound.
 - **Safety veto:** avoids encirclement, and at low HP falls back behind the player instead of fighting on.
 
-Planned: firing-line avoidance, the Harass role, and the LURE mission.
+Planned: firing-line avoidance and the Harass role (luring the outermost enemies of a group away and leaving them straggling).
 
 **Status:** experimental build for redhot BN (Lua API 2) in [`DoGS_mod/`](DoGS_mod/). Experiments E0–E6 are recorded.
 

@@ -17,7 +17,7 @@
 2. [Philosophy](philosophy.md): the user's principles; the yardstick for every decision
 3. [Behavior design](design.md): how the dog judges now
 4. [Roadmap](roadmap.md): what is done and what comes next
-5. As the task requires: [control attacks](attacks.md), [engine notes](engine-notes.md), [development guide](development.md), [experiments](experiments.md), [LURE](lure.md)
+5. As the task requires: [control attacks](attacks.md), [engine notes](engine-notes.md), [development guide](development.md), [experiments](experiments.md), [Harass role](harass.md)
 6. Research and implementation rules: [AGENT/research-rules.md](../../AGENT/research-rules.md)
 
 ## Document map
@@ -27,7 +27,7 @@
 | [philosophy.md](philosophy.md) | Goals, design principles, trained-dog behavior |
 | [design.md](design.md) | Decision order, states and transitions, safety veto, roles, planned behavior, known limits |
 | [attacks.md](attacks.md) | Intent, numbers and resolution of Takedown and Ankle Tear |
-| [lure.md](lure.md) | The LURE mission (not implemented) and its implementation constraints |
+| [harass.md](harass.md) | The Harass role: lure and straggle (not implemented); strengths, limits, implementation proposal |
 | [engine-notes.md](engine-notes.md) | BN behavior the implementation relies on, with source locations and runtime status |
 | [development.md](development.md) | Code layout, coding rules, per-entity values, configuration, logging, install and check, experiment procedure |
 | [experiments.md](experiments.md) | Experiment list, procedures and results |

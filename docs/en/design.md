@@ -60,7 +60,7 @@ Implementation: `M.turn` in [`ai.lua`](../../DoGS_mod/dogs/ai.lua).
 
 [runtime E2, E3, E5] In all 6 low-HP retreats, the dog took no further damage after entry, waited within 2 tiles of the player, and released once the player killed the enemy. [runtime E1] Before this rule, the retreat ended whenever no enemy was adjacent, so the dog re-engaged, got hit, and died.
 
-This brings the enemy to the player, against LURE's rule of not dragging enemies to the player. It is a deliberate choice for wounded dogs only. Shaking off the pursuer belongs to LURE's BREAK_CONTACT.
+This brings the enemy to the player, against the Harass role's rule of not dragging enemies to the player. It is a deliberate choice for wounded dogs only. Shaking off the pursuer belongs to the Harass role's BREAK_CONTACT.
 
 ## 5. Control attacks and follow-up
 
@@ -76,7 +76,7 @@ Numbers and resolution: [control attacks](attacks.md).
 | Role | Status | Scope of the dog's judgment |
 | --- | --- | --- |
 | Guard | implemented, [runtime E6] | Keeps within 3 tiles of the player; takes on only enemies approaching the player or the dog |
-| Harass | planned | Holds off enemies not engaged with the player; slows them with Ankle Tear and hits and runs |
+| Harass | planned | Lures the outermost enemies of a group away, bites their ankles to leave them straggling, and returns ([Harass role](harass.md)) |
 | Free | implemented, [runtime E0–E5] | Mixes control attacks into the engine's fighting; only the 8-tile leash applies |
 
 ### Guard
@@ -105,9 +105,9 @@ Numbers and resolution: [control attacks](attacks.md).
 - [design] Use the `on_shoot` hook to receive the shooter and aim position right after a shot, remember that trajectory for a few turns, and step off its axis. Do not avoid by reading the weapon in advance: the dog does not know what a gun is, but it can remember a trajectory after a shot. If the player then shoots another target, the dog may be in the way; this is accepted as a dog's limitation.
 - To decide at implementation: how many turns to remember, and how many tiles either side of the trajectory to avoid (shot spread, dispersion).
 
-### Harass role, LURE
+### Harass role
 
-The Harass role is fully described in section 6. LURE: see [LURE](lure.md).
+The lure-and-straggle flow, strengths and limits, and a staged implementation proposal are in [Harass role](harass.md).
 
 ## 8. Known limits
 

@@ -29,7 +29,7 @@ A separate test world, open terrain, daytime, at least 3 runs per experiment. Pl
 | E4 State persistence | done | cleanup if needed | allowed mid-run |
 | E5 Leash and oscillation | done (second run passed) | cleanup if needed | allowed mid-run |
 | E6 Guard | done (second run passed) | fights alongside | between runs only |
-| E7 New Takedown resolution | planned | fights alongside | between runs only |
+| E7 New Takedown resolution | done (largely passed) | fights alongside | between runs only |
 | E8 Crowd | planned | kills only zombies adjacent to the player | between runs only |
 
 ## Procedures
@@ -79,7 +79,7 @@ Roles were implemented after E3 (Guard implemented, Harass planned). The experim
 - Check: does the dog close on zombies approaching the player (`step kind=intercept`)? Does it avoid chasing distant zombies while guarding? Do control attacks turn into openings for the player?
 - Success: the player takes less damage than with the vanilla dog, and the dog stays within 3 tiles of the player except while returning.
 
-### E7 New Takedown resolution check (planned)
+### E7 New Takedown resolution check (done: largely passed)
 - Background: Takedown's knockdown moved to Lua with size resistance ([control attacks](attacks.md)). Not yet checked in play.
 - Setup: a Guard-role dog, the player fighting alongside with a melee weapon. Fight a regular zombie and a fat zombie separately. For a LARGE target use the zombie moose (`mon_zoose`: 92.5 L, HP 210, speed 140, melee skill 6, bash armor 6). Its HP yields many Takedown attempts, and bash armor 6 absorbs all of Takedown's bash 2, so "knocked down at 0 damage" is checked in the same runs. Set the attack mode to takedown. The boomer (`mon_boomer`: HP 40, bile) is the alternative. The zombie deer (`mon_zeer`, speed 240) outruns the dog, so the low-HP retreat cannot work; it is not used this time.
 - Also check: blowing the existing dog whistle logs `docile on=true` and the dog stops attacking.
@@ -257,3 +257,24 @@ Observations:
 1. **Downed zombies were always hit:** 5/5 against 86% (24/28) for standing ones. Same direction as the experimenter's observation, on a small sample.
 2. **Without Takedown, guarding helps little.** Fat zombies are not Takedown targets (only `mon_zombie` is), so they got only Ankle Tear (1 damage). The player took 3 hits from the two of them, and the dog took 17 damage. The Takedown target range (size and resistance rules) is still an open design question. (Later decision: apply the knockdown from Lua and resist it by size; see [control attacks](attacks.md). Checked in E7.)
 3. **Downed flag on the killing blow.** Some killing swings logged `downed=false` (#39). Whether the zombie had stood up or death processing cleared it was not checked.
+
+### 2026-10-05 E7 (new Takedown resolution)
+
+Log: `config/debug.log` 12:25–12:34. Dog #10, Guard role, the player fighting alongside. Opponents: regular zombies #51, #54, #55, fat zombie #52, zombie moose #53. The existing dog whistle was blown several times.
+
+| Target | Takedown result (`outcome`) | Damage | Notes |
+| --- | --- | --- | --- |
+| Regular zombie | `knocked_MEDIUM` ×4 | 2 | One (#54) was a target killed by that blow |
+| Fat zombie #52 | `knocked_MEDIUM` ×1 | **0** | Went down even though armor stopped all damage |
+| Zombie moose #53 | `knocked_LARGE` ×1, `resisted_LARGE` ×1 | 0 | |
+
+**Verdict: largely passed.** Knockdown at 0 damage and size resistance worked. Miss detection was not verified: none of 7 Takedowns logged `dodged`, and the log alone cannot tell whether none missed or detection failed.
+
+Observations:
+
+1. **Large enemies get up quickly.** The zombie moose was already standing the turn after it went down (1335894); regular zombies stayed down 2–3 turns and the fat zombie 2. [source] Monsters roll to stand with their melee dice (`monster.cpp`), so strong monsters rise sooner. Against the moose, the knockdown barely turned into openings for the player.
+2. **Ankle Tear does nothing to the zombie moose.** Cut 4 against its cut armor 4 dealt 0 damage and no wound (JSON effects need damage). Against the fat zombie it dealt 1 and the wound applied.
+3. **The zombie moose was dangerous.** It hit the player 7 of 9 times (about 23 HP). The dog fell from 30 to 5 HP (0.17), retreated to wait beside the player, and survived.
+4. **Player hits on downed targets:** regular zombies 2/2, fat zombie 1/2; 8/9 together with E6.
+5. **Docile:** `docile on/off` was logged with each whistle, and DoGS used no control attacks while docile. But the engine kept the docile dog biting the adjacent zombie (19 normal attacks across two windows, killing zombie #55). Vanilla docile only stops picking new targets; it does not stop a fight already in contact.
+6. **Knockdown on a dead target.** When Takedown's damage killed the target, it still applied the knockdown and logged `knocked`. Fixed: a dead target is logged `killed` and not knocked down.

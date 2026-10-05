@@ -33,14 +33,15 @@ Labels: [design] decision, [source] confirmed in BN source, [runtime E#] confirm
 
 1. A watch is set just before the attack. If the target raises the dodge hook (`on_creature_dodged`) during the attack, it missed.
 2. If it did not miss and the target is not immune to knockdown, `downed` is applied from Lua for 2 turns with the size chance. The target goes down even when armor reduces the damage to 0.
-3. The result goes to `outcome` in the `special` log: `dodged`, `immune`, `resisted_SIZE`, `knocked_SIZE`.
+3. The result goes to `outcome` in the `special` log: `dodged`, `killed` (the blow was fatal), `immune`, `resisted_SIZE`, `knocked_SIZE`.
 
 **Evidence.**
 
 - [runtime E6] The fat zombie (bash armor 5) absorbed all of bash 2, so the knockdown written in the JSON never applied. Knockdown was therefore moved from the JSON to Lua.
 - [source] The actor returns a miss when `hit_spread < 0`. The target's dodge handling calls the dodge hook when `hit_spread <= 0`, and monsters do not override it. An exact 0 is a hit for the actor but read as a miss here, erring toward no knockdown.
 - [source] A downed monster's dodge is 0. [runtime E6] The player hit all 5 swings at downed zombies (24/28 against standing ones).
-- **unverified:** the new resolution (Lua application, size resistance) has not been checked in play. The check is E7 in [experiments](experiments.md).
+- [runtime E7] The fat zombie went down at 0 damage; the zombie moose (LARGE) went down once and resisted once. Miss detection was not verified because no miss occurred (unverified).
+- [runtime E7, source] Large enemies get up quickly: the zombie moose was standing the next turn. Monsters roll to stand with their melee dice.
 
 ## Ankle Tear
 

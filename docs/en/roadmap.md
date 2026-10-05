@@ -10,7 +10,7 @@
 | Safety veto: encirclement avoidance, low-HP retreat behind the player, object permanence | implemented, [runtime E2, E3, E5] |
 | Return (REGROUP) and engine delegation | implemented, [runtime E3, E5] |
 | Control attacks and follow-up (knock down → bite → break off) | implemented, [runtime E2, E6] |
-| New Takedown resolution (Lua application, size resistance) | implemented, not checked in play |
+| New Takedown resolution (Lua application, size resistance) | implemented, [runtime E7] (miss detection unverified) |
 | Role: Guard (default) | implemented, [runtime E6] |
 | Role: Free | implemented, [runtime E0–E5] |
 | Per-entity state save/restore | [runtime E4] |
@@ -23,7 +23,7 @@
 
 In order; each step moves on only after its experiment meets the success criteria.
 
-1. **E7 new Takedown resolution check.** Does the fat zombie go down, and does miss detection match the game messages ([experiments](experiments.md))?
+1. **Decide docile handling.** The engine keeps a docile dog biting an adjacent enemy (E7). Decide whether DoGS should do more.
 2. **E8 crowd (per role).** Compare vanilla, Free and Guard dogs against a group of 5 zombies.
 3. **Firing-line avoidance: implement and test.** Remember shot trajectories from `on_shoot` and step off them ([behavior design](design.md) section 7). Decide how many turns to remember and how wide to avoid.
 4. **Harass probe.** How long does a zombie chase the dog, and does it switch to the player as the player gets closer? Also set the holding distance (2–3 tiles).
@@ -33,6 +33,9 @@ In order; each step moves on only after its experiment meets the success criteri
 
 ## Open questions
 
+- Does miss detection (`dodged`) actually work (no miss occurred in E7)?
+- Large enemies get up quickly, so knockdown is worth little against them. Adjust knockdown duration or chance by size?
+- Ankle Tear does nothing to enemies with high cut armor (e.g. the zombie moose). Leave it?
 - Takedown: are 50% for large targets and 2 turns of knockdown right?
 - Ankle Tear: effect stacking and actual application by armor and immunity (not checked in play).
 - Do a Guard distance of 3 and an engage distance of 2 hold in other situations (indoors, crowds)?

@@ -81,7 +81,7 @@ Roles were implemented after E3 (Guard implemented, Harass planned). The experim
 
 ### E7 New Takedown resolution check (planned)
 - Background: Takedown's knockdown moved to Lua with size resistance ([control attacks](attacks.md)). Not yet checked in play.
-- Setup: a Guard-role dog, the player fighting alongside with a melee weapon. Fight a regular zombie and a fat zombie separately. For a LARGE target use the boomer (`mon_boomer`: 92.5 L, HP 40, speed 55, bile). To see the 50% chance, set the attack mode to takedown and do not kill it right away. The zomballoon (`mon_zomballoon`: bash armor 20, gas on death) shows the case where armor stops all damage.
+- Setup: a Guard-role dog, the player fighting alongside with a melee weapon. Fight a regular zombie and a fat zombie separately. For a LARGE target use the zombie moose (`mon_zoose`: 92.5 L, HP 210, speed 140, melee skill 6, bash armor 6). Its HP yields many Takedown attempts, and bash armor 6 absorbs all of Takedown's bash 2, so "knocked down at 0 damage" is checked in the same runs. Set the attack mode to takedown. The boomer (`mon_boomer`: HP 40, bile) is the alternative. The zombie deer (`mon_zeer`, speed 240) outruns the dog, so the low-HP retreat cannot work; it is not used this time.
 - Also check: blowing the existing dog whistle logs `docile on=true` and the dog stops attacking.
 - Measure: the distribution of `outcome` in `special` (knocked, resisted, dodged, immune); `player_melee downed=true` hits on downed targets.
 - Check: when `outcome=dodged` appears, did the game message also show a miss?

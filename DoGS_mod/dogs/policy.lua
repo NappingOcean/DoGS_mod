@@ -59,6 +59,7 @@ end
 ---@field eligible boolean target accepts Takedown
 ---@field downed boolean
 ---@field wounded boolean target already has dogs_ankle_wound
+---@field flies boolean|nil target flies: no ankle to reach, but a Takedown can still knock it down
 ---@field ready table<string, boolean>
 
 ---Takedown chance in percent for a creature size name ("TINY" .. "HUGE").
@@ -73,9 +74,10 @@ end
 function M.choose_attack(ctx)
   local takedown = ctx.ready.dogs_takedown and ctx.eligible and not ctx.downed
   if ctx.mode == "takedown" then return takedown and "dogs_takedown" or nil end
-  if ctx.mode == "ankle" then return ctx.ready.dogs_ankle_tear and "dogs_ankle_tear" or nil end
+  local ankle = ctx.ready.dogs_ankle_tear and not ctx.flies
+  if ctx.mode == "ankle" then return ankle and "dogs_ankle_tear" or nil end
   if takedown then return "dogs_takedown" end
-  if ctx.ready.dogs_ankle_tear and not ctx.wounded then return "dogs_ankle_tear" end
+  if ankle and not ctx.wounded then return "dogs_ankle_tear" end
   return nil
 end
 

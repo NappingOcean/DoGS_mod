@@ -27,7 +27,7 @@ Labels: [design] decision, [source] confirmed in BN source, [runtime E#] confirm
 | Move cost / cooldown | 100 / 8 turns |
 | Knockdown | 2 turns, applied from Lua |
 | Chance by size | tiny/small/medium 100%, large 50%, huge 0%. Size follows the monster's volume ([engine notes](engine-notes.md), Data) |
-| Targets | any enemy that is not huge |
+| Targets | any enemy that is not huge, flying ones included (read as struck and knocked out of the air) |
 
 **Resolution.** [design, 2026-10-05]
 
@@ -50,6 +50,7 @@ Labels: [design] decision, [source] confirmed in BN source, [runtime E#] confirm
 | Move cost / cooldown | 100 / 8 turns |
 | Effects | bleed 20 turns, `dogs_ankle_wound` 60 turns (one BN turn is one second) |
 | `dogs_ankle_wound` | speed bonus -20 (not a 20% reduction), max intensity 1, max 60 turns; a new bite refreshes it |
+| Targets | flying enemies (`flies()`) excluded: there is no ankle to reach |
 
 - [design] A dedicated effect expresses wound-related mobility loss; unrelated slowing effects are not reused.
 - [design, 2026-10-05] It was 10 turns at first. A real bite healing in 10 seconds was implausible and shorter than one Harass cycle (the player dealing with one enemy and regrouping), so it was raised to 60 turns. Not checked in play.
@@ -63,9 +64,9 @@ Set by the attack mode in the menu (`dogs_attack_mode`). Implementation: `choose
 
 | Mode | Choice |
 | --- | --- |
-| auto (default) | Takedown if the target is a Takedown target and standing; otherwise Ankle Tear if the target has no ankle wound; otherwise leave it to the engine's normal bite |
+| auto (default) | Takedown if the target is a Takedown target and standing; otherwise Ankle Tear if the target does not fly and has no ankle wound; otherwise leave it to the engine's normal bite |
 | takedown | Takedown only, when the target is a Takedown target and standing |
-| ankle | Ankle Tear only |
+| ankle | Ankle Tear only (never on flying enemies) |
 
 ## Open questions
 

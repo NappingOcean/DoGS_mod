@@ -52,6 +52,11 @@ function M.run()
   assert(policy.choose_attack(ctx("takedown", false, false, false, both)) == nil)
   assert(policy.choose_attack(ctx("ankle", true, false, true, both)) == "dogs_ankle_tear")
   assert(policy.choose_attack(ctx("auto", true, false, false, { dogs_ankle_tear = true })) == "dogs_ankle_tear")
+  -- Flying targets: Takedown can still knock them down; there is no ankle to reach.
+  local function fly(mode, ready) local c = ctx(mode, true, false, false, ready); c.flies = true; return c end
+  assert(policy.choose_attack(fly("", both)) == "dogs_takedown")
+  assert(policy.choose_attack(fly("", { dogs_ankle_tear = true })) == nil)
+  assert(policy.choose_attack(fly("ankle", both)) == nil)
 
   -- Takedown resistance by size.
   assert(policy.takedown_chance("MEDIUM") == 100 and policy.takedown_chance("LARGE") == 50)

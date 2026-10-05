@@ -45,6 +45,7 @@ function M.choose(dog, target, now)
     eligible = policy.takedown_chance(size_of(target)) > 0,
     downed = target:has_effect(downed),
     wounded = target:has_effect(ankle),
+    flies = target:flies(),
     ready = { dogs_takedown = ready(dog, "dogs_takedown", now), dogs_ankle_tear = ready(dog, "dogs_ankle_tear", now) },
   })
 end

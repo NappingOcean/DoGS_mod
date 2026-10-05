@@ -69,6 +69,7 @@
 | `dogs_threat_turn` | 적을 인식한 마지막 게임 턴(존재 영속성) |
 | `dogs_holding` | 저체력 후퇴 중 대기 기록을 한 번만 남기기 위한 표식 |
 | `dogs_disengage` | 제압 공격 뒤 후속 단계 표식 |
+| `dogs_docile` | 마지막으로 기록한 docile 상태(변화를 한 번만 기록하기 위함) |
 | `dogs_next_<공격 ID>` | 다음 사용 가능 게임 턴 |
 | `dogs_delegate_block` | 이 게임 턴까지 복귀를 엔진에 맡기지 않음 |
 | `dogs_probe_dest`, `dogs_probe_player` | 엔진에 맡긴 복귀 목적지(절대 좌표)와 그때의 플레이어 거리 |
@@ -104,6 +105,7 @@
 | `step` / `step_failed` | 한 칸 이동(종류: retreat, flee, disengage, regroup, intercept)과 위험 점수 전후 |
 | `hold` | 저체력 후퇴 중 대기 시작(대기마다 한 번) |
 | `disengage` | 제압 후속의 이탈 시도 |
+| `docile` | docile 상태가 바뀜(`on=true/false`) |
 | `special` | 공격 ID, 표적, 결과(`outcome`), 실제 피해, 넘어짐·출혈·발목 상처 |
 | `melee` | 개의 일반 공격: 표적 타입, 명중, 공격 뒤 표적 HP |
 | `player_melee` | 플레이어의 근접 공격: 대상(번호), 명중, 대상이 넘어져 있었는지, 대상 HP |

@@ -33,7 +33,6 @@ In order; each step moves on only after its experiment meets the success criteri
 
 ## Open questions
 
-- When and how to fix DoGS ignoring `docile` (the existing whistle's stop-attacking order).
 - Takedown: are 50% for large targets and 2 turns of knockdown right?
 - Ankle Tear: effect stacking and actual application by armor and immunity (not checked in play).
 - Do a Guard distance of 3 and an engage distance of 2 hold in other situations (indoors, crowds)?
@@ -64,5 +63,6 @@ In order; each step moves on only after its experiment meets the success criteri
 | 2026-10-05 | Harass means controlling the next enemy within 7–8 tiles of the player and holding it up so it chases the dog alone and arrives later | User decision |
 | 2026-10-05 | Harass ends both automatically and on recall | User decision |
 | 2026-10-05 | The release command device is a command dog whistle (a new item) | The existing whistle is hardcoded; the experimental menu does not suit release (user decision) |
+| 2026-10-05 | Respect `docile` (the existing whistle's stop-attacking order), keeping only the safety veto | A command in BN proper (user decision) |
 | 2026-10-05 | Raise the ankle wound from 10 to 60 turns | A real bite healing in 10 seconds is implausible and shorter than one Harass cycle (user decision) |
 | 2026-10-05 | "It survives" includes moving out without hesitation when encirclement looms | User decision |

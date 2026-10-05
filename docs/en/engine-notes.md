@@ -21,6 +21,7 @@ BN behavior the implementation relies on, at BN commit `ef0eced` (redhot `2026-1
 ## Pet AI targets and destinations
 
 - [source] A friendly monster's `plan` re-picks the best-rated hostile monster as its target every action ([monmove.cpp:626][plan]).
+- [source] A `docile` friendly monster picks no target in `plan` ([monmove.cpp:516](https://github.com/cataclysmbn/Cataclysm-BN/blob/ef0eceda391d4d291b366e3bf2833b04c7342d72/src/monmove.cpp#L516)). The existing dog whistle toggles this effect.
 - [source] `set_move_target(pos)` only sets a destination. `set_target(creature)` only copies the creature's current position as the destination ([bindings_creature:526][setmove], [:533][settarget]).
 - [runtime E3] After setting a destination and returning false, the engine keeps it only while it has no target (37/37); with a target it replaces it with the target's direction.
 - [runtime E5] The engine targets enemies beyond DoGS's 8-tile perception. "The engine has no target" cannot be known directly from DoGS.

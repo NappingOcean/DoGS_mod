@@ -11,6 +11,7 @@ local log = require("dogs.log")
 local M = {}
 
 local downed = EffectTypeId.new("downed")
+local docile = EffectTypeId.new("docile")
 
 local blockers = {}
 for i, id in ipairs(config.blockers) do blockers[i] = EffectTypeId.new(id) end
@@ -150,6 +151,18 @@ function M.turn(dog)
     if policy.risk(dog:get_pos_ms(), positions) == 0 then return true end -- already clear: hold
     if movement.step(dog, "retreat", positions) then return true end
     return false -- cornered: let the engine fight
+  end
+
+  -- Docile is the stock dog whistle's "follow closely and stop attacking". Respect it: keep only
+  -- the safety veto above and leave the rest to the engine, which picks no target while docile.
+  local is_docile = dog:has_effect(docile)
+  if is_docile ~= (dog:get_value("dogs_docile") == "1") then
+    dog:set_value("dogs_docile", is_docile and "1" or "")
+    log.write("docile", "dog=" .. log.id(dog) .. " on=" .. tostring(is_docile))
+  end
+  if is_docile then
+    dog:set_value("dogs_disengage", "")
+    return false
   end
 
   -- 2. After a control attack: bite while a neighbor is down, break off once it stands.

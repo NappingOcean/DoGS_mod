@@ -5,7 +5,7 @@ assert(MonsterTypeId.new(config.dog_id):is_valid(), "missing monster " .. config
 for _, id in ipairs(config.blockers) do
   assert(EffectTypeId.new(id):is_valid(), "unknown blocker effect " .. id)
 end
-for _, id in ipairs({ "downed", "bleed", "dogs_ankle_wound" }) do
+for _, id in ipairs({ "downed", "bleed", "dogs_ankle_wound", "docile" }) do
   assert(EffectTypeId.new(id):is_valid(), "unknown attack effect " .. id)
 end
 gdebug.log_info("[DoGS] event=finalize result=pass")

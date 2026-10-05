@@ -69,6 +69,7 @@ All are strings, saved and restored; missing keys read as an empty string.
 | `dogs_threat_turn` | Last game turn an enemy was perceived (object permanence) |
 | `dogs_holding` | Marker so a low-HP wait is logged only once |
 | `dogs_disengage` | Marker for the control follow-up |
+| `dogs_docile` | Last logged docile state (so changes are logged once) |
 | `dogs_next_<attack ID>` | Next usable game turn |
 | `dogs_delegate_block` | Do not delegate the return to the engine until this game turn |
 | `dogs_probe_dest`, `dogs_probe_player` | Delegated return destination (absolute) and the player distance at that time |
@@ -104,6 +105,7 @@ Lines tagged `[DoGS]` in `config/debug.log` in the game user directory. Every li
 | `step` / `step_failed` | One-tile step (kind: retreat, flee, disengage, regroup, intercept) and risk score before/after |
 | `hold` | Start of a wait during the low-HP retreat (once per wait) |
 | `disengage` | Break-off attempt in the control follow-up |
+| `docile` | Docile state changed (`on=true/false`) |
 | `special` | Attack ID, target, result (`outcome`), actual damage, downed/bleed/ankle flags |
 | `melee` | The dog's normal attacks: target type, hit, target HP after |
 | `player_melee` | The player's melee swings: target (numbered), hit, whether the target was downed, target HP |

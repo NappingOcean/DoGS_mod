@@ -21,6 +21,7 @@
 ## 펫 AI의 표적과 목적지
 
 - [소스] 우호 몬스터의 `plan`은 매 행동 적대 몬스터 중 평가가 가장 좋은 것을 표적으로 다시 고른다([monmove.cpp:626][plan]).
+- [소스] `docile`인 우호 몬스터는 `plan`에서 표적을 고르지 않는다([monmove.cpp:516](https://github.com/cataclysmbn/Cataclysm-BN/blob/ef0eceda391d4d291b366e3bf2833b04c7342d72/src/monmove.cpp#L516)). 기존 도그 휘슬이 이 효과를 켜고 끈다.
 - [소스] `set_move_target(pos)`는 목적지만 정한다. `set_target(creature)`는 대상의 현재 위치를 목적지로 복사할 뿐이다([bindings_creature:526][setmove], [:533][settarget]).
 - [실행 E3] 목적지를 정하고 false를 돌려주면, 엔진은 표적이 없을 때만 그 목적지를 유지한다(37/37). 표적이 있으면 표적 쪽으로 바꾼다.
 - [실행 E5] 엔진은 DoGS의 8타일 인식보다 먼 표적도 잡는다. "엔진에 표적이 없다"는 DoGS 쪽에서 직접 알 수 없다.

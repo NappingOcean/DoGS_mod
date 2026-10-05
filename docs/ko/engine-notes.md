@@ -46,6 +46,7 @@
 
 ## 인식과 좌표
 
+- [소스] 몬스터가 다른 몬스터를 보는 태도는 `monster::attitude_to`가 정한다([monster.cpp](https://github.com/cataclysmbn/Cataclysm-BN/blob/ef0eceda391d4d291b366e3bf2833b04c7342d72/src/monster.cpp)). 진영표의 미움(hate)이면 적대, 사기가 0 미만이거나 분노가 10 미만이면 중립이다. 그래서 겁 많은 동물(예: 스피디어, 사기 -5·공격성 -99)은 개를 중립으로 보고, DoGS의 적 인식(개와 플레이어 모두에게 적대)에 들지 않는다.
 - [소스] `sees`는 거리, 조명, 지형 투명도로 판정한다. 확인한 경로에는 다른 생물이 시야를 막는 처리가 없다([creature.cpp:455][sees]).
 - [실행 E1] `get_pos_ms`는 리얼리티 버블 좌표라 맵이 이동하면 값이 바뀐다. 한 번의 판단 안에서는 문제가 없지만, 턴을 넘어 저장할 위치는 `abs_pos()`나 `gapi.bub_to_abs`로 절대 좌표를 쓴다([bindings_creature:240][abspos], [bindings_game:497][bub2abs]).
 

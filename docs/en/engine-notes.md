@@ -46,6 +46,7 @@ BN behavior the implementation relies on, at BN commit `ef0eced` (redhot `2026-1
 
 ## Perception and coordinates
 
+- [source] A monster's attitude toward another monster comes from `monster::attitude_to` ([monster.cpp](https://github.com/cataclysmbn/Cataclysm-BN/blob/ef0eceda391d4d291b366e3bf2833b04c7342d72/src/monster.cpp)): faction hate means hostile; morale below 0 or anger below 10 means neutral. Timid animals (e.g. the spideer, morale -5, aggression -99) therefore see the dog as neutral and fall outside DoGS's enemy perception (hostile to both the dog and the player).
 - [source] `sees` checks distance, light and terrain transparency; the checked path has nothing for other creatures blocking sight ([creature.cpp:455][sees]).
 - [runtime E1] `get_pos_ms` is reality-bubble local and changes when the map shifts. That is harmless within one decision, but positions stored across turns use absolute coordinates via `abs_pos()` or `gapi.bub_to_abs` ([bindings_creature:240][abspos], [bindings_game:497][bub2abs]).
 

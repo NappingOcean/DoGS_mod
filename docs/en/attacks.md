@@ -26,7 +26,7 @@ Labels: [design] decision, [source] confirmed in BN source, [runtime E#] confirm
 | Damage | bash 2 |
 | Move cost / cooldown | 100 / 8 turns |
 | Knockdown | 2 turns, applied from Lua |
-| Chance by size | tiny/small/medium 100%, large 50%, huge 0% |
+| Chance by size | tiny/small/medium 100%, large 50%, huge 0%. Size follows the monster's volume ([engine notes](engine-notes.md), Data) |
 | Targets | any enemy that is not huge |
 
 **Resolution.** [design, 2026-10-05]

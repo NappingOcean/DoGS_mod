@@ -59,14 +59,15 @@ BN behavior the implementation relies on, at BN commit `ef0eced` (redhot `2026-1
 
 ## Data
 
+- [source] Monster JSON has no size field. Size is computed at load from `volume`: up to 7.5 L TINY, 46.25 L SMALL, 77.5 L MEDIUM, 483.75 L LARGE, above that HUGE ([monstergenerator.cpp:321](https://github.com/cataclysmbn/Cataclysm-BN/blob/ef0eceda391d4d291b366e3bf2833b04c7342d72/src/monstergenerator.cpp#L321), [:412](https://github.com/cataclysmbn/Cataclysm-BN/blob/ef0eceda391d4d291b366e3bf2833b04c7342d72/src/monstergenerator.cpp#L412)). Effects can add a size bonus ([monster.cpp:4256](https://github.com/cataclysmbn/Cataclysm-BN/blob/ef0eceda391d4d291b366e3bf2833b04c7342d72/src/monster.cpp#L4256)).
 - [source] `heavysnare` and `lightsnare` are referenced in C++ ([monster.cpp:145][snare]) but have no JSON effect definition; listing them in the effect ID check fails it.
 - Monster numbers ([mammal.json:918][mondog], [zed-classic.json:52][zombie], [:312][fat]):
 
 | ID | HP | Speed | Notes |
 | --- | --- | --- | --- |
 | `mon_dog` | 30 | 150 | `HIT_AND_RUN` and others. Labrador mutt |
-| `mon_zombie` | 80 | 70 | Volume 62.5 L, weight 81.5 kg |
-| `mon_zombie_fat` | 95 | 55 | Bash armor 5. Same volume and weight as `mon_zombie` |
+| `mon_zombie` | 80 | 70 | Volume 62.5 L (MEDIUM), weight 81.5 kg |
+| `mon_zombie_fat` | 95 | 55 | Bash armor 5. Same volume and weight as `mon_zombie` (MEDIUM) |
 
 [load]: https://github.com/cataclysmbn/Cataclysm-BN/blob/ef0eceda391d4d291b366e3bf2833b04c7342d72/src/catalua.cpp#L491
 [unload]: https://github.com/cataclysmbn/Cataclysm-BN/blob/ef0eceda391d4d291b366e3bf2833b04c7342d72/src/catalua.cpp#L503

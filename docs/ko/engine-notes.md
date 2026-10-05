@@ -59,14 +59,15 @@
 
 ## 데이터
 
+- [소스] 몬스터 JSON에는 크기 필드가 없다. 크기는 로딩 때 `volume`(부피)에서 계산된다: 7.5L 이하 TINY, 46.25L 이하 SMALL, 77.5L 이하 MEDIUM, 483.75L 이하 LARGE, 그 이상 HUGE([monstergenerator.cpp:321](https://github.com/cataclysmbn/Cataclysm-BN/blob/ef0eceda391d4d291b366e3bf2833b04c7342d72/src/monstergenerator.cpp#L321), [:412](https://github.com/cataclysmbn/Cataclysm-BN/blob/ef0eceda391d4d291b366e3bf2833b04c7342d72/src/monstergenerator.cpp#L412)). 효과의 크기 보너스가 더해질 수 있다([monster.cpp:4256](https://github.com/cataclysmbn/Cataclysm-BN/blob/ef0eceda391d4d291b366e3bf2833b04c7342d72/src/monster.cpp#L4256)).
 - [소스] `heavysnare`, `lightsnare`는 C++에서 참조되지만([monster.cpp:145][snare]) JSON 효과 정의가 없다. 효과 ID 검사에 넣으면 실패한다.
 - 몬스터 수치([mammal.json:918][mondog], [zed-classic.json:52][zombie], [:312][fat]):
 
 | ID | HP | 속도 | 비고 |
 | --- | --- | --- | --- |
 | `mon_dog` | 30 | 150 | `HIT_AND_RUN` 등. Labrador mutt |
-| `mon_zombie` | 80 | 70 | 부피 62.5L, 무게 81.5kg |
-| `mon_zombie_fat` | 95 | 55 | 타격 방어 5. 부피·무게는 `mon_zombie`와 같다 |
+| `mon_zombie` | 80 | 70 | 부피 62.5L(MEDIUM), 무게 81.5kg |
+| `mon_zombie_fat` | 95 | 55 | 타격 방어 5. 부피·무게는 `mon_zombie`와 같다(MEDIUM) |
 
 [load]: https://github.com/cataclysmbn/Cataclysm-BN/blob/ef0eceda391d4d291b366e3bf2833b04c7342d72/src/catalua.cpp#L491
 [unload]: https://github.com/cataclysmbn/Cataclysm-BN/blob/ef0eceda391d4d291b366e3bf2833b04c7342d72/src/catalua.cpp#L503

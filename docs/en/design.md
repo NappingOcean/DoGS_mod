@@ -16,7 +16,7 @@ Implementation: `M.turn` in [`ai.lua`](../../DoGS_mod/dogs/ai.lua).
 
 | Step | Condition | Action | Return |
 | --- | --- | --- | --- |
-| 0 | Other type, untrained, not friendly, restrained/ridden/leashed etc., hallucination | Disable DoGS attacks and leave the action to the engine | false |
+| 0 | Other type, untrained, not friendly, restrained/ridden/leashed etc. (including any movement-impairing effect), hallucination | Disable DoGS attacks and leave the action to the engine | false |
 | 1 | State RETREAT | Safety veto (section 4) | true / false |
 | 1a | `docile` (the existing whistle's stop-attacking order) | With an enemy adjacent, step to a tile out of contact; otherwise leave it to the engine (following) | true / false |
 | 2 | A control attack was just used | While a downed enemy is adjacent, let the engine bite; once it stands, step away (section 5). The Harass role skips the bite and goes to step 4 | false / true |

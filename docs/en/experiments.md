@@ -91,7 +91,7 @@ Roles were implemented after E3 (Guard implemented, Harass planned). The experim
 ### E8 Harass v0 probe (first attempt invalid; rerun planned)
 - Purpose: does Harass v0 actually hold an enemy up, and how long does a zombie chase a dog that keeps its distance?
 - Setup: two regular zombies. The dog in the Harass role. The player fights one with a melee weapon (the player must be engaged for harassing to start) and leaves the other to the dog.
-- Measure: `toward` in `track` (is the target's destination nearer the dog or the player) and how long it lasts, the change in target–player distance, `on_player` (enemies on the player at once), time until `harass_end`, damage taken by the dog.
+- Measure: `chases` in `track` (whom the target is attacking: dog or player) and how long it stays on the dog, `toward` (is the target's destination nearer the dog or the player), the change in target–player distance, `on_player` (enemies on the player at once), time until `harass_end`, damage taken by the dog.
 - Decides: the holding distance (2–3 tiles now), the harass range (8 tiles now), and conditions where harassing does not work.
 - Also check: the docile stop order and the menu Call back.
 - The first attempt ran in the Free role before Harass existed and was invalid (see Results).

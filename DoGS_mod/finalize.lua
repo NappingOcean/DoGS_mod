@@ -8,4 +8,8 @@ end
 for _, id in ipairs({ "downed", "bleed", "dogs_ankle_wound", "docile" }) do
   assert(EffectTypeId.new(id):is_valid(), "unknown attack effect " .. id)
 end
+-- Monster bindings from BN 5442dd4 (#10504); older builds lack them.
+for _, name in ipairs({ "attack_target", "movement_impaired", "is_dead_or_dying" }) do
+  assert(Monster[name] ~= nil, "BN lacks Monster:" .. name .. " (needs 5442dd4 or later)")
+end
 gdebug.log_info("[DoGS] event=finalize result=pass")

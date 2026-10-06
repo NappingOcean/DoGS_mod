@@ -77,7 +77,7 @@ end
 ---@return string outcome for the log
 local function knock_down(target, dodged)
   if dodged then return "dodged" end
-  if target:get_hp() <= 0 then return "killed" end -- the blow itself was fatal (E7: #54)
+  if target:is_dead_or_dying() then return "killed" end -- the blow itself was fatal (E7: #54)
   if target:is_immune_effect(downed) then return "immune" end
   local size = size_of(target)
   if math.random(100) > policy.takedown_chance(size) then return "resisted_" .. size end

@@ -43,7 +43,7 @@ return {
   takedown = { duration = 2, chance = { TINY = 100, SMALL = 100, MEDIUM = 100, LARGE = 50, HUGE = 0 } },
 
   -- Restraints and riding states the engine must handle itself. finalize.lua checks each ID.
-  -- heavysnare/lightsnare are referenced in monster.cpp but have no JSON definition at ef0eced.
+  -- heavysnare/lightsnare have no JSON definition; ai.lua catches them with movement_impaired().
   blockers = { "beartrap", "crushed", "downed", "grabbed", "in_pit", "tied", "webbed", "stunned",
     "riding", "harnessed", "led_by_leash", "pacified" },
 

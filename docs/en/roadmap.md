@@ -23,7 +23,7 @@
 
 In order; each step moves on only after its experiment meets the success criteria.
 
-1. **E8 Harass v0 probe (rerun).** Does the Harass dog hold its target up, and how long does a zombie chase a dog that keeps its distance? Read from `track` ([experiments](experiments.md)).
+1. **E8 Harass v0 probe (rerun).** Does the Harass dog hold its target up, and how long does a zombie chase a dog that keeps its distance? Read from `track`, whose `chases` field shows the zombie's actual target since 8e8aa90 ([experiments](experiments.md)).
 2. **Refine Harass.** Adjust the holding distance, range and finishing from E8 ([Harass role](harass.md)).
 3. **E9 multiple enemies: Guard versus Harass.** With 3–4 zombies approaching, compare how many enemies are on the player at once, and judge whether encirclement avoidance starts early enough (it looked late in E8's first attempt).
 4. **Firing-line avoidance: implement and test.** Remember shot trajectories from `on_shoot` and step off them ([behavior design](design.md) section 7). Decide how many turns to remember and how wide to avoid.
@@ -43,6 +43,8 @@ The docile stop order was checked once in E8's first attempt; check it again in 
 - Leave the Free role's sawtooth (distance 4↔9) as is?
 - Do one-tile steps get stuck among obstacles while enemies are visible (unverified)?
 - Do attack cooldown values persist across save and reload (not observed directly in E4)?
+- Base production training on BN's own `training_level` and `pet_bond_level` (readable since 8e8aa90), or keep DoGS's own `dogs_trained`?
+- Weigh tile danger by enemy melee damage (`melee_dice`, `melee_damage` on the monster type, readable since 8e8aa90) instead of counting enemies equally?
 - A log flag for "the player stands between the dog and the enemy" during the low-HP retreat, and a "set HP to 35%" menu item (add when needed).
 
 ## Decision log
@@ -74,3 +76,4 @@ The docile stop order was checked once in E8's first attempt; check it again in 
 | 2026-10-05 | Flying enemies: Takedown allowed (struck down), Ankle Tear not (no ankle in reach) | User decision |
 | 2026-10-05 | Raise the ankle wound from 10 to 60 turns | A real bite healing in 10 seconds is implausible and shorter than one Harass cycle (user decision) |
 | 2026-10-05 | "It survives" includes moving out without hesitation when encirclement looms | User decision |
+| 2026-10-06 | Use the 8e8aa90 monster bindings: `attack_target` in `track`/`probe_result` logs, `movement_impaired` in the restraint check, `is_dead_or_dying` for Takedown | BN #10504; E8 needs whom the zombie chases ([engine notes](engine-notes.md)) |

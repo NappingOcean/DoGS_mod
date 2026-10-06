@@ -24,7 +24,18 @@
 - [소스] `docile`인 우호 몬스터는 `plan`에서 표적을 고르지 않는다([monmove.cpp:516](https://github.com/cataclysmbn/Cataclysm-BN/blob/ef0eceda391d4d291b366e3bf2833b04c7342d72/src/monmove.cpp#L516)). 기존 도그 휘슬이 이 효과를 켜고 끈다.
 - [소스] `set_move_target(pos)`는 목적지만 정한다. `set_target(creature)`는 대상의 현재 위치를 목적지로 복사할 뿐이다([bindings_creature:526][setmove], [:533][settarget]).
 - [실행 E3] 목적지를 정하고 false를 돌려주면, 엔진은 표적이 없을 때만 그 목적지를 유지한다(37/37). 표적이 있으면 표적 쪽으로 바꾼다.
-- [실행 E5] 엔진은 DoGS의 8타일 인식보다 먼 표적도 잡는다. "엔진에 표적이 없다"는 DoGS 쪽에서 직접 알 수 없다.
+- [실행 E5] 엔진은 DoGS의 8타일 인식보다 먼 표적도 잡는다. "엔진에 표적이 없다"는 DoGS 쪽에서 직접 알 수 없다. 8e8aa90부터 `attack_target()`으로 개가 보는 표적은 알 수 있지만, 냄새·소리로 쫓는 표적은 알 수 없다(다음 절).
+
+## 8e8aa90에서 추가된 몬스터 바인딩
+
+기준은 BN `8e8aa90`(redhot `2026-10-05-2327`)이며 BN #10504로 들어왔다. DoGS는 앞의 네 가지를 쓴다. 앞의 세 가지 중 하나라도 없으면 `finalize.lua`가 로딩을 실패시킨다.
+
+- [소스] `attack_target()`은 몬스터가 배회 중이 아니고, `move_target` 위의 생물이 그 몬스터에게 우호적이지 않으며, 몬스터가 그 생물을 볼 때 그 생물을 돌려준다. 아니면 nil이다([monster.cpp:1776](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/monster.cpp#L1776), [bindings_creature:513](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/catalua_bindings_creature.cpp#L513)). 엔진의 붙잡기 공격도 이것으로 표적을 고른다([monattack.cpp:2936](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/monattack.cpp#L2936)). `lua_ai`는 `plan`보다 먼저 돌므로, 개의 콜백에서 읽으면 각 몬스터의 직전 계획이 나온다. `track`(`chases`)과 `probe_result`(`engine_target`)에 쓴다.
+- [소스] `movement_impaired()`는 하드코딩된 효과 집합으로 채운 캐시를 읽는다: beartrap, crushed, downed, grabbed, heavysnare, in_pit, lightsnare, tied, webbed. JSON으로는 늘릴 수 없다([effect.cpp:1355](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/effect.cpp#L1355), [:1477](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/effect.cpp#L1477)). DoGS는 이것을 구속 검사에 더해, JSON ID가 없어 목록에 넣지 못한 두 덫을 잡는다.
+- [소스] `is_dead_or_dying()`은 `monster::is_dead`를 묶은 것이다. 이미 죽었거나 HP가 0 이하이면 true다. 기존 `is_dead`는 HP만 본다([monster.cpp:4341](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/monster.cpp#L4341), [bindings_creature:524](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/catalua_bindings_creature.cpp#L524)). 넘어뜨리기는 일격에 죽은 표적에 넘어짐을 걸지 않는 데 쓴다.
+- [소스] `can_act()`: 행동력이 남았고 기절·넘어짐·거미줄 상태가 아니다([monster.cpp:1563](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/monster.cpp#L1563)). 아직 쓰지 않는다.
+- [소스] 읽기 전용이며 아직 쓰지 않는 것: `is_fleeing(character)`, `get_grab_strength()`, 멤버 `training_level`과 `pet_bond_level`(BN 자체의 펫 훈련과 유대), 몬스터 종류의 `melee_dice`, `melee_sides`, `melee_damage`, `grab_strength`([bindings_type_defs:48](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/catalua_bindings_type_defs.cpp#L48)). 정식 훈련과 적 위협도 평가의 후보다.
+- [소스] BN #10506은 플레이어와 인접하지 않은 몬스터에서 `grabbed`를 지운다([monster.cpp:3426](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/monster.cpp#L3426)). 개에는 영향이 없다. 몬스터의 붙잡기 공격은 Character만 표적으로 삼는다([monattack.cpp:2936](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/monattack.cpp#L2936)).
 
 ## 특수공격
 

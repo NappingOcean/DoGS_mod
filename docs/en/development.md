@@ -118,10 +118,10 @@ Lines tagged `[DoGS]` in `config/debug.log` in the game user directory. Every li
 | `player_melee` | The player's melee swings: target (numbered), hit, whether the target was downed, target HP |
 | `player_attacked` | Melee attacks on the player: attacker, hit, player HP after (sum of body parts) |
 | `summary` | Every 10 turns for every friendly Labrador mutt: trained, role, state, position, HP, player distance, nearby enemy count and HP sum, player HP, enemies on the player (`on_player`) |
-| `probe_result` | Only when the engine replaced a delegated return destination |
+| `probe_result` | Only when the engine replaced a delegated return destination; `engine_target` is whether the dog's previous plan had a seen target (`attack_target`) |
 | `death` | Deaths of dogs, monsters killed by dogs, and numbered monsters. Killer is a monster, `avatar`, or `none` (bleeding or debug kill) |
 | `harass_target`, `harass_end` | Harass target picked; harassing finished |
-| `track` | Each turn while harassing: target–dog and target–player distance, whom the target's destination is nearer (`toward`), enemies on the player |
+| `track` | Each turn while harassing: target–dog and target–player distance, whom the target's destination is nearer (`toward`), whom it is attacking (`chases`: player, dog, other, none), enemies on the player |
 | `menu` | Menu changes |
 
 ## Menu

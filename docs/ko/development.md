@@ -118,10 +118,10 @@
 | `player_melee` | 플레이어의 근접 공격: 대상(번호), 명중, 대상이 넘어져 있었는지, 대상 HP |
 | `player_attacked` | 플레이어가 받은 근접 공격: 공격자, 명중, 공격 뒤 플레이어 HP(신체 부위 합) |
 | `summary` | 10턴마다 우호적인 Labrador mutt 전부: 훈련, 역할, 상태, 위치, HP, 플레이어 거리, 주변 적 수·HP 합, 플레이어 HP, 플레이어에게 붙은 적 수(`on_player`) |
-| `probe_result` | 엔진에 맡긴 복귀 목적지를 엔진이 바꾼 경우에만 |
+| `probe_result` | 엔진에 맡긴 복귀 목적지를 엔진이 바꾼 경우에만. `engine_target`은 개의 직전 계획에 보이는 표적이 있었는지(`attack_target`) |
 | `death` | 개, 개가 처치한 몬스터, 번호가 붙은 몬스터의 사망. 처치자는 몬스터, `avatar`, `none`(출혈이나 디버그 처치) |
 | `harass_target`, `harass_end` | 견제 표적 선택과 종료 |
-| `track` | 견제 중 턴마다: 표적과 개·플레이어 거리, 표적 목적지가 누구 쪽인지(`toward`), 플레이어에게 붙은 적 수 |
+| `track` | 견제 중 턴마다: 표적과 개·플레이어 거리, 표적 목적지가 누구 쪽인지(`toward`), 표적이 공격하려는 대상(`chases`: player, dog, other, none), 플레이어에게 붙은 적 수 |
 | `menu` | 메뉴 변경 |
 
 ## 메뉴

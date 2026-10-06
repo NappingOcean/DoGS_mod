@@ -22,7 +22,8 @@ local function restrained(dog)
   for _, id in ipairs(blockers) do
     if dog:has_effect(id) then return true end
   end
-  return dog:is_hallucination()
+  -- movement_impaired also covers heavysnare/lightsnare, which have no JSON ID to list.
+  return dog:movement_impaired() or dog:is_hallucination()
 end
 
 ---@param dog Monster
@@ -70,7 +71,7 @@ local function report_probe(dog, now)
   -- The engine has a target DoGS did not count; stop delegating for a while.
   dog:set_value("dogs_delegate_block", tostring(now + config.regroup.block))
   log.write("probe_result", "dog=" .. log.id(dog) .. " set=" .. pending .. " now=" .. now_dest ..
-    " kept=false player_before=" .. dog:get_value("dogs_probe_player") ..
+    " kept=false engine_target=" .. tostring(dog:attack_target() ~= nil) .. " player_before=" .. dog:get_value("dogs_probe_player") ..
     " player_after=" .. policy.distance(dog:get_pos_ms(), gapi.get_avatar():get_pos_ms()))
 end
 
@@ -112,8 +113,22 @@ local function guard(dog, obs, positions, now)
   return true -- by the player: wait
 end
 
+---Whom a monster's last plan targets: "player", "dog", "other", or "none" (wandering, or the
+---target is out of its sight). Lua AI runs before plan, so this is the previous action's choice.
+---@param mon Monster
+---@param dog Monster
+---@return string
+local function chasing(mon, dog)
+  local target = mon:attack_target()
+  if target == nil then return "none" end
+  if target:is_avatar() then return "player" end
+  local a, b = target:get_pos_ms(), dog:get_pos_ms()
+  if a.x == b.x and a.y == b.y and a.z == b.z then return "dog" end
+  return "other"
+end
+
 ---Harass log, once per game turn: whom the held-up enemy is heading for. `toward` compares its
----destination with the dog and the player; `move_target` is only evidence, not its attack target.
+---destination with the dog and the player; `chases` is its attack target.
 ---@param dog Monster
 ---@param target Monster
 ---@param now integer
@@ -127,7 +142,7 @@ local function track(dog, target, now, positions)
   local toward = to_dog < to_player and "dog" or (to_player < to_dog and "player" or "tie")
   log.write("track", "dog=" .. log.id(dog) .. " target=" .. log.id(target) .. " dog_dist=" .. policy.distance(pos, here) ..
     " player_dist=" .. policy.distance(pos, player) .. " toward=" .. toward ..
-    " on_player=" .. policy.adjacent(player, positions))
+    " chases=" .. chasing(target, dog) .. " on_player=" .. policy.adjacent(player, positions))
 end
 
 ---Harass role v0 (docs/en/harass.md): while the player is engaged, hold up the next enemy to

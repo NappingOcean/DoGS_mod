@@ -29,7 +29,7 @@ Labels: [design] decision, [source] confirmed in BN source (`ef0eced`), [runtime
 - **Target:** within 8 tiles of the player, not yet on the player, exposed (at most one other enemy within 2 tiles), closest to the player. Once picked, kept while it qualifies.
 - **Action:** with an attack ready and nothing adjacent, approach the target (within 8 tiles of the player); once adjacent, the control attack fires (decision step 3). Otherwise keep 2–3 tiles from the target (`step kind=kite`), never in contact, never beyond 8 tiles from the player, preferring tiles farther from the player on ties. No biting the downed target after control.
 - **Finish:** automatically after 3 turns with no enemy on the player. "Call back" in the menu stops harassing for 10 turns and returns the dog to guarding (a whistle signal in the release version).
-- **Logs:** `harass_target` (target picked), `harass_end` (finished), `track` (each turn: target–dog and target–player distances, whether the target's destination is nearer the dog or the player, enemies on the player).
+- **Logs:** `harass_target` (target picked), `harass_end` (finished), `track` (each turn: target–dog and target–player distances, whether the target's destination is nearer the dog or the player, whom it is attacking (`chases`, from `attack_target`), enemies on the player).
 
 ## Why this form
 
@@ -51,7 +51,7 @@ Labels: [design] decision, [source] confirmed in BN source (`ef0eced`), [runtime
 ## Open points and risks
 
 - **Finishing.** [design, 2026-10-05] Both are used. Automatic: return after several turns (number undecided) with no enemy on the player. Recall: the player calls the dog back with the command device ([behavior design](design.md) section 7, command device).
-- **Does the zombie keep chasing the dog?** [source] Monsters re-pick their target every action; if the player gets closer to the zombie, it may switch to the player. How long a zombie chases the dog is unverified; E8 checks it with v0's `track` log.
+- **Does the zombie keep chasing the dog?** [source] Monsters re-pick their target every action; if the player gets closer to the zombie, it may switch to the player. How long a zombie chases the dog is unverified; E8 checks it with v0's `track` log, where `chases` reads the zombie's actual target ([engine notes](engine-notes.md), 8e8aa90 bindings).
 - **Distance to keep.** The distance that keeps the dog out of reach yet still chased (e.g. 2–3 tiles) is to be set by experiment.
 - **Movement.** [runtime E3, E5] While enemies are visible, movement is DoGS's one-tile steps. Over short distances this is fine, but cluttered terrain needs checking.
 - **Measures.** The maximum number of enemies on the player at once; turns until the harassed enemy reaches the player.
@@ -63,5 +63,5 @@ Labels: [design] decision, [source] confirmed in BN source (`ef0eced`), [runtime
 - The dog and the player get far apart, with a high risk of being picked off separately.
 - [source] A zombie that loses the dog follows the player's scent back, so taking it far away does not keep it away.
 - Luring by sight can draw every zombie that sees the dog, so separating just one is not guaranteed.
-- Who is pursuing the dog cannot be read from Lua, and long-distance movement while enemies are visible has no pathfinding.
+- Who is pursuing the dog could not be read from Lua at the time (since 8e8aa90 `attack_target` shows a target the pursuer sees), and long-distance movement while enemies are visible has no pathfinding.
 - One enemy per cycle means low throughput, and the player is alone and unguarded meanwhile.

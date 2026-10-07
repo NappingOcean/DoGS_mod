@@ -138,7 +138,7 @@
 
 **근거.**
 
-- [소스] `CAN_FETCH`는 enum과 문자열 변환만 있다([mtype.h:180](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/mtype.h#L180)). 로컬 포크 `e569e75` 전체 검색에서 이 플래그를 읽는 코드나 이 플래그를 단 몬스터 JSON은 없었다(`8e8aa90` 전체 검색은 못 함). 본편이 나중에 구현하면 DoGS 동작과 겹칠 수 있어 쓰지 않는다.
+- [소스] `CAN_FETCH`는 enum과 문자열 변환만 있다([mtype.h:180](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/mtype.h#L180)). `8e8aa90`의 `src`, `data`, `docs`, `tests` 전체 검색에서 이 플래그를 읽는 코드나 이 플래그를 단 몬스터 JSON은 없었다. 본편이 나중에 구현하면 DoGS 동작과 겹칠 수 있어 쓰지 않는다.
 - 그 밖의 엔진 사실은 [엔진 사실](engine-notes.md)의 "펫 가방과 몬스터 소지품"을 참조한다.
 
 **정할 것:** 회수 반경, 개체 값 이름(가칭 `dogs_fetch`, `dogs_fetch_items`), 회수 능력을 주는 방법(훈련과의 관계), 등록 UI(플레이어 소지품을 Lua에서 고르는 방법), 가방 부피를 Lua에서 읽는 방법, 대상이 없거나 가방이 찼을 때의 메시지.

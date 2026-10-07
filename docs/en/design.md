@@ -138,7 +138,7 @@ Numbers and resolution: [control attacks](attacks.md).
 
 **Basis.**
 
-- [source] `CAN_FETCH` exists only as an enum and its string conversion ([mtype.h:180](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/mtype.h#L180)). A full search of the local fork at `e569e75` found no code reading it and no monster JSON using it (`8e8aa90` was not fully searched). If BN implements it later it could collide with DoGS, so DoGS does not use it.
+- [source] `CAN_FETCH` exists only as an enum and its string conversion ([mtype.h:180](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/mtype.h#L180)). A full search of `src`, `data`, `docs` and `tests` at `8e8aa90` found no code reading it and no monster JSON using it. If BN implements it later it could collide with DoGS, so DoGS does not use it.
 - Other engine facts are under "Pet bags and monster inventory" in [engine notes](engine-notes.md).
 
 **To decide:** fetch radius, entity value names (tentatively `dogs_fetch`, `dogs_fetch_items`), how the capability is granted (relation to training), the registration UI (choosing from the player's items in Lua), how to read the bag volume from Lua, and messages for no target or a full bag.

@@ -84,3 +84,4 @@ The docile stop order was checked once in E8's first attempt; check it again in 
 | 2026-10-08 | Store the fetch capability as an entity value, not the monster flag `CAN_FETCH` | An unused stock flag could collide if BN implements it later (user decision) |
 | 2026-10-08 | Only a dog wearing a vanilla pet bag fetches | The bag is the only place the player can take fetched items from with the vanilla menu; it also gives a reason to make a pet bag (user decision) |
 | 2026-10-08 | Fetch targets: up to 3 types chosen from the player's items; with none registered, only a message; no fetching of whatever was shot or thrown | Chasing far projectiles brings too many unknowns (user decision) |
+| 2026-10-08 | Move the reference revision to `31a9589` (redhot `2026-10-07-0423`) | The installed game is this build; no `src` changes since `8e8aa90`. Move again when a BN PR relevant to DoGS lands |

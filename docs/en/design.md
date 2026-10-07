@@ -123,6 +123,26 @@ Numbers and resolution: [control attacks](attacks.md).
 
 **To decide:** the signal list, audible range (the whole map like the existing whistle, or a distance limit), how to obtain it (recipe, spawn locations), and how it relates to production training.
 
+### Fetch (design candidate, not implemented)
+
+[design, 2026-10-08] A trained dog brings back pre-registered items from nearby: items that are recovered and reused, such as arrows and javelins.
+
+- **Command.** Given as a DoGS whistle signal; the whistle comes first.
+- **Capability.** Stored per dog as an entity value (`set_value`). The unused stock monster flag `CAN_FETCH` is not used (reason below).
+- **Bag required.** Only a dog wearing a vanilla pet bag fetches. Fetched items go into the dog's inventory (the bag contents), and the player takes them out with the vanilla "Take items from bag" menu. Items put on a dog without a bag would have no menu to take them out. This also gives the player a reason to make a pet bag.
+- **Registration.** The player picks from items they carry; registration is per item type (itype), per dog, up to 3 types (each arrow type has its own ID). Showing the dog an item to learn fits the principle "only what the dog can perceive".
+- **Command with nothing registered.** The dog picks up nothing; only a message is shown.
+- **No fetching of whatever was shot or thrown.** Projectiles can fly far, and a long trip exposes the dog to too many unknowns.
+- **Capacity.** The engine's item add does not check capacity, so DoGS checks the same limits as the vanilla give-items menu (remaining weight capacity; bag volume minus carried volume).
+- **Safety.** The safety veto (decision step 1) still comes first while fetching.
+
+**Basis.**
+
+- [source] `CAN_FETCH` exists only as an enum and its string conversion ([mtype.h:180](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/mtype.h#L180)). A full search of the local fork at `e569e75` found no code reading it and no monster JSON using it (`8e8aa90` was not fully searched). If BN implements it later it could collide with DoGS, so DoGS does not use it.
+- Other engine facts are under "Pet bags and monster inventory" in [engine notes](engine-notes.md).
+
+**To decide:** fetch radius, entity value names (tentatively `dogs_fetch`, `dogs_fetch_items`), how the capability is granted (relation to training), the registration UI (choosing from the player's items in Lua), how to read the bag volume from Lua, and messages for no target or a full bag.
+
 ### Harass role
 
 The flow, the difference from Guard, open points, and the shelved "cut enemies out of a group" idea are in [Harass role](harass.md).

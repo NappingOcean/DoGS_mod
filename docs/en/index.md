@@ -4,11 +4,11 @@
 
 **DoGS — Dogs of Good Sense** turns dogs in Cataclysm: Bright Nights (BN) into tactical companions that judge the situation. It does not make dogs stronger; it adds judgment about position, risk and when to step in.
 
-## Status (2026-10-05)
+## Status (2026-10-07)
 
 - Implementation: [`DoGS_mod/`](../../DoGS_mod/), for one dog type, the Labrador mutt (`mon_dog`). It runs as a judgment layer over BN's stock pet AI.
-- Behavior: a safety veto (encirclement avoidance, falling back behind the player at low HP), Takedown and Ankle Tear control attacks, and roles (Guard by default, Free selectable). Training and role are set per dog in the action menu.
-- Verification: experiments E0–E6 are done. The new Takedown resolution (applied from Lua, resisted by size) has not been checked in play yet.
+- Behavior: a safety veto (encirclement avoidance, falling back behind the player at low HP), Takedown and Ankle Tear control attacks, and roles (Guard by default; Free and Harass selectable, Harass at v0). Training and role are set per dog in the action menu.
+- Verification: experiments E0–E7 are done. E7 largely confirmed the new Takedown resolution (applied from Lua, resisted by size); miss detection is still unverified. Harass v0 has not been checked in play yet (E8 rerun planned).
 - Next steps: [roadmap](roadmap.md).
 
 ## Reading order for a new session
@@ -27,7 +27,7 @@
 | [philosophy.md](philosophy.md) | Goals, design principles, trained-dog behavior |
 | [design.md](design.md) | Decision order, states and transitions, safety veto, roles, planned behavior, known limits |
 | [attacks.md](attacks.md) | Intent, numbers and resolution of Takedown and Ankle Tear |
-| [harass.md](harass.md) | The Harass role: delaying the next enemy (not implemented); difference from Guard, open points, shelved idea |
+| [harass.md](harass.md) | The Harass role: delaying the next enemy (v0 implemented, not yet checked in play); difference from Guard, open points, shelved idea |
 | [engine-notes.md](engine-notes.md) | BN behavior the implementation relies on, with source locations and runtime status |
 | [development.md](development.md) | Code layout, coding rules, per-entity values, configuration, logging, install and check, experiment procedure |
 | [experiments.md](experiments.md) | Experiment list, procedures and results |

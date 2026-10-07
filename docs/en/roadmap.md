@@ -2,11 +2,11 @@
 
 [한국어](../ko/roadmap.md) · [Contents](index.md)
 
-## Status (2026-10-05)
+## Status (2026-10-08)
 
 | Area | Status |
 | --- | --- |
-| Judgment layer over the engine's pet AI | implemented, [runtime E0–E6] |
+| Judgment layer over the engine's pet AI | implemented, [runtime E0–E7] |
 | Safety veto: encirclement avoidance, low-HP retreat behind the player, object permanence | implemented, [runtime E2, E3, E5] |
 | Return (REGROUP) and engine delegation | implemented, [runtime E3, E5] |
 | Control attacks and follow-up (knock down → bite → break off) | implemented, [runtime E2, E6] |
@@ -17,6 +17,7 @@
 | Firing-line avoidance | decided (approach 2), not implemented |
 | Role: Harass (delaying the next enemy) | v0 implemented, not checked in play |
 | Command device (DoGS whistle) | decided, not implemented |
+| Fetch (bring back registered items) | design candidate, not implemented |
 | Production training, other dog types, hostile NPCs | undecided |
 
 ## Next steps
@@ -28,7 +29,8 @@ In order; each step moves on only after its experiment meets the success criteri
 3. **E9 multiple enemies: Guard versus Harass.** With 3–4 zombies approaching, compare how many enemies are on the player at once, and judge whether encirclement avoidance starts early enough (it looked late in E8's first attempt).
 4. **Firing-line avoidance: implement and test.** Remember shot trajectories from `on_shoot` and step off them ([behavior design](design.md) section 7). Decide how many turns to remember and how wide to avoid.
 5. **Command device (DoGS whistle) and production training.** Build the command whistle that replaces the experimental menu, and a training method ([behavior design](design.md) section 7).
-6. **Wider coverage.** Other dog types, hostile NPC perception, compatibility checks with other mods.
+6. **Fetch.** On a whistle command, bring back registered items into the bag ([behavior design](design.md) section 7).
+7. **Wider coverage.** Other dog types, hostile NPC perception, compatibility checks with other mods.
 
 The docile stop order was checked once in E8's first attempt; check it again in E8 and E9 runs.
 
@@ -45,6 +47,7 @@ The docile stop order was checked once in E8's first attempt; check it again in 
 - Do attack cooldown values persist across save and reload (not observed directly in E4)?
 - Base production training on BN's own `training_level` and `pet_bond_level` (readable since 8e8aa90), or keep DoGS's own `dogs_trained`?
 - Weigh tile danger by enemy melee damage (`melee_dice`, `melee_damage` on the monster type, readable since 8e8aa90) instead of counting enemies equally?
+- Fetch: radius, how the capability is granted (relation to training), the registration UI, reading the bag volume from Lua.
 - A log flag for "the player stands between the dog and the enemy" during the low-HP retreat, and a "set HP to 35%" menu item (add when needed).
 
 ## Decision log
@@ -77,3 +80,7 @@ The docile stop order was checked once in E8's first attempt; check it again in 
 | 2026-10-05 | Raise the ankle wound from 10 to 60 turns | A real bite healing in 10 seconds is implausible and shorter than one Harass cycle (user decision) |
 | 2026-10-05 | "It survives" includes moving out without hesitation when encirclement looms | User decision |
 | 2026-10-06 | Use the 8e8aa90 monster bindings: `attack_target` in `track`/`probe_result` logs, `movement_impaired` in the restraint check, `is_dead_or_dying` for Takedown | BN #10504; E8 needs whom the zombie chases ([engine notes](engine-notes.md)) |
+| 2026-10-08 | Keep Fetch as a design candidate: on a whistle command, bring back registered items from nearby | Trained-dog behavior, practical for bow and javelin users (user decision) |
+| 2026-10-08 | Store the fetch capability as an entity value, not the monster flag `CAN_FETCH` | An unused stock flag could collide if BN implements it later (user decision) |
+| 2026-10-08 | Only a dog wearing a vanilla pet bag fetches | The bag is the only place the player can take fetched items from with the vanilla menu; it also gives a reason to make a pet bag (user decision) |
+| 2026-10-08 | Fetch targets: up to 3 types chosen from the player's items; with none registered, only a message; no fetching of whatever was shot or thrown | Chasing far projectiles brings too many unknowns (user decision) |

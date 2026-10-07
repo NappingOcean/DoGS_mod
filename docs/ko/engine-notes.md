@@ -69,6 +69,18 @@
 - [소스] 살 재질 몬스터의 자연 회복은 시간당 HP 0.25, 배부르면 두 배다([monster.cpp:3607][regen]).
 - [소스] `add_effect(효과, 지속, [부위], [강도])`, `is_immune_effect`, `get_size()`(`MonsterSize`: TINY~HUGE)가 Lua에 있다([bindings_creature:289][addeffect], [:365][getsize]).
 
+## 펫 가방과 몬스터 소지품
+
+기준 `8e8aa90`. 회수 설계([행동 설계](design.md) 7절)가 기댄다.
+
+- [소스] 기계 탈것을 뺀 펫에는 저장 공간이 있는 방어구를 가방으로 달 수 있다. 일반 배낭도 된다([monexamine.cpp:1171](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/monexamine.cpp#L1171)). 가방은 `storage_item`에 들고 `has_bag` 효과가 붙는다([monster.cpp:1727](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/monster.cpp#L1727)).
+- [소스] 가방에 넣은 아이템은 가방 아이템 안이 아니라 몬스터 소지품 `inv`에 들어간다. "Take items from bag" 메뉴는 `has_bag`이고 `inv`가 비어 있지 않을 때만 나온다([monexamine.cpp:489](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/monexamine.cpp#L489), [:1261](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/monexamine.cpp#L1261)).
+- [소스] 바닐라의 넣기 메뉴는 `weight_capacity − 지닌 무게`와 `가방 storage − 지닌 부피`로 용량을 검사한다([monexamine.cpp:1220](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/monexamine.cpp#L1220)). `monster::add_item`은 검사하지 않는다([monster.cpp:4686](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/monster.cpp#L4686)).
+- [소스] `inv`는 저장 파일에 남고, 몬스터가 죽으면 그 자리에 떨어진다. 가방을 떼면 내용물이 플레이어 칸에 쏟아진다([monster.cpp:3736](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/monster.cpp#L3736), [monexamine.cpp:1195](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/monexamine.cpp#L1195)).
+- [소스] Lua 바인딩: 몬스터 `get_items`, `add_detached_item`, `remove_item`, `drop_items`, `get_storage_item`([bindings_creature:638](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/catalua_bindings_creature.cpp#L638), [:536](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/catalua_bindings_creature.cpp#L536)), `get_weight_capacity`([:423](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/catalua_bindings_creature.cpp#L423)). 맵 `get_items_at`, `get_items_in_radius`, `detach_item_at`, `add_item`([bindings_map:441](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/catalua_bindings_map.cpp#L441)). 아이템 `weight`, `volume`.
+- [소스] 몬스터 플래그 `CAN_FETCH`는 enum과 문자열 변환만 있고 쓰는 곳이 없다([mtype.h:180](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/mtype.h#L180); 사용처 검색은 로컬 포크 `e569e75` 기준).
+- 미확인: 가방 아이템의 부피(`storage`)를 Lua에서 읽는 경로, 플레이어 소지품에서 아이템을 고르는 Lua UI.
+
 ## 데이터
 
 - [소스] 몬스터 JSON에는 크기 필드가 없다. 크기는 로딩 때 `volume`(부피)에서 계산된다: 7.5L 이하 TINY, 46.25L 이하 SMALL, 77.5L 이하 MEDIUM, 483.75L 이하 LARGE, 그 이상 HUGE([monstergenerator.cpp:321](https://github.com/cataclysmbn/Cataclysm-BN/blob/ef0eceda391d4d291b366e3bf2833b04c7342d72/src/monstergenerator.cpp#L321), [:412](https://github.com/cataclysmbn/Cataclysm-BN/blob/ef0eceda391d4d291b366e3bf2833b04c7342d72/src/monstergenerator.cpp#L412)). 효과의 크기 보너스가 더해질 수 있다([monster.cpp:4256](https://github.com/cataclysmbn/Cataclysm-BN/blob/ef0eceda391d4d291b366e3bf2833b04c7342d72/src/monster.cpp#L4256)).

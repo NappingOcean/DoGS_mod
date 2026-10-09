@@ -121,7 +121,27 @@ Numbers and resolution: [control attacks](attacks.md).
 - [design, 2026-10-05] DoGS respects and completes `docile`. While docile it keeps the safety veto (step 1); with an enemy adjacent it steps out of contact, then leaves the rest to the engine (decision step 1a). With nowhere to step, it leaves the engine to defend itself.
 - [runtime E7] The engine picks no new target for a docile dog but keeps biting an enemy already adjacent (19 normal attacks across two windows). So a trained dog completes the stop order by breaking contact first. This behavior is not checked in play.
 
-**To decide:** the signal list, audible range (the whole map like the existing whistle, or a distance limit), how to obtain it (recipe, spawn locations), and how it relates to production training.
+**To decide:** the signal list, audible range (the whole map like the existing whistle, or a distance limit), how to obtain it (recipe, spawn locations), and which signals each training level obeys.
+
+### Acquisition and training (decided, not implemented)
+
+[design, 2026-10-09] A dog becomes a DoGS dog the way BN makes a pet. Taming (dog food), bonding and training stay as in BN, and so do BN's training stat gains (the 2026-10-09 principles in [philosophy](philosophy.md)). DoGS reads BN's `training_level` and opens judgment capabilities at fixed levels.
+
+| `training_level` | Capabilities opened |
+| --- | --- |
+| 0 | None. Stock pet AI (step 0 of the decision order) |
+| 1 | Guard and Free roles, safety veto (encirclement avoidance, low-HP retreat) |
+| 2 | Control attacks (Takedown, Ankle Tear) and follow-up |
+| 3 | Harass role, Fetch |
+| 4–5 | No new capability; BN stat gains only |
+
+- No fraction of the max level is used. Breed differences become differences in judgment. Beagles, Chihuahuas and dachshunds (max 2) learn up to control attacks; Harass is for breeds that reach level 3. A dog whose stats cannot back a judgment is not given that judgment.
+- Levels 4–5 (boxer, pit bull, rottweiler; shepherd, wolf) only raise stats.
+- Max levels and stats per breed are in [engine notes](engine-notes.md), "Pet training and breeds".
+- BN training is read-only from Lua. No hook fires when training finishes, so DoGS reads the level each turn.
+- Fetch also needs a vanilla pet bag in addition to level 3 (see Fetch below).
+
+**To decide:** whether starting-profession dogs begin trained, what happens when the handler changes or the dog is neglected, whether to use the bond (`pet_bond_level`) as a basis for judgment, and when to retire the experimental `dogs_trained`.
 
 ### Fetch (design candidate, not implemented)
 
@@ -141,7 +161,7 @@ Numbers and resolution: [control attacks](attacks.md).
 - [source] `CAN_FETCH` exists only as an enum and its string conversion ([mtype.h:180](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/mtype.h#L180)). A full search of `src`, `data`, `docs` and `tests` at `8e8aa90` found no code reading it and no monster JSON using it. If BN implements it later it could collide with DoGS, so DoGS does not use it.
 - Other engine facts are under "Pet bags and monster inventory" in [engine notes](engine-notes.md).
 
-**To decide:** fetch radius, entity value names (tentatively `dogs_fetch`, `dogs_fetch_items`), how the capability is granted (relation to training), the registration UI (choosing from the player's items in Lua), how to read the bag volume from Lua, and messages for no target or a full bag.
+**To decide:** fetch radius, entity value names (tentatively `dogs_fetch`, `dogs_fetch_items`), the registration UI (choosing from the player's items in Lua), how to read the bag volume from Lua, and messages for no target or a full bag.
 
 ### Harass role
 

@@ -18,7 +18,8 @@
 | Role: Harass (delaying the next enemy) | v0 implemented, not checked in play |
 | Command device (DoGS whistle) | decided, not implemented |
 | Fetch (bring back registered items) | design candidate, not implemented |
-| Production training, other dog types, hostile NPCs | undecided |
+| Acquisition and training: capabilities open at fixed BN training levels | decided, not implemented |
+| Other dog types, hostile NPCs | undecided |
 
 ## Next steps
 
@@ -28,7 +29,7 @@ In order; each step moves on only after its experiment meets the success criteri
 2. **Refine Harass.** Adjust the holding distance, range and finishing from E8 ([Harass role](harass.md)).
 3. **E9 multiple enemies: Guard versus Harass.** With 3–4 zombies approaching, compare how many enemies are on the player at once, and judge whether encirclement avoidance starts early enough (it looked late in E8's first attempt).
 4. **Firing-line avoidance: implement and test.** Remember shot trajectories from `on_shoot` and step off them ([behavior design](design.md) section 7). Decide how many turns to remember and how wide to avoid.
-5. **Command device (DoGS whistle) and production training.** Build the command whistle that replaces the experimental menu, and a training method ([behavior design](design.md) section 7).
+5. **Command device (DoGS whistle) and acquisition/training.** Build the command whistle that replaces the experimental menu, and open capabilities by BN's `training_level` instead of `dogs_trained` ([behavior design](design.md) section 7).
 6. **Fetch.** On a whistle command, bring back registered items into the bag ([behavior design](design.md) section 7).
 7. **Wider coverage.** Other dog types, hostile NPC perception, compatibility checks with other mods.
 
@@ -45,7 +46,7 @@ The docile stop order was checked once in E8's first attempt; check it again in 
 - Leave the Free role's sawtooth (distance 4↔9) as is?
 - Do one-tile steps get stuck among obstacles while enemies are visible (unverified)?
 - Do attack cooldown values persist across save and reload (not observed directly in E4)?
-- Base production training on BN's own `training_level` and `pet_bond_level` (readable since 8e8aa90), or keep DoGS's own `dogs_trained`?
+- Acquisition and training: whether starting-profession dogs (e.g. the K9 German shepherd) begin trained, what happens when the handler changes or the dog is neglected, and whether to use the bond (`pet_bond_level`) as a basis for judgment ([behavior design](design.md) section 7).
 - Weigh tile danger by enemy melee damage (`melee_dice`, `melee_damage` on the monster type, readable since 8e8aa90) instead of counting enemies equally?
 - Fetch: radius, how the capability is granted (relation to training), the registration UI, reading the bag volume from Lua.
 - A log flag for "the player stands between the dog and the enemy" during the low-HP retreat, and a "set HP to 35%" menu item (add when needed).
@@ -85,3 +86,7 @@ The docile stop order was checked once in E8's first attempt; check it again in 
 | 2026-10-08 | Only a dog wearing a vanilla pet bag fetches | The bag is the only place the player can take fetched items from with the vanilla menu; it also gives a reason to make a pet bag (user decision) |
 | 2026-10-08 | Fetch targets: up to 3 types chosen from the player's items; with none registered, only a message; no fetching of whatever was shot or thrown | Chasing far projectiles brings too many unknowns (user decision) |
 | 2026-10-08 | Move the reference revision to `31a9589` (redhot `2026-10-07-0423`) | The installed game is this build; no `src` changes since `8e8aa90`. Move again when a BN PR relevant to DoGS lands |
+| 2026-10-09 | Move the reference revision to `a27f19d` (redhot `2026-10-09-0454`) | The installed experimental build is this one |
+| 2026-10-09 | Design how a dog becomes a DoGS dog (taming, bonding, training), not only how it behaves | User decision |
+| 2026-10-09 | DoGS capabilities open at fixed BN `training_level` values (1: Guard, Free and safety veto; 2: control attacks; 3: Harass and Fetch), not at a fraction of the max level | Breed differences become differences in judgment. Small breeds (max 2) never take Harass, so stats never fail to back the judgment (user decision) |
+| 2026-10-09 | Keep BN's per-level training stat gains; DoGS does not override `pet_training` | BN intends them and DoGS has no right to revert them. Judgment-first forbids covering poor judgment with stats, not stat gains; untrained dogs die to the stat gap before judgment matters (user decision) |

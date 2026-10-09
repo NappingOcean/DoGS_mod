@@ -5,7 +5,7 @@ Read [AGENT/research-rules.md](AGENT/research-rules.md) before investigating BN 
 For the current state, design, roadmap and experiment log, start at [docs/en/index.md](docs/en/index.md) (Korean: [docs/ko/index.md](docs/ko/index.md)). The mod lives in `DoGS_mod/`.
 
 - Target Cataclysm: Bright Nights and identify the source revision used for verification.
-- Current reference target: `31a958998ac2bb53aca592e06eb4010d9dc1746a`, matching redhot build `2026-10-07-0423`. Keep reference checkouts pinned to the installed game revision; older audit documents retain their stated historical revisions.
+- Current reference target: `a27f19d399be26836b45462f4784079f54eca704`, matching redhot build `2026-10-09-0454`. Keep reference checkouts pinned to the installed game revision; older audit documents retain their stated historical revisions.
 - Resolve unclear constants and IDs through their JSON definitions, inheritance, and loaders before assigning meaning.
 - Distinguish design decisions, source-confirmed behavior, and runtime-tested behavior.
 - Keep English and Korean documentation aligned.

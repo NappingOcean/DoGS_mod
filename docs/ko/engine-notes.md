@@ -34,7 +34,7 @@
 - [소스] `movement_impaired()`는 하드코딩된 효과 집합으로 채운 캐시를 읽는다: beartrap, crushed, downed, grabbed, heavysnare, in_pit, lightsnare, tied, webbed. JSON으로는 늘릴 수 없다([effect.cpp:1355](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/effect.cpp#L1355), [:1477](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/effect.cpp#L1477)). DoGS는 이것을 구속 검사에 더해, JSON ID가 없어 목록에 넣지 못한 두 덫을 잡는다.
 - [소스] `is_dead_or_dying()`은 `monster::is_dead`를 묶은 것이다. 이미 죽었거나 HP가 0 이하이면 true다. 기존 `is_dead`는 HP만 본다([monster.cpp:4341](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/monster.cpp#L4341), [bindings_creature:524](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/catalua_bindings_creature.cpp#L524)). 넘어뜨리기는 일격에 죽은 표적에 넘어짐을 걸지 않는 데 쓴다.
 - [소스] `can_act()`: 행동력이 남았고 기절·넘어짐·거미줄 상태가 아니다([monster.cpp:1563](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/monster.cpp#L1563)). 아직 쓰지 않는다.
-- [소스] 읽기 전용이며 아직 쓰지 않는 것: `is_fleeing(character)`, `get_grab_strength()`, 멤버 `training_level`과 `pet_bond_level`(BN 자체의 펫 훈련과 유대), 몬스터 종류의 `melee_dice`, `melee_sides`, `melee_damage`, `grab_strength`([bindings_type_defs:48](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/catalua_bindings_type_defs.cpp#L48)). 정식 훈련과 적 위협도 평가의 후보다.
+- [소스] 읽기 전용이며 아직 쓰지 않는 것: `is_fleeing(character)`, `get_grab_strength()`, 멤버 `training_level`과 `pet_bond_level`(BN 자체의 펫 훈련과 유대), 몬스터 종류의 `melee_dice`, `melee_sides`, `melee_damage`, `grab_strength`([bindings_type_defs:48](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/catalua_bindings_type_defs.cpp#L48)). `training_level`은 획득과 훈련 설계([행동 설계](design.md) 7절)가 쓴다. 나머지는 적 위협도 평가의 후보다.
 - [소스] BN #10506은 플레이어와 인접하지 않은 몬스터에서 `grabbed`를 지운다([monster.cpp:3426](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/monster.cpp#L3426)). 개에는 영향이 없다. 몬스터의 붙잡기 공격은 Character만 표적으로 삼는다([monattack.cpp:2936](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/monattack.cpp#L2936)).
 
 ## 특수공격
@@ -80,6 +80,40 @@
 - [소스] Lua 바인딩: 몬스터 `get_items`, `add_detached_item`, `remove_item`, `drop_items`, `get_storage_item`([bindings_creature:638](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/catalua_bindings_creature.cpp#L638), [:536](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/catalua_bindings_creature.cpp#L536)), `get_weight_capacity`([:423](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/catalua_bindings_creature.cpp#L423)). 맵 `get_items_at`, `get_items_in_radius`, `detach_item_at`, `add_item`([bindings_map:441](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/catalua_bindings_map.cpp#L441)). 아이템 `weight`, `volume`.
 - [소스] 몬스터 플래그 `CAN_FETCH`는 enum과 문자열 변환만 있고 쓰는 곳이 없다([mtype.h:180](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/mtype.h#L180); 사용처는 `8e8aa90`의 `src`, `data`, `docs`, `tests` 전체 검색).
 - 미확인: 가방 아이템의 부피(`storage`)를 Lua에서 읽는 경로, 플레이어 소지품에서 아이템을 고르는 Lua UI.
+
+## 펫 훈련과 견종
+
+기준 `a27f19d`. 획득과 훈련 설계([행동 설계](design.md) 7절)가 기댄다.
+
+- [소스] 훈련할 수 있는 몬스터는 JSON에 `pet_training`이 있다. 최대 단계와 단계별 배율이 여기서 정해진다([monstergenerator.cpp:880](https://github.com/cataclysmbn/Cataclysm-BN/blob/a27f19d399be26836b45462f4784079f54eca704/src/monstergenerator.cpp#L880)).
+- [소스] 펫 메뉴의 Train은 생존 기술이 `min_skill` 이상이고 개가 `well_fed`일 때 열리는 60분 활동이다([monexamine.cpp:511](https://github.com/cataclysmbn/Cataclysm-BN/blob/a27f19d399be26836b45462f4784079f54eca704/src/monexamine.cpp#L511)). 끝나면 생존 기술 × 10%(유대 완성 시 2배) 확률로 단계가 하나 오른다([activity_handlers.cpp:4441](https://github.com/cataclysmbn/Cataclysm-BN/blob/a27f19d399be26836b45462f4784079f54eca704/src/activity_handlers.cpp#L4441)).
+- [소스] 유대 `pet_bond_level`은 0~10이다. 먹이기, 놀아 주기, 훈련으로 오르며, 한 번 오른 뒤 8시간은 잘 오르지 않는다. 10이면 유대가 완성된다([monster.cpp:4227](https://github.com/cataclysmbn/Cataclysm-BN/blob/a27f19d399be26836b45462f4784079f54eca704/src/monster.cpp#L4227)).
+- [소스] 배율은 단계마다 HP 최대치, 명중 기술, 회피 기술에 곱해진다([monster.cpp:3026](https://github.com/cataclysmbn/Cataclysm-BN/blob/a27f19d399be26836b45462f4784079f54eca704/src/monster.cpp#L3026), [:4514](https://github.com/cataclysmbn/Cataclysm-BN/blob/a27f19d399be26836b45462f4784079f54eca704/src/monster.cpp#L4514)). 근접 피해와 속도는 바뀌지 않는다. `melee_mult`도 명중 기술에만 곱해진다.
+- [소스] 강아지가 자라도 훈련 단계와 유대는 유지된다([monster.cpp:545](https://github.com/cataclysmbn/Cataclysm-BN/blob/a27f19d399be26836b45462f4784079f54eca704/src/monster.cpp#L545)). 실행 미확인.
+
+견종별 훈련 단계와 최대 단계에서의 스탯이다(`data/json/monsters/mammal.json`, `mutant_animal.json`, 상속을 풀어 계산). 화살표는 기본 → 최대 단계다. 명중·회피 기술은 엔진이 쓰는 실수 값이고, HP 최대치는 정수로 내린다.
+
+| ID | 이름 | 최대 단계 | HP 최대치 | 명중 기술 | 회피 기술 | 근접 피해 | 속도 | 생존 기술 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `mon_dog_beagle` | 비글 | 2 | 13 → 15 | 2 → 2.42 | 3 → 3.97 | 1d1+cut 2 | 135 | 3 |
+| `mon_dog_chihuahua` | 치와와 | 2 | 6 → 6 | 3 → 3.63 | 3 → 3.97 | 2d2+cut 2 | 135 | 3 |
+| `mon_dog_dachshund` | 닥스훈트 | 2 | 10 → 12 | 3 → 3.63 | 3 → 3.97 | 2d2+cut 3 | 135 | 3 |
+| `mon_dog` | Labrador mutt | 3 | 30 → 51 | 6 → 9.13 | 3 → 4.56 | 2d3+cut 3 | 150 | 3 |
+| `mon_dog_pup` | Labrador 강아지 | 3 | 8 → 13 | 2 → 3.04 | 1 → 1.52 | 1d1+cut 1 | 98 | 3 |
+| `mon_dog_bcollie` | 보더 콜리 | 3 | 19 → 25 | 6 → 7.99 | 4 → 7.81 | 2d3+cut 4 | 200 | 3 |
+| `mon_dog_auscattle` | 캐틀 독 | 3 | 20 → 30 | 4 → 6.08 | 4 → 6.91 | 2d2+cut 6 | 200 | 3 |
+| `mon_dog_bull` | 불독 | 3 | 47 → 91 | 4 → 6.91 | 3 → 3.99 | 2d2+cut 6 | 135 | 3 |
+| `mon_dog_gpyrenees` | 그레이트 피레니즈 | 3 | 40 → 78 | 6 → 9.13 | 2 → 2.66 | 1d1+cut 5 | 100 | 3 |
+| `mon_dog_mutant_mongrel` | 잡종견(변이) | 3 | 30 → 51 | 6 → 9.13 | 3 → 4.56 | 2d3+cut 3 | 150 | 3 |
+| `mon_coyote` | 코요테 | 3 | 22 → 33 | 6 → 9.13 | 3 → 5.18 | 2d3+cut 2 | 155 | 3 |
+| `mon_dog_boxer` | 복서 마스티프 | 4 | 29 → 60 | 4 → 9.77 | 3 → 5.25 | 2d2+cut 4 | 150 | 3 |
+| `mon_dog_pitbullmix` | 핏불 믹스 | 4 | 27 → 55 | 4 → 9.77 | 3 → 5.25 | 2d2+cut 5 | 135 | 3 |
+| `mon_dog_rottweiler` | 로트와일러 | 4 | 42 → 102 | 4 → 8.29 | 3 → 5.25 | 2d2+cut 6 | 135 | 3 |
+| `mon_dog_gshepherd` | 저먼 셰퍼드 | 5 | 36 → 89 | 6 → 14.93 | 3 → 7.46 | 2d3+cut 6 | 150 | 3 |
+| `mon_wolf` | 늑대 | 5 | 40 → 99 | 7 → 17.42 | 4 → 9.95 | 2d3+cut 4 | 165 | 5 |
+
+- [소스] 훈련할 수 없는 것: Labrador를 뺀 모든 강아지(자란 뒤에는 훈련할 수 있다), `mon_coyote_wolf`, 여우, 좀비 개, 네더 개.
+- [소스] `mon_dog`와 `mon_dog_boxer`를 뺀 견종은 `flags`를 새로 정의하는데(물려받지 않고 대체된다, [monstergenerator.cpp:1080](https://github.com/cataclysmbn/Cataclysm-BN/blob/a27f19d399be26836b45462f4784079f54eca704/src/monstergenerator.cpp#L1080)) 그 안에 `DOG_WHISTLE`이 없다. 본편 휘슬에 반응하지 않을 것으로 보인다. 실행 미확인.
 
 ## 데이터
 

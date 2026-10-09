@@ -34,7 +34,7 @@ Source at BN `8e8aa90` (redhot `2026-10-05-2327`), added by BN #10504. DoGS uses
 - [source] `movement_impaired()` reads the effect cache filled from a hardcoded set: beartrap, crushed, downed, grabbed, heavysnare, in_pit, lightsnare, tied, webbed. JSON cannot add to it ([effect.cpp:1355](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/effect.cpp#L1355), [:1477](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/effect.cpp#L1477)). DoGS adds it to the restraint check to cover the two snares, which have no JSON ID to list.
 - [source] `is_dead_or_dying()` binds `monster::is_dead`: already dead, or HP at 0 or below. The existing `is_dead` checks only HP ([monster.cpp:4341](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/monster.cpp#L4341), [bindings_creature:524](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/catalua_bindings_creature.cpp#L524)). Takedown uses it to skip the knockdown on a target the blow killed.
 - [source] `can_act()`: moves left and not stunned, downed or webbed ([monster.cpp:1563](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/monster.cpp#L1563)). Not used yet.
-- [source] Read-only, not used yet: `is_fleeing(character)`, `get_grab_strength()`; members `training_level` and `pet_bond_level` (BN's own pet training and bond); and on the monster type `melee_dice`, `melee_sides`, `melee_damage`, `grab_strength` ([bindings_type_defs:48](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/catalua_bindings_type_defs.cpp#L48)). Candidates for production training and for weighing enemy threat.
+- [source] Read-only, not used yet: `is_fleeing(character)`, `get_grab_strength()`; members `training_level` and `pet_bond_level` (BN's own pet training and bond); and on the monster type `melee_dice`, `melee_sides`, `melee_damage`, `grab_strength` ([bindings_type_defs:48](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/catalua_bindings_type_defs.cpp#L48)). `training_level` is used by the acquisition and training design ([behavior design](design.md) section 7); the rest are candidates for weighing enemy threat.
 - [source] BN #10506 removes `grabbed` from a monster that is not adjacent to the player ([monster.cpp:3426](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/monster.cpp#L3426)). It does not affect the dog: monster grab attacks target only Characters ([monattack.cpp:2936](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/monattack.cpp#L2936)).
 
 ## Special attacks
@@ -80,6 +80,40 @@ At `8e8aa90`. The fetch design ([behavior design](design.md) section 7) relies o
 - [source] Lua bindings: on the monster `get_items`, `add_detached_item`, `remove_item`, `drop_items`, `get_storage_item` ([bindings_creature:638](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/catalua_bindings_creature.cpp#L638), [:536](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/catalua_bindings_creature.cpp#L536)), `get_weight_capacity` ([:423](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/catalua_bindings_creature.cpp#L423)); on the map `get_items_at`, `get_items_in_radius`, `detach_item_at`, `add_item` ([bindings_map:441](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/catalua_bindings_map.cpp#L441)); on items `weight`, `volume`.
 - [source] The monster flag `CAN_FETCH` exists only as an enum and its string conversion, with no users ([mtype.h:180](https://github.com/cataclysmbn/Cataclysm-BN/blob/8e8aa90498fcc04176ee26ddd5bd56d68218b6a9/src/mtype.h#L180); usage searched across `src`, `data`, `docs` and `tests` at `8e8aa90`).
 - Unverified: how to read a bag item's volume (`storage`) from Lua, and a Lua UI for choosing from the player's items.
+
+## Pet training and breeds
+
+Reference `a27f19d`. The acquisition and training design ([behavior design](design.md) section 7) relies on this.
+
+- [source] A trainable monster has `pet_training` in its JSON, which sets the max level and the per-level multipliers ([monstergenerator.cpp:880](https://github.com/cataclysmbn/Cataclysm-BN/blob/a27f19d399be26836b45462f4784079f54eca704/src/monstergenerator.cpp#L880)).
+- [source] The pet menu's Train is a 60-minute activity, available when survival is at least `min_skill` and the dog is `well_fed` ([monexamine.cpp:511](https://github.com/cataclysmbn/Cataclysm-BN/blob/a27f19d399be26836b45462f4784079f54eca704/src/monexamine.cpp#L511)). On finishing, the level rises by one with probability survival × 10% (doubled when bonded) ([activity_handlers.cpp:4441](https://github.com/cataclysmbn/Cataclysm-BN/blob/a27f19d399be26836b45462f4784079f54eca704/src/activity_handlers.cpp#L4441)).
+- [source] The bond `pet_bond_level` runs 0–10. It rises from feeding, playing and training, and rarely rises again within 8 hours of a rise. At 10 the dog is bonded ([monster.cpp:4227](https://github.com/cataclysmbn/Cataclysm-BN/blob/a27f19d399be26836b45462f4784079f54eca704/src/monster.cpp#L4227)).
+- [source] Each level multiplies max HP, hit skill and dodge skill ([monster.cpp:3026](https://github.com/cataclysmbn/Cataclysm-BN/blob/a27f19d399be26836b45462f4784079f54eca704/src/monster.cpp#L3026), [:4514](https://github.com/cataclysmbn/Cataclysm-BN/blob/a27f19d399be26836b45462f4784079f54eca704/src/monster.cpp#L4514)). Melee damage and speed do not change; `melee_mult` scales hit skill only.
+- [source] Training level and bond carry over when a puppy grows up ([monster.cpp:545](https://github.com/cataclysmbn/Cataclysm-BN/blob/a27f19d399be26836b45462f4784079f54eca704/src/monster.cpp#L545)). Not runtime-tested.
+
+Training levels per breed and stats at max level (`data/json/monsters/mammal.json`, `mutant_animal.json`, computed with inheritance resolved). Arrows read base → max level. Hit and dodge skills are the floats the engine uses; max HP is truncated to an integer.
+
+| ID | Name | Max level | Max HP | Hit skill | Dodge skill | Melee damage | Speed | Survival |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `mon_dog_beagle` | beagle | 2 | 13 → 15 | 2 → 2.42 | 3 → 3.97 | 1d1+cut 2 | 135 | 3 |
+| `mon_dog_chihuahua` | Chihuahua | 2 | 6 → 6 | 3 → 3.63 | 3 → 3.97 | 2d2+cut 2 | 135 | 3 |
+| `mon_dog_dachshund` | dachshund | 2 | 10 → 12 | 3 → 3.63 | 3 → 3.97 | 2d2+cut 3 | 135 | 3 |
+| `mon_dog` | Labrador mutt | 3 | 30 → 51 | 6 → 9.13 | 3 → 4.56 | 2d3+cut 3 | 150 | 3 |
+| `mon_dog_pup` | Labrador puppy | 3 | 8 → 13 | 2 → 3.04 | 1 → 1.52 | 1d1+cut 1 | 98 | 3 |
+| `mon_dog_bcollie` | border collie | 3 | 19 → 25 | 6 → 7.99 | 4 → 7.81 | 2d3+cut 4 | 200 | 3 |
+| `mon_dog_auscattle` | cattle dog | 3 | 20 → 30 | 4 → 6.08 | 4 → 6.91 | 2d2+cut 6 | 200 | 3 |
+| `mon_dog_bull` | bulldog | 3 | 47 → 91 | 4 → 6.91 | 3 → 3.99 | 2d2+cut 6 | 135 | 3 |
+| `mon_dog_gpyrenees` | Great Pyrenees | 3 | 40 → 78 | 6 → 9.13 | 2 → 2.66 | 1d1+cut 5 | 100 | 3 |
+| `mon_dog_mutant_mongrel` | mongrel | 3 | 30 → 51 | 6 → 9.13 | 3 → 4.56 | 2d3+cut 3 | 150 | 3 |
+| `mon_coyote` | coyote | 3 | 22 → 33 | 6 → 9.13 | 3 → 5.18 | 2d3+cut 2 | 155 | 3 |
+| `mon_dog_boxer` | boxer mastiff | 4 | 29 → 60 | 4 → 9.77 | 3 → 5.25 | 2d2+cut 4 | 150 | 3 |
+| `mon_dog_pitbullmix` | pit bull mix | 4 | 27 → 55 | 4 → 9.77 | 3 → 5.25 | 2d2+cut 5 | 135 | 3 |
+| `mon_dog_rottweiler` | rottweiler | 4 | 42 → 102 | 4 → 8.29 | 3 → 5.25 | 2d2+cut 6 | 135 | 3 |
+| `mon_dog_gshepherd` | German shepherd | 5 | 36 → 89 | 6 → 14.93 | 3 → 7.46 | 2d3+cut 6 | 150 | 3 |
+| `mon_wolf` | wolf | 5 | 40 → 99 | 7 → 17.42 | 4 → 9.95 | 2d3+cut 4 | 165 | 5 |
+
+- [source] Not trainable: every puppy except the Labrador (trainable once grown), `mon_coyote_wolf`, foxes, zombie dogs, nether dogs.
+- [source] Every breed except `mon_dog` and `mon_dog_boxer` redefines `flags` (replaced, not inherited, [monstergenerator.cpp:1080](https://github.com/cataclysmbn/Cataclysm-BN/blob/a27f19d399be26836b45462f4784079f54eca704/src/monstergenerator.cpp#L1080)) without `DOG_WHISTLE`, so they likely do not respond to the stock whistle. Not runtime-tested.
 
 ## Data
 

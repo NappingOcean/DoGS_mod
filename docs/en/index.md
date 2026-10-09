@@ -41,12 +41,13 @@ Following AGENTS.md, evidence is labeled by kind.
 - **[design]** A decision made with the user; experiments may change it.
 - **[source]** Behavior confirmed in BN source at the revision below.
 - **[runtime E#]** Behavior confirmed in a play log; the number points to [experiments](experiments.md).
+- **[BN bug]** A BN bug present at the reference revision. Remove the statement once the reference moves to a build with the fix.
 - **unverified** Not yet confirmed in source or play.
 
 ## Basis
 
-- Game: redhot build `2026-10-07-0423`, BN commit `31a958998ac2bb53aca592e06eb4010d9dc1746a` (the reference revision in AGENTS.md).
-- Source claims recorded at `8e8aa90` (redhot `2026-10-05-2327`) keep links pinned to that commit. `src` is unchanged through `31a9589`, so they still hold.
+- Game: redhot build `2026-10-09-0454`, BN commit `a27f19d399be26836b45462f4784079f54eca704` (the reference revision in AGENTS.md).
+- Source claims recorded at `31a9589` (redhot `2026-10-07-0423`) and `8e8aa90` (redhot `2026-10-05-2327`) keep links pinned to those commits. They still hold at `a27f19d`.
 - Source claims recorded earlier were confirmed at `ef0eced` (redhot `2026-10-04-0345`) and their links stay pinned there.
 - Older audit documents keep their historical revision `e0e25e9`.
 

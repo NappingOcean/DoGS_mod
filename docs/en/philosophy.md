@@ -20,7 +20,7 @@ Which of these comes first is set by the player through the role (Guard, Harass,
 
 ## Design principles
 
-- Prioritize positioning, risk avoidance, enemy separation, intervention timing and disengagement over increased stats or damage.
+- Prioritize positioning, risk avoidance, enemy separation, intervention timing and disengagement over increased stats or damage. This forbids covering for poor judgment with higher stats; it does not exclude stat gains (see the principles set on 2026-10-09).
 - When an action is chosen matters more than what the dog can do.
 - Do not add attacks that a normal dog's anatomy cannot explain.
 - Do not add features whose implementation cost outweighs their play value.
@@ -42,6 +42,12 @@ Principles the user set during the experiments.
 - **Remove the enemy in front of you quickly.** Even while guarding, the dog fights an enemy right in front of it with normal attacks.
 - **The dog judges only by what it can perceive and remember.** A dog does not know what a gun or bow is, but after a shot it can remember that something flies along that path. Mistakes from this limit are acceptable to the player as a dog's limitation.
 - **A wounded dog returns to its handler.** At low HP the dog leaves the fight and falls back behind the player; ending the situation is the player's job.
+
+## Principles set on 2026-10-09
+
+- **How a dog becomes a DoGS dog is part of the design.** Until now DoGS has focused on how the dog behaves. How the dog reaches that state (taming, bonding, training) is now designed as well.
+- **BN's training stat gains stay.** The HP, melee and dodge multipliers that BN applies per `training_level` are intended by BN, and DoGS has no right to revert them. DoGS does not override `pet_training`.
+- **Stat gains are not the enemy of judgment.** Putting judgment first forbids making up for a lack of judgment with stats. Stat gains themselves are needed: an untrained dog's base stats are so low that it often dies to a zombie from the stat gap before its judgment matters.
 
 ## Scope
 

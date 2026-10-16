@@ -1,9 +1,11 @@
--- Observation for experiments. Covers trained and untrained dogs alike so E0 has a baseline.
-local config = require("dogs.config")
+-- Observation for experiments (debug mode only, see log.lua). Covers trained and untrained dogs alike
+-- so E0 has a baseline.
 local policy = require("dogs.policy")
 local perception = require("dogs.perception")
 local log = require("dogs.log")
 local role = require("dogs.role")
+local breed = require("dogs.breed")
+local debug_mode = require("dogs.debug")
 
 local M = {}
 
@@ -11,9 +13,7 @@ local downed = EffectTypeId.new("downed")
 
 ---@param mon Monster
 ---@return boolean
-local function is_dog(mon)
-  return mon:get_type():str() == config.dog_id and not mon:is_hallucination()
-end
+local function is_dog(mon) return breed.is_dog(mon) end
 
 ---@param dog Monster
 local function summarize(dog)
@@ -22,7 +22,7 @@ local function summarize(dog)
   for _, enemy in ipairs(enemies) do enemy_hp = enemy_hp + enemy:get_hp() end
   local obs, positions = perception.observe(dog, enemies)
   local pos = dog:get_pos_ms()
-  log.write("summary", "dog=" .. log.id(dog) .. " trained=" .. (dog:get_value("dogs_trained") == "1" and "1" or "0") ..
+  log.write("summary", "dog=" .. log.id(dog) .. " type=" .. dog:get_type():str() .. " level=" .. breed.level(dog) ..
     " role=" .. role.get(dog) ..
     " state=" .. (dog:get_value("dogs_state") == "" and "none" or dog:get_value("dogs_state")) ..
     " pos=" .. pos.x .. "," .. pos.y .. " hp=" .. dog:get_hp() .. "/" .. dog:get_hp_max() ..
@@ -32,6 +32,7 @@ local function summarize(dog)
 end
 
 function M.summary()
+  if not debug_mode.on() then return end
   for _, mon in ipairs(gapi.get_all_monsters()) do
     if is_dog(mon) and mon.friendly ~= 0 then summarize(mon) end
   end

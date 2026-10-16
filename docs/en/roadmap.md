@@ -2,7 +2,7 @@
 
 [한국어](../ko/roadmap.md) · [Contents](index.md)
 
-## Status (2026-10-08)
+## Status (2026-10-17)
 
 | Area | Status |
 | --- | --- |
@@ -15,13 +15,29 @@
 | Role: Free | implemented, [runtime E0–E5] |
 | Per-entity state save/restore | [runtime E4] |
 | Firing-line avoidance | decided (approach 2), not implemented |
-| Role: Harass (delaying the next enemy) | v0 implemented, not checked in play |
-| Command device (DoGS whistle) | decided, not implemented |
+| Role: Harass (delaying the next enemy) | v0 implemented, not checked in play. In v0.1 only selectable in debug mode |
+| Command device (DoGS whistle) | implemented (role orders), not checked in play |
 | Fetch (bring back registered items) | design candidate, not implemented |
-| Acquisition and training: capabilities open at fixed BN training levels | decided, not implemented |
-| Other dog types, hostile NPCs | undecided |
+| Acquisition and training: capabilities open at fixed BN training levels | implemented, not checked in play. Details (starting-profession dogs, bond) undecided |
+| Other dog types | applied to 12 adult breeds, not checked in play |
+| Debug mode (logs, state messages, experiment tools) | implemented, not checked in play |
+| Hostile NPCs | undecided |
 
-## Next steps
+## v0.1 release
+
+The release scope is separate from the experiment steps (decided 2026-10-17). v0.1 holds the behavior confirmed in play (judgment layer, safety veto, return, control attacks and follow-up, Guard and Free roles, state saving) and what a release needs (training levels, whistle, breeds, debug mode). Harass is selectable only in debug mode.
+
+- [x] Open capabilities by BN training level; the experimental `dogs_trained` and laboratory menu are gone
+- [x] Hide Harass (debug mode only)
+- [x] Debug mode: logs, state messages, experiment tools
+- [x] Apply to 12 adult breeds
+- [x] Command whistle (role orders)
+- [ ] E10 v0.1 check play ([experiments](experiments.md)); record the BN build it was confirmed on
+- [ ] Release zip and install instructions
+- [ ] README from the player's side: what differs from vanilla dogs, supported build, known limits
+- [ ] Drop "(rebuild)" from the mod name and "Experimental" from its description
+
+## After v0.1
 
 In order; each step moves on only after its experiment meets the success criteria.
 
@@ -29,9 +45,9 @@ In order; each step moves on only after its experiment meets the success criteri
 2. **Refine Harass.** Adjust the holding distance, range and finishing from E8 ([Harass role](harass.md)).
 3. **E9 multiple enemies: Guard versus Harass.** With 3–4 zombies approaching, compare how many enemies are on the player at once, and judge whether encirclement avoidance starts early enough (it looked late in E8's first attempt).
 4. **Firing-line avoidance: implement and test.** Remember shot trajectories from `on_shoot` and step off them ([behavior design](design.md) section 7). Decide how many turns to remember and how wide to avoid.
-5. **Command device (DoGS whistle) and acquisition/training.** Build the command whistle that replaces the experimental menu, and open capabilities by BN's `training_level` instead of `dogs_trained` ([behavior design](design.md) section 7).
+5. **More whistle signals and the remaining acquisition/training decisions.** Harass order and recall signals, audible range, starting-profession dogs, bond ([behavior design](design.md) section 7).
 6. **Fetch.** On a whistle command, bring back registered items into the bag ([behavior design](design.md) section 7).
-7. **Wider coverage.** Other dog types, hostile NPC perception, compatibility checks with other mods.
+7. **Wider coverage.** Hostile NPC perception, compatibility checks with other mods.
 
 The docile stop order was checked once in E8's first attempt; check it again in E8 and E9 runs.
 
@@ -91,4 +107,10 @@ The docile stop order was checked once in E8's first attempt; check it again in 
 | 2026-10-09 | Keep BN's per-level training stat gains; DoGS does not override `pet_training` | BN intends them and DoGS has no right to revert them. Judgment-first forbids covering poor judgment with stats, not stat gains; untrained dogs die to the stat gap before judgment matters (user decision) |
 | 2026-10-17 | Takedown is tried only at a dog/target weight ratio of 0.3 or more; chance and knockdown duration follow the ratio and BN training level. Replaces the chance by size | Trying only on targets it can bring down is the judgment; no small-breed exception is needed. Training level is the knack of striking the center of mass (user decision) |
 | 2026-10-17 | Takedown judgment does not model misjudging by volume (apparent size) | It is a trained move; in BN data weight and volume are mostly proportional and breed volumes are mostly inherited (user decision) |
+| 2026-10-17 | Separate the v0.1 release scope from the experiment steps. It holds behavior confirmed in play and what a release needs; the steps from E8 on move after v0.1 | Waiting for every step keeps pushing the release back (user decision) |
+| 2026-10-17 | Hide Harass in v0.1; selectable only in debug mode | A role not checked in play should not spoil the first impression (user decision) |
+| 2026-10-17 | Ship the command whistle in v0.1; its only signals are role orders (Guard, Free) | Copying the wooden whistle and its recipe and adding a Lua use function is enough; the signal list and range wait (user decision) |
+| 2026-10-17 | Apply DoGS to 12 adult breeds; puppies are excluded and join when grown | The judgment logic does not depend on breed, and the weight-ratio Takedown needs no small-breed exception (user decision) |
+| 2026-10-17 | Add a debug mode, toggled from the action menu's Debug category; on, it opens logs, state messages and experiment tools. Off by default | Keeps a release's log file and messages quiet while keeping the experiment tools (user decision) |
+| 2026-10-17 | Retire the experimental `dogs_trained`; capabilities open by BN `training_level`. A level override exists only in debug mode | Implements the 2026-10-09 decision; the override allows per-level experiments without training time |
 | 2026-10-17 | Move the reference revision to `f9586ef` (redhot `2026-10-16-0238`) | The installed experimental build is this one; cited sources changed, but no claim DoGS relies on |

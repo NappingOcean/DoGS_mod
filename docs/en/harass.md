@@ -4,6 +4,8 @@
 
 Labels: [design] decision, [source] confirmed in BN source (`ef0eced`), [runtime E#] confirmed in play, unverified.
 
+[design, 2026-10-17] Harass is hidden in v0.1. It is selectable only in debug mode, for a dog at training level 3 or more (or the debug override). The experiment menu's Call back is also debug-only.
+
 ## Definition
 
 [design, 2026-10-05] Harassing means **buying time against the next enemy to arrive, close to the player**. While the player fights one enemy or regroups, the dog holds up the enemy that would arrive next. Cutting enemies out of a group and taking them far away is not the goal.

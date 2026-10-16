@@ -72,7 +72,7 @@ Numbers and resolution: [control attacks](attacks.md).
 
 ## 6. Roles
 
-[design] The player sets each dog's role (Role in the menu, cycling Guard → Harass → Free); the dog judges within it. The default is **Guard**; Harass and Free must be chosen in the menu. Survival (RETREAT) takes priority in every role.
+[design] The player sets each dog's role (command whistle); the dog judges within it. The default is **Guard**; Free must be chosen with the whistle. Harass is hidden in v0.1 and selectable only in debug mode (training level 3 or more). Survival (RETREAT) takes priority in every role.
 
 | Role | Status | Scope of the dog's judgment |
 | --- | --- | --- |
@@ -106,12 +106,14 @@ Numbers and resolution: [control attacks](attacks.md).
 - [design] Use the `on_shoot` hook to receive the shooter and aim position right after a shot, remember that trajectory for a few turns, and step off its axis. Do not avoid by reading the weapon in advance: the dog does not know what a gun is, but it can remember a trajectory after a shot. If the player then shoots another target, the dog may be in the way; this is accepted as a dog's limitation.
 - To decide at implementation: how many turns to remember, and how many tiles either side of the trajectory to avoid (shot spread, dispersion).
 
-### Command device: the DoGS whistle (decided, not implemented)
+### Command device: the DoGS whistle (implemented, not checked in play)
 
-[design, 2026-10-05] Training and roles are set from an experimental action-menu entry for now. The release version uses a **command dog whistle** instead.
+[design, 2026-10-05] The release version sets roles with a **command dog whistle** (`dogs_command_whistle`) instead of the experimental menu.
+
+[design, 2026-10-17] The v0.1 whistle copies `dog_whistle_wood` and its recipe (same materials and skills). Using it picks a tamed DoGS dog in sight (from a list when there are several) and then a role. A dog below training level 1 is reported as not knowing the signals yet. The only signals are role orders (Guard and Free; Harass too in debug mode). It does not toggle docile like the stock whistle.
 
 - A new item, separate from the existing dog whistle. Its description says a tongue-stopped hole cut into the mouthpiece lets it produce more kinds of signals than the ordinary whistle.
-- Candidate signals: role orders (Guard, Harass, Free) and recalling a harassing dog. The exact list is undecided.
+- Later candidate signals: a Harass order and recalling a harassing dog. The exact list is undecided.
 - Being a signal the dog can actually hear, it fits the principle that the dog judges only by what it can perceive.
 
 **Findings about the existing whistle.**
@@ -121,9 +123,9 @@ Numbers and resolution: [control attacks](attacks.md).
 - [design, 2026-10-05] DoGS respects and completes `docile`. While docile it keeps the safety veto (step 1); with an enemy adjacent it steps out of contact, then leaves the rest to the engine (decision step 1a). With nowhere to step, it leaves the engine to defend itself.
 - [runtime E7] The engine picks no new target for a docile dog but keeps biting an enemy already adjacent (19 normal attacks across two windows). So a trained dog completes the stop order by breaking contact first. This behavior is not checked in play.
 
-**To decide:** the signal list, audible range (the whole map like the existing whistle, or a distance limit), how to obtain it (recipe, spawn locations), and which signals each training level obeys.
+**To decide:** the signal list after v0.1, audible range (now one dog the player sees), spawn locations, and which signals each training level obeys.
 
-### Acquisition and training (decided, not implemented)
+### Acquisition and training (implemented, not checked in play)
 
 [design, 2026-10-09] A dog becomes a DoGS dog the way BN makes a pet. Taming (dog food), bonding and training stay as in BN, and so do BN's training stat gains (the 2026-10-09 principles in [philosophy](philosophy.md)). DoGS reads BN's `training_level` and opens judgment capabilities at fixed levels.
 
@@ -142,7 +144,10 @@ Numbers and resolution: [control attacks](attacks.md).
 - BN training is read-only from Lua. No hook fires when training finishes, so DoGS reads the level each turn.
 - Fetch also needs a vanilla pet bag in addition to level 3 (see Fetch below).
 
-**To decide:** whether starting-profession dogs begin trained, what happens when the handler changes or the dog is neglected, whether to use the bond (`pet_bond_level`) as a basis for judgment, and when to retire the experimental `dogs_trained`.
+- [design, 2026-10-17] Implementation: DoGS reads `training_level` on every action. A level-0 dog is a stock pet. The experimental `dogs_trained` is gone; only in debug mode can the experiment menu override the level (BN's level is not changed).
+- [design, 2026-10-17] It covers 12 adult breeds (`mon_dog`, Australian cattle dog, border collie, beagle, boxer, bulldog, Chihuahua, dachshund, Great Pyrenees, German shepherd, pit bull mix, rottweiler). Puppies are left out; a growing puppy turns into its adult type in place and is covered from then on.
+
+**To decide:** whether starting-profession dogs begin trained, what happens when the handler changes or the dog is neglected, and whether to use the bond (`pet_bond_level`) as a basis for judgment.
 
 ### Fetch (design candidate, not implemented)
 
@@ -166,7 +171,7 @@ Numbers and resolution: [control attacks](attacks.md).
 
 ### Harass role
 
-The flow, the difference from Guard, open points, and the shelved "cut enemies out of a group" idea are in [Harass role](harass.md).
+The flow, the difference from Guard, open points, and the shelved "cut enemies out of a group" idea are in [Harass role](harass.md). In v0.1 it is selectable only in debug mode.
 
 ## 8. Known limits
 

@@ -1,6 +1,16 @@
 -- Values are documented in docs/en/development.md. Tune from play logs only.
 return {
-  dog_id = "mon_dog",
+  -- Adult breeds (docs/en/engine-notes.md, "Pet training and breeds"). Puppies are left out: they
+  -- turn into these types in place when they grow. Each needs its entry in json/dogs.json.
+  dog_ids = {
+    mon_dog = true, mon_dog_auscattle = true, mon_dog_bcollie = true, mon_dog_beagle = true,
+    mon_dog_boxer = true, mon_dog_bull = true, mon_dog_chihuahua = true, mon_dog_dachshund = true,
+    mon_dog_gpyrenees = true, mon_dog_gshepherd = true, mon_dog_pitbullmix = true, mon_dog_rottweiler = true,
+  },
+  -- BN training_level that opens each capability (docs/en/design.md, "Acquisition and training").
+  training = { judgment = 1, attacks = 2, harass = 3 },
+  -- v0.1 hides Harass outside debug mode: not checked in play yet.
+  harass_enabled = false,
   radius = 8,
 
   retreat = {

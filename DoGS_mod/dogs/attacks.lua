@@ -1,5 +1,7 @@
 local config = require("dogs.config")
 local policy = require("dogs.policy")
+local breed = require("dogs.breed")
+local debug_mode = require("dogs.debug")
 local log = require("dogs.log")
 
 local M = {}
@@ -38,6 +40,7 @@ end
 ---@param now integer
 ---@return string|nil
 function M.choose(dog, target, now)
+  if not breed.can(dog, "attacks") then return nil end
   return policy.choose_attack({
     mode = dog:get_value("dogs_attack_mode"),
     eligible = takedown(dog, target) ~= nil,
@@ -110,7 +113,8 @@ function M.use(dog, target, id, now)
     " id=" .. id .. " outcome=" .. outcome .. " damage=" .. damage .. " downed=" .. tostring(target:has_effect(downed)) ..
     " bleed=" .. tostring(target:has_effect(bleed)) .. " ankle=" .. tostring(target:has_effect(ankle)))
   if gapi.get_avatar():sees(dog:get_pos_ms()) then
-    gapi.add_msg(MsgType.info, string.format("DoGS #%s: %s on %s (%s).", log.id(dog), config.attacks[id].label,
+    local who = debug_mode.on() and ("DoGS #" .. log.id(dog)) or ("Your " .. dog:name(1))
+    gapi.add_msg(MsgType.info, string.format("%s: %s on %s (%s).", who, config.attacks[id].label,
       target:name(1), dodged and "dodged" or ((id == "dogs_takedown" and outcome:find("^knocked") and "knocked down, " or "") ..
         (damage > 0 and ("damage " .. damage) or "no damage"))))
   end

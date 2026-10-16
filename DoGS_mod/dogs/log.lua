@@ -1,3 +1,5 @@
+local debug_mode = require("dogs.debug")
+
 local M = {}
 
 local storage = {}
@@ -22,7 +24,9 @@ end
 
 ---@param event string
 ---@param fields string
+---Gameplay log lines are written only in debug mode.
 function M.write(event, fields)
+  if not debug_mode.on() then return end
   gdebug.log_info("[DoGS] event=" .. event .. " turn=" .. gapi.current_turn():to_turn() .. " " .. fields)
 end
 

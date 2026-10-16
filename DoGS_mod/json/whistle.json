@@ -1,0 +1,61 @@
+[
+  {
+    "type": "item_action",
+    "id": "DOGS_COMMAND_WHISTLE",
+    "name": {
+      "str": "Signal a dog"
+    }
+  },
+  {
+    "id": "dogs_command_whistle",
+    "type": "GENERIC",
+    "copy-from": "dog_whistle_wood",
+    "name": {
+      "str": "command dog whistle"
+    },
+    "description": "A hardwood dog whistle with a hole cut in the mouthpiece.  Covering the hole with your tongue changes the tone, so it can give a trained dog more signals than a plain whistle: which role to take beside you.",
+    "use_action": [
+      "DOGS_COMMAND_WHISTLE"
+    ]
+  },
+  {
+    "result": "dogs_command_whistle",
+    "type": "recipe",
+    "category": "CC_OTHER",
+    "subcategory": "CSC_OTHER_TOOLS",
+    "skill_used": "fabrication",
+    "skills_required": [
+      "survival",
+      2
+    ],
+    "difficulty": 2,
+    "time": "20 m",
+    "autolearn": true,
+    "qualities": [
+      {
+        "id": "CUT",
+        "level": 1
+      },
+      {
+        "id": "DRILL",
+        "level": 1
+      },
+      {
+        "id": "SANDING",
+        "level": 1
+      }
+    ],
+    "components": [
+      [
+        [
+          "2x4",
+          1
+        ],
+        [
+          "stick",
+          1
+        ]
+      ]
+    ]
+  }
+]

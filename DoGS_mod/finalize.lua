@@ -1,7 +1,10 @@
 -- Runs after data finalization, including --check-mods. Checks IDs only; no world access.
 local config = require("dogs.config")
 
-assert(MonsterTypeId.new(config.dog_id):is_valid(), "missing monster " .. config.dog_id)
+for id in pairs(config.dog_ids) do
+  assert(MonsterTypeId.new(id):is_valid(), "missing monster " .. id)
+end
+assert(ItypeId.new("dogs_command_whistle"):is_valid(), "missing item dogs_command_whistle")
 for _, id in ipairs(config.blockers) do
   assert(EffectTypeId.new(id):is_valid(), "unknown blocker effect " .. id)
 end

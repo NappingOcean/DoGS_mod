@@ -46,5 +46,533 @@
         }
       ]
     }
+  },
+  {
+    "type": "MONSTER",
+    "id": "mon_dog_auscattle",
+    "copy-from": "mon_dog_auscattle",
+    "lua_ai": "dogs_normal",
+    "extend": {
+      "special_attacks": [
+        {
+          "type": "melee",
+          "id": "dogs_takedown",
+          "cooldown": 8,
+          "move_cost": 100,
+          "min_mul": 1.0,
+          "max_mul": 1.0,
+          "damage_max_instance": [
+            {
+              "damage_type": "bash",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "type": "melee",
+          "id": "dogs_ankle_tear",
+          "cooldown": 8,
+          "move_cost": 100,
+          "min_mul": 1.0,
+          "max_mul": 1.0,
+          "damage_max_instance": [
+            {
+              "damage_type": "cut",
+              "amount": 4
+            }
+          ],
+          "effects": [
+            {
+              "id": "bleed",
+              "duration": 20
+            },
+            {
+              "id": "dogs_ankle_wound",
+              "duration": 60
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "type": "MONSTER",
+    "id": "mon_dog_bcollie",
+    "copy-from": "mon_dog_bcollie",
+    "lua_ai": "dogs_normal",
+    "extend": {
+      "special_attacks": [
+        {
+          "type": "melee",
+          "id": "dogs_takedown",
+          "cooldown": 8,
+          "move_cost": 100,
+          "min_mul": 1.0,
+          "max_mul": 1.0,
+          "damage_max_instance": [
+            {
+              "damage_type": "bash",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "type": "melee",
+          "id": "dogs_ankle_tear",
+          "cooldown": 8,
+          "move_cost": 100,
+          "min_mul": 1.0,
+          "max_mul": 1.0,
+          "damage_max_instance": [
+            {
+              "damage_type": "cut",
+              "amount": 4
+            }
+          ],
+          "effects": [
+            {
+              "id": "bleed",
+              "duration": 20
+            },
+            {
+              "id": "dogs_ankle_wound",
+              "duration": 60
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "type": "MONSTER",
+    "id": "mon_dog_beagle",
+    "copy-from": "mon_dog_beagle",
+    "lua_ai": "dogs_normal",
+    "extend": {
+      "special_attacks": [
+        {
+          "type": "melee",
+          "id": "dogs_takedown",
+          "cooldown": 8,
+          "move_cost": 100,
+          "min_mul": 1.0,
+          "max_mul": 1.0,
+          "damage_max_instance": [
+            {
+              "damage_type": "bash",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "type": "melee",
+          "id": "dogs_ankle_tear",
+          "cooldown": 8,
+          "move_cost": 100,
+          "min_mul": 1.0,
+          "max_mul": 1.0,
+          "damage_max_instance": [
+            {
+              "damage_type": "cut",
+              "amount": 4
+            }
+          ],
+          "effects": [
+            {
+              "id": "bleed",
+              "duration": 20
+            },
+            {
+              "id": "dogs_ankle_wound",
+              "duration": 60
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "type": "MONSTER",
+    "id": "mon_dog_boxer",
+    "copy-from": "mon_dog_boxer",
+    "lua_ai": "dogs_normal",
+    "extend": {
+      "special_attacks": [
+        {
+          "type": "melee",
+          "id": "dogs_takedown",
+          "cooldown": 8,
+          "move_cost": 100,
+          "min_mul": 1.0,
+          "max_mul": 1.0,
+          "damage_max_instance": [
+            {
+              "damage_type": "bash",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "type": "melee",
+          "id": "dogs_ankle_tear",
+          "cooldown": 8,
+          "move_cost": 100,
+          "min_mul": 1.0,
+          "max_mul": 1.0,
+          "damage_max_instance": [
+            {
+              "damage_type": "cut",
+              "amount": 4
+            }
+          ],
+          "effects": [
+            {
+              "id": "bleed",
+              "duration": 20
+            },
+            {
+              "id": "dogs_ankle_wound",
+              "duration": 60
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "type": "MONSTER",
+    "id": "mon_dog_bull",
+    "copy-from": "mon_dog_bull",
+    "lua_ai": "dogs_normal",
+    "extend": {
+      "special_attacks": [
+        {
+          "type": "melee",
+          "id": "dogs_takedown",
+          "cooldown": 8,
+          "move_cost": 100,
+          "min_mul": 1.0,
+          "max_mul": 1.0,
+          "damage_max_instance": [
+            {
+              "damage_type": "bash",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "type": "melee",
+          "id": "dogs_ankle_tear",
+          "cooldown": 8,
+          "move_cost": 100,
+          "min_mul": 1.0,
+          "max_mul": 1.0,
+          "damage_max_instance": [
+            {
+              "damage_type": "cut",
+              "amount": 4
+            }
+          ],
+          "effects": [
+            {
+              "id": "bleed",
+              "duration": 20
+            },
+            {
+              "id": "dogs_ankle_wound",
+              "duration": 60
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "type": "MONSTER",
+    "id": "mon_dog_chihuahua",
+    "copy-from": "mon_dog_chihuahua",
+    "lua_ai": "dogs_normal",
+    "extend": {
+      "special_attacks": [
+        {
+          "type": "melee",
+          "id": "dogs_takedown",
+          "cooldown": 8,
+          "move_cost": 100,
+          "min_mul": 1.0,
+          "max_mul": 1.0,
+          "damage_max_instance": [
+            {
+              "damage_type": "bash",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "type": "melee",
+          "id": "dogs_ankle_tear",
+          "cooldown": 8,
+          "move_cost": 100,
+          "min_mul": 1.0,
+          "max_mul": 1.0,
+          "damage_max_instance": [
+            {
+              "damage_type": "cut",
+              "amount": 4
+            }
+          ],
+          "effects": [
+            {
+              "id": "bleed",
+              "duration": 20
+            },
+            {
+              "id": "dogs_ankle_wound",
+              "duration": 60
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "type": "MONSTER",
+    "id": "mon_dog_dachshund",
+    "copy-from": "mon_dog_dachshund",
+    "lua_ai": "dogs_normal",
+    "extend": {
+      "special_attacks": [
+        {
+          "type": "melee",
+          "id": "dogs_takedown",
+          "cooldown": 8,
+          "move_cost": 100,
+          "min_mul": 1.0,
+          "max_mul": 1.0,
+          "damage_max_instance": [
+            {
+              "damage_type": "bash",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "type": "melee",
+          "id": "dogs_ankle_tear",
+          "cooldown": 8,
+          "move_cost": 100,
+          "min_mul": 1.0,
+          "max_mul": 1.0,
+          "damage_max_instance": [
+            {
+              "damage_type": "cut",
+              "amount": 4
+            }
+          ],
+          "effects": [
+            {
+              "id": "bleed",
+              "duration": 20
+            },
+            {
+              "id": "dogs_ankle_wound",
+              "duration": 60
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "type": "MONSTER",
+    "id": "mon_dog_gpyrenees",
+    "copy-from": "mon_dog_gpyrenees",
+    "lua_ai": "dogs_normal",
+    "extend": {
+      "special_attacks": [
+        {
+          "type": "melee",
+          "id": "dogs_takedown",
+          "cooldown": 8,
+          "move_cost": 100,
+          "min_mul": 1.0,
+          "max_mul": 1.0,
+          "damage_max_instance": [
+            {
+              "damage_type": "bash",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "type": "melee",
+          "id": "dogs_ankle_tear",
+          "cooldown": 8,
+          "move_cost": 100,
+          "min_mul": 1.0,
+          "max_mul": 1.0,
+          "damage_max_instance": [
+            {
+              "damage_type": "cut",
+              "amount": 4
+            }
+          ],
+          "effects": [
+            {
+              "id": "bleed",
+              "duration": 20
+            },
+            {
+              "id": "dogs_ankle_wound",
+              "duration": 60
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "type": "MONSTER",
+    "id": "mon_dog_gshepherd",
+    "copy-from": "mon_dog_gshepherd",
+    "lua_ai": "dogs_normal",
+    "extend": {
+      "special_attacks": [
+        {
+          "type": "melee",
+          "id": "dogs_takedown",
+          "cooldown": 8,
+          "move_cost": 100,
+          "min_mul": 1.0,
+          "max_mul": 1.0,
+          "damage_max_instance": [
+            {
+              "damage_type": "bash",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "type": "melee",
+          "id": "dogs_ankle_tear",
+          "cooldown": 8,
+          "move_cost": 100,
+          "min_mul": 1.0,
+          "max_mul": 1.0,
+          "damage_max_instance": [
+            {
+              "damage_type": "cut",
+              "amount": 4
+            }
+          ],
+          "effects": [
+            {
+              "id": "bleed",
+              "duration": 20
+            },
+            {
+              "id": "dogs_ankle_wound",
+              "duration": 60
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "type": "MONSTER",
+    "id": "mon_dog_pitbullmix",
+    "copy-from": "mon_dog_pitbullmix",
+    "lua_ai": "dogs_normal",
+    "extend": {
+      "special_attacks": [
+        {
+          "type": "melee",
+          "id": "dogs_takedown",
+          "cooldown": 8,
+          "move_cost": 100,
+          "min_mul": 1.0,
+          "max_mul": 1.0,
+          "damage_max_instance": [
+            {
+              "damage_type": "bash",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "type": "melee",
+          "id": "dogs_ankle_tear",
+          "cooldown": 8,
+          "move_cost": 100,
+          "min_mul": 1.0,
+          "max_mul": 1.0,
+          "damage_max_instance": [
+            {
+              "damage_type": "cut",
+              "amount": 4
+            }
+          ],
+          "effects": [
+            {
+              "id": "bleed",
+              "duration": 20
+            },
+            {
+              "id": "dogs_ankle_wound",
+              "duration": 60
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "type": "MONSTER",
+    "id": "mon_dog_rottweiler",
+    "copy-from": "mon_dog_rottweiler",
+    "lua_ai": "dogs_normal",
+    "extend": {
+      "special_attacks": [
+        {
+          "type": "melee",
+          "id": "dogs_takedown",
+          "cooldown": 8,
+          "move_cost": 100,
+          "min_mul": 1.0,
+          "max_mul": 1.0,
+          "damage_max_instance": [
+            {
+              "damage_type": "bash",
+              "amount": 2
+            }
+          ]
+        },
+        {
+          "type": "melee",
+          "id": "dogs_ankle_tear",
+          "cooldown": 8,
+          "move_cost": 100,
+          "min_mul": 1.0,
+          "max_mul": 1.0,
+          "damage_max_instance": [
+            {
+              "damage_type": "cut",
+              "amount": 4
+            }
+          ],
+          "effects": [
+            {
+              "id": "bleed",
+              "duration": 20
+            },
+            {
+              "id": "dogs_ankle_wound",
+              "duration": 60
+            }
+          ]
+        }
+      ]
+    }
   }
 ]

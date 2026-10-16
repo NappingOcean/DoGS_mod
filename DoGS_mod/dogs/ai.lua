@@ -6,6 +6,8 @@ local perception = require("dogs.perception")
 local movement = require("dogs.movement")
 local attacks = require("dogs.attacks")
 local role = require("dogs.role")
+local breed = require("dogs.breed")
+local debug_mode = require("dogs.debug")
 local log = require("dogs.log")
 
 local M = {}
@@ -41,8 +43,8 @@ local function update_state(dog, now, obs)
     log.write("decide", "dog=" .. log.id(dog) .. " from=" .. (previous == "" and "none" or previous) .. " to=" .. state ..
       string.format(" hp=%.2f adjacent=%d nearby=%d nearest=%s player=%s", obs.hp, obs.adjacent, obs.nearby,
         tostring(obs.nearest), tostring(obs.player)))
-    -- Messages default to on; the menu stores "0" to silence them.
-    if dog:get_value("dogs_messages") ~= "0" then
+    -- State names are a debugging aid, shown only in debug mode.
+    if debug_mode.on() then
       local reason = state == "RETREAT" and policy.low_hp(obs) and " (wounded, falling back behind you)" or ""
       gapi.add_msg(MsgType.info, "DoGS #" .. log.id(dog) .. ": " .. state .. reason)
     end
@@ -192,7 +194,8 @@ end
 function M.turn(dog)
   -- Disable before every possible fallback so the stock scheduler cannot pick DoGS attacks.
   attacks.disable(dog)
-  if dog:get_type():str() ~= config.dog_id or dog:get_value("dogs_trained") ~= "1" or dog.friendly == 0 then
+  -- Below training level 1 the dog is a stock pet (docs/en/design.md, "Acquisition and training").
+  if not breed.is_dog(dog) or dog.friendly == 0 or not breed.can(dog, "judgment") then
     return false
   end
   if restrained(dog) then return false end

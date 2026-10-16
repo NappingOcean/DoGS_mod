@@ -4,12 +4,12 @@
 
 **DoGS — Dogs of Good Sense** turns dogs in Cataclysm: Bright Nights (BN) into tactical companions that judge the situation. It does not make dogs stronger; it adds judgment about position, risk and when to step in.
 
-## Status (2026-10-07)
+## Status (2026-10-17)
 
-- Implementation: [`DoGS_mod/`](../../DoGS_mod/), for one dog type, the Labrador mutt (`mon_dog`). It runs as a judgment layer over BN's stock pet AI.
-- Behavior: a safety veto (encirclement avoidance, falling back behind the player at low HP), Takedown and Ankle Tear control attacks, and roles (Guard by default; Free and Harass selectable, Harass at v0). Training and role are set per dog in the action menu.
+- Implementation: [`DoGS_mod/`](../../DoGS_mod/), for 12 adult dog breeds (experiments mostly with the Labrador mutt, `mon_dog`). It runs as a judgment layer over BN's stock pet AI.
+- Behavior: a safety veto (encirclement avoidance, falling back behind the player at low HP), Takedown and Ankle Tear control attacks, and roles (Guard by default, Free selectable; Harass v0 only in debug mode). Capabilities open by BN training level and roles are set with the command whistle. It covers 12 adult breeds. Experiment tools and logs live in debug mode.
 - Verification: experiments E0–E7 are done. E7 largely confirmed Takedown's Lua resolution; miss detection is still unverified. Size resistance has since been replaced by a weight-ratio resolution, not yet checked in play. Harass v0 has not been checked in play yet (E8 rerun planned).
-- Next steps: [roadmap](roadmap.md).
+- Next steps: v0.1 release preparation (E10 check play, packaging). [Roadmap](roadmap.md).
 
 ## Reading order for a new session
 

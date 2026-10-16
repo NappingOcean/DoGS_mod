@@ -32,6 +32,7 @@ A separate test world, open terrain, daytime, at least 3 runs per experiment. Pl
 | E7 New Takedown resolution | done (largely passed) | fights alongside | between runs only |
 | E8 Harass v0 probe | first attempt invalid; rerun planned | fights the zombie the dog is not holding | allowed mid-run |
 | E9 Multiple enemies | planned | fights alongside | between runs only |
+| E10 v0.1 check play | planned | varies by item | between runs only |
 
 ## Procedures
 
@@ -103,6 +104,26 @@ Roles were implemented after E3 (Guard implemented, Harass planned). The experim
 - To judge: does encirclement avoidance start early enough to count as "without hesitation"? If late, change the entry thresholds.
 
 The old E8 (a 5-zombie crowd, per role) is not run; E9 replaces it, because Guard and Harass never enter a group by design.
+
+### E10 v0.1 check play (planned)
+Before the v0.1 release, check the new pieces (training levels, whistle, breeds, debug mode, weight-ratio Takedown) and regressions of existing behavior on the reference build. Each item states its minimum runs.
+
+- Setup: a fresh test world with DoGS on. Turn debug mode on in action_menu → Debug → **DoGS debug**. Create dogs and zombies with BN's debug menu and tame dogs with dog food. Set training levels with DoGS debug → Dog tools → "Training level override" (no override for items G and H).
+- Log: `[DoGS]` lines after the last `event=load`. Split items by `menu` events. After the run, also record the game build (`VERSION.txt`).
+
+| Item | Setup | Check in the log | Success criterion |
+| --- | --- | --- | --- |
+| A Training levels | Labrador, one regular zombie; override 0 → 1 → 2 | 0: no `decide`, `step` or `special` for that dog. 1: `decide` and `step`, no `special`. 2: `special` | Each level as on the left; one run per level |
+| B Guard and return regression | E6 setup (two zombies, 6 tiles, player in melee), override 2. Afterwards the player walks away from the dog | `step kind=intercept`, `summary player=`, `decide to=REGROUP` entry and exit | The E6 and E5 criteria; 2 runs |
+| C Low-HP retreat regression | E2 setup, override 2 | `decide to=RETREAT`, `step kind=flee`, `hold` | The E2 criteria; 1 run |
+| D Weight-ratio Takedown | Labrador at override 0 and 3, regular zombies; then one zombie moose | Zombie: `special id=dogs_takedown outcome=knocked/resisted chance=61` (level 0), `chance=76` (level 3), `turns=2`. Zombie moose: no `dogs_takedown` | `chance` matches the table in [control attacks](attacks.md); no attempt below ratio 0.3; at least 5 Takedowns per level |
+| E Breeds | Chihuahua and German shepherd (override 2), regular zombies | Chihuahua: `dogs_ankle_tear` only. Shepherd: `chance=72` | One run per breed |
+| F Whistle | Craft the whistle (Other → Tools) or spawn it; two dogs | Use → dog list → role list. `menu source=whistle role=`, then `summary role=` | The chosen role applies. Debug off: no Harass. On and level 3: Harass offered. Level-0 dog: notice message |
+| G Puppy growth | A tamed Labrador puppy trained to level 2 the BN way (raise survival with the debug menu; keep the dog well fed). Skip 42+ days with BN's debug Change time | `summary type=mon_dog level=2`, then `special` | Behaves as in B and D once grown; 1 run |
+| H BN training | Train to level 1 or more with BN's Train, no override | `summary level=` equals the BN level | 1 run |
+| I Debug off | After any item, turn debug mode off; save and reload | After turning it off the only `[DoGS]` line is `event=debug on=false`; no state messages; attack messages read `Your Labrador mutt: Takedown on …` | Still off after reloading |
+
+- On a failure, fix and rerun only that item. A–F and I passing meets the v0.1 release condition. G and H take time and may follow the release, but their results are recorded.
 
 ## Results
 

@@ -6,15 +6,13 @@ local M = {}
 
 local downed = EffectTypeId.new("downed")
 
--- MonsterSize enum value -> name used in config.takedown.chance.
-local size_names = {}
-for _, name in ipairs({ "TINY", "SMALL", "MEDIUM", "LARGE", "HUGE" }) do
-  size_names[assert(MonsterSize[name], "MonsterSize." .. name)] = name
+---Takedown chance and downed turns for this dog on this target; nil chance when not worth trying.
+---@param dog Monster
+---@param target Monster
+---@return integer|nil, integer|nil
+local function takedown(dog, target)
+  return policy.takedown(dog:get_weight():to_gram(), target:get_weight():to_gram(), dog.training_level)
 end
-
----@param mon Monster
----@return string
-local function size_of(mon) return size_names[mon:get_size()] or "MEDIUM" end
 
 -- Set during one Takedown so on_dodged can tell a dodge from a hit.
 local watch = nil
@@ -42,7 +40,7 @@ end
 function M.choose(dog, target, now)
   return policy.choose_attack({
     mode = dog:get_value("dogs_attack_mode"),
-    eligible = policy.takedown_chance(size_of(target)) > 0,
+    eligible = takedown(dog, target) ~= nil,
     downed = target:has_effect(downed),
     wounded = target:has_effect(ankle),
     flies = target:flies(),
@@ -71,18 +69,20 @@ function M.on_dodged(params)
   end
 end
 
----After a handled, undodged Takedown: knock down by size, regardless of damage dealt.
+---After a handled, undodged Takedown: knock down by weight ratio and training, regardless of damage dealt.
+---@param dog Monster
 ---@param target Monster
 ---@param dodged boolean
 ---@return string outcome for the log
-local function knock_down(target, dodged)
+local function knock_down(dog, target, dodged)
   if dodged then return "dodged" end
   if target:is_dead_or_dying() then return "killed" end -- the blow itself was fatal (E7: #54)
   if target:is_immune_effect(downed) then return "immune" end
-  local size = size_of(target)
-  if math.random(100) > policy.takedown_chance(size) then return "resisted_" .. size end
-  target:add_effect(downed, TimeDuration.from_turns(config.takedown.duration))
-  return "knocked_" .. size
+  local chance, turns = takedown(dog, target)
+  if chance == nil or turns == nil then return "too_heavy" end -- forced or picked before the check
+  local result = math.random(100) > chance and "resisted" or "knocked"
+  if result == "knocked" then target:add_effect(downed, TimeDuration.from_turns(turns)) end
+  return result .. " chance=" .. chance .. " turns=" .. turns
 end
 
 ---@param dog Monster
@@ -102,7 +102,7 @@ function M.use(dog, target, id, now)
   M.disable(dog)
   if not ok then error(handled) end
   if not handled then return false end
-  local outcome = id == "dogs_takedown" and knock_down(target, dodged) or (dodged and "dodged" or "hit")
+  local outcome = id == "dogs_takedown" and knock_down(dog, target, dodged) or (dodged and "dodged" or "hit")
 
   dog:set_value("dogs_next_" .. id, tostring(now + config.attacks[id].cooldown))
   local damage = hp - target:get_hp()

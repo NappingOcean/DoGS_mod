@@ -136,6 +136,7 @@ Numbers and resolution: [control attacks](attacks.md).
 | 4–5 | No new capability; BN stat gains only |
 
 - No fraction of the max level is used. Breed differences become differences in judgment. Beagles, Chihuahuas and dachshunds (max 2) learn up to control attacks; Harass is for breeds that reach level 3. A dog whose stats cannot back a judgment is not given that judgment.
+- Even with control attacks learned, Takedown is tried only on targets with a fitting weight ratio. Small breeds do not try to knock zombies down; they use Ankle Tear ([control attacks](attacks.md)).
 - Levels 4–5 (boxer, pit bull, rottweiler; shepherd, wolf) only raise stats.
 - Max levels and stats per breed are in [engine notes](engine-notes.md), "Pet training and breeds".
 - BN training is read-only from Lua. No hook fires when training finishes, so DoGS reads the level each turn.

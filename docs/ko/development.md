@@ -97,7 +97,9 @@
 | `harass.crowd` / `finish` / `recall` | 1 / 3 / 10 | 노출 기준(주변 다른 적 수) / 자동 종료 턴 / 호출 지속 턴 |
 | `control_nearby` | 2 | 제압 공격 시 3타일 안 적 수 상한 |
 | `attacks.*.cooldown` | 8 | 공격 쿨다운(턴) |
-| `takedown.duration` / `chance` | 2 / 크기별 | 넘어짐 턴 / 크기별 확률 |
+| `takedown.min_ratio` / `full_ratio` | 0.3 / 0.6 | 시도하는 체중비 / 확률이 100%가 되는 체중비 |
+| `takedown.min_chance` / `train_bonus` | 50 / 5 | `min_ratio`에서의 확률 / 훈련 단계당 확률 보정 |
+| `takedown.duration` / `train_turn` | 2 / 4 | 기본 넘어짐 턴 / 넘어짐 +1턴이 붙는 훈련 단계 |
 | `summary_interval` | 10 | 요약 기록 주기(턴) |
 
 ## 로그

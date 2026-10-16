@@ -97,7 +97,9 @@ Values in [`config.lua`](../../DoGS_mod/dogs/config.lua). Change them only throu
 | `harass.crowd` / `finish` / `recall` | 1 / 3 / 10 | Exposure limit (other enemies nearby) / auto-finish turns / recall duration |
 | `control_nearby` | 2 | Maximum enemies within 3 tiles for a control attack |
 | `attacks.*.cooldown` | 8 | Attack cooldown (turns) |
-| `takedown.duration` / `chance` | 2 / by size | Knockdown turns / chance by size |
+| `takedown.min_ratio` / `full_ratio` | 0.3 / 0.6 | Weight ratio to try / ratio where the chance reaches 100% |
+| `takedown.min_chance` / `train_bonus` | 50 / 5 | Chance at `min_ratio` / chance bonus per training level |
+| `takedown.duration` / `train_turn` | 2 / 4 | Base knockdown turns / training level that adds a turn |
 | `summary_interval` | 10 | Summary period (turns) |
 
 ## Logging

@@ -25,22 +25,43 @@ Labels: [design] decision, [source] confirmed in BN source, [runtime E#] confirm
 | --- | --- |
 | Damage | bash 2 |
 | Move cost / cooldown | 100 / 8 turns |
-| Knockdown | 2 turns, applied from Lua |
-| Chance by size | tiny/small/medium 100%, large 50%, huge 0%. Size follows the monster's volume ([engine notes](engine-notes.md), Data) |
-| Targets | any enemy that is not huge, flying ones included (read as struck and knocked out of the air) |
+| Weight ratio | Dog weight ÷ target weight, both the monster definition's `weight` ([engine notes](engine-notes.md), Data) |
+| Attempt | weight ratio 0.3 or more |
+| Knockdown chance | rises linearly from 50% at ratio 0.3 to 100% at 0.6; +5% per BN training level (max 100%) |
+| Knockdown duration | 2 turns; +1 at ratio 0.6 or more, +1 at training level 4 or more. Applied from Lua |
+| Targets | any enemy that meets the attempt condition, flying ones included (read as struck and knocked out of the air) |
+
+**Judged by weight ratio.** [design, 2026-10-17] The dog tries a Takedown only on an enemy it can bring down. Whether it is worth trying is set by the dog/target weight ratio, and so are the success and the knockdown duration.
+
+- Deciding the attempt by volume (apparent size), to model the dog misjudging by eye, was considered and not adopted. Takedown is a trained move, and not being fooled by appearance is part of the training. [source] Most BN monsters have an even weight/volume ratio (engine notes, Data), most breeds define no volume and inherit the Labrador's 30 L, and Lua can read only the five-step size, not the volume.
+- BN training level stands for the knack of striking the target's center of mass. [source] BN's training multiplier applies only to the hit skill (does the bite land), so it does not overlap DoGS's bonus (does a landed bite bring the target down). The felt success rate is the product of the two.
+- Small breeds get no separate rule. With a low ratio the dog uses Ankle Tear or a normal bite instead.
+
+Weight ratio examples (BN `weight`, training level 0):
+
+| Dog | Zombie 81.5 kg | Zombie child 40.75 kg | Zombie moose 120 kg |
+| --- | --- | --- | --- |
+| Chihuahua 2.2 kg | 0.03, no attempt | 0.05, no attempt | 0.02, no attempt |
+| Beagle, dachshund 10 kg | 0.12, no attempt | 0.25, no attempt | 0.08, no attempt |
+| Collie 16 kg | 0.20, no attempt | 0.39, 65% | 0.13, no attempt |
+| Labrador 30 kg | 0.37, 61% | 0.74, 100%, 3 turns | 0.25, no attempt |
+| German shepherd 35 kg | 0.43, 72% | 0.86, 100%, 3 turns | 0.29, no attempt |
+| Rottweiler 50 kg | 0.61, 100%, 3 turns | 1.23, 100%, 3 turns | 0.42, 69% |
+
+A Labrador trained to its max level 3 has 76% against a zombie.
 
 **Resolution.** [design, 2026-10-05]
 
 1. A watch is set just before the attack. If the target raises the dodge hook (`on_creature_dodged`) during the attack, it missed.
-2. If it did not miss and the target is not immune to knockdown, `downed` is applied from Lua for 2 turns with the size chance. The target goes down even when armor reduces the damage to 0.
-3. The result goes to `outcome` in the `special` log: `dodged`, `killed` (the blow was fatal), `immune`, `resisted_SIZE`, `knocked_SIZE`.
+2. If it did not miss and the target is not immune to knockdown, `downed` is applied from Lua with the chance and duration set by weight ratio and training level. The target goes down even when armor reduces the damage to 0.
+3. The result goes to `outcome` in the `special` log: `dodged`, `killed` (the blow was fatal), `immune`, `too_heavy` (the ratio fell short at resolution), `resisted`, `knocked`. The last two carry `chance=` and `turns=`. `resisted_SIZE` and `knocked_SIZE` in logs before 2026-10-17 come from the size resolution.
 
 **Evidence.**
 
 - [runtime E6] The fat zombie (bash armor 5) absorbed all of bash 2, so the knockdown written in the JSON never applied. Knockdown was therefore moved from the JSON to Lua.
 - [source] The actor returns a miss when `hit_spread < 0`. The target's dodge handling calls the dodge hook when `hit_spread <= 0`, and monsters do not override it. An exact 0 is a hit for the actor but read as a miss here, erring toward no knockdown.
 - [source] A downed monster's dodge is 0. [runtime E6] The player hit all 5 swings at downed zombies (24/28 against standing ones).
-- [runtime E7] The fat zombie went down at 0 damage; the zombie moose (LARGE) went down once and resisted once. Miss detection was not verified because no miss occurred (unverified).
+- [runtime E7] The fat zombie went down at 0 damage; the zombie moose (LARGE) went down once and resisted once (under the size resolution; with the weight ratio a Labrador does not try it on a zombie moose). Miss detection was not verified because no miss occurred (unverified).
 - [runtime E7, source] Large enemies get up quickly: the zombie moose was standing the next turn. Monsters roll to stand with their melee dice.
 
 ## Ankle Tear
@@ -71,6 +92,6 @@ Set by the attack mode in the menu (`dogs_attack_mode`). Implementation: `choose
 
 ## Open questions
 
-- Whether 50% for large targets and 2 turns of knockdown are right.
+- Whether the weight-ratio values (attempt 0.3, 100% at 0.6, floor 50%, +5% per training level, 2–4 turns downed) are right. The weight-ratio resolution has not been checked in play (it needs a check like E7 again).
 - How Ankle Tear effects stack and actually apply by armor and immunity (not checked in play).
 - The attack's hit roll uses the actor default (the monster's melee skill). The dog's hit rate has not been measured.

@@ -10,7 +10,7 @@
 | Safety veto: encirclement avoidance, low-HP retreat behind the player, object permanence | implemented, [runtime E2, E3, E5] |
 | Return (REGROUP) and engine delegation | implemented, [runtime E3, E5] |
 | Control attacks and follow-up (knock down → bite → break off) | implemented, [runtime E2, E6] |
-| New Takedown resolution (Lua application, size resistance) | implemented, [runtime E7] (miss detection unverified) |
+| Takedown resolution (Lua application) | implemented, [runtime E7] (miss detection unverified). Size resistance replaced by weight ratio and training level (2026-10-17, not checked in play) |
 | Role: Guard (default) | implemented, [runtime E6] |
 | Role: Free | implemented, [runtime E0–E5] |
 | Per-entity state save/restore | [runtime E4] |
@@ -38,9 +38,8 @@ The docile stop order was checked once in E8's first attempt; check it again in 
 ## Open questions
 
 - Does miss detection (`dodged`) actually work (no miss occurred in E7)?
-- Large enemies get up quickly, so knockdown is worth little against them. Adjust knockdown duration or chance by size?
 - Ankle Tear does nothing to enemies with high cut armor (e.g. the zombie moose). Leave it?
-- Takedown: are 50% for large targets and 2 turns of knockdown right?
+- Are the Takedown weight-ratio values (attempt 0.3, 100% at 0.6, floor 50%, +5% per training level, 2–4 turns downed) right (not checked in play)?
 - Ankle Tear: effect stacking and actual application by armor and immunity (not checked in play).
 - Do a Guard distance of 3 and an engage distance of 2 hold in other situations (indoors, crowds)?
 - Leave the Free role's sawtooth (distance 4↔9) as is?
@@ -90,4 +89,6 @@ The docile stop order was checked once in E8's first attempt; check it again in 
 | 2026-10-09 | Design how a dog becomes a DoGS dog (taming, bonding, training), not only how it behaves | User decision |
 | 2026-10-09 | DoGS capabilities open at fixed BN `training_level` values (1: Guard, Free and safety veto; 2: control attacks; 3: Harass and Fetch), not at a fraction of the max level | Breed differences become differences in judgment. Small breeds (max 2) never take Harass, so stats never fail to back the judgment (user decision) |
 | 2026-10-09 | Keep BN's per-level training stat gains; DoGS does not override `pet_training` | BN intends them and DoGS has no right to revert them. Judgment-first forbids covering poor judgment with stats, not stat gains; untrained dogs die to the stat gap before judgment matters (user decision) |
+| 2026-10-17 | Takedown is tried only at a dog/target weight ratio of 0.3 or more; chance and knockdown duration follow the ratio and BN training level. Replaces the chance by size | Trying only on targets it can bring down is the judgment; no small-breed exception is needed. Training level is the knack of striking the center of mass (user decision) |
+| 2026-10-17 | Takedown judgment does not model misjudging by volume (apparent size) | It is a trained move; in BN data weight and volume are mostly proportional and breed volumes are mostly inherited (user decision) |
 | 2026-10-17 | Move the reference revision to `f9586ef` (redhot `2026-10-16-0238`) | The installed experimental build is this one; cited sources changed, but no claim DoGS relies on |

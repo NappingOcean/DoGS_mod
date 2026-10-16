@@ -39,8 +39,11 @@ return {
   },
   attack_ids = { "dogs_takedown", "dogs_ankle_tear" },
   -- Takedown knocks down in Lua after a hit, whatever the armor (E6: bash 2 never got through the
-  -- fat zombie's armor, so the JSON effect never applied). Percent chance by creature size.
-  takedown = { duration = 2, chance = { TINY = 100, SMALL = 100, MEDIUM = 100, LARGE = 50, HUGE = 0 } },
+  -- fat zombie's armor, so the JSON effect never applied). Ratio is dog weight / target weight.
+  -- Worth trying from `min_ratio`; chance rises from `min_chance` there to 100 at `full_ratio`, plus
+  -- `train_bonus` per BN training level. Downed `duration` turns, +1 at `full_ratio`, +1 from
+  -- training level `train_turn`.
+  takedown = { min_ratio = 0.3, full_ratio = 0.6, min_chance = 50, train_bonus = 5, duration = 2, train_turn = 4 },
 
   -- Restraints and riding states the engine must handle itself. finalize.lua checks each ID.
   -- heavysnare/lightsnare have no JSON definition; ai.lua catches them with movement_impaired().

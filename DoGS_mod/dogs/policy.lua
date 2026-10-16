@@ -62,11 +62,21 @@ end
 ---@field flies boolean|nil target flies: no ankle to reach, but a Takedown can still knock it down
 ---@field ready table<string, boolean>
 
----Takedown chance in percent for a creature size name ("TINY" .. "HUGE").
----@param size string
----@return integer
-function M.takedown_chance(size)
-  return config.takedown.chance[size] or 0
+---Takedown from the dog/target weight ratio and the dog's BN training level.
+---@param dog_g integer dog weight in grams
+---@param target_g integer target weight in grams
+---@param level integer BN training_level
+---@return integer|nil chance percent; nil when the target is too heavy to try (or has no weight)
+---@return integer|nil turns downed
+function M.takedown(dog_g, target_g, level)
+  local t = config.takedown
+  if target_g <= 0 then return nil end
+  local ratio = dog_g / target_g
+  if ratio < t.min_ratio then return nil end
+  local rise = math.min(1, (ratio - t.min_ratio) / (t.full_ratio - t.min_ratio))
+  local chance = math.min(100, math.floor(t.min_chance + (100 - t.min_chance) * rise + t.train_bonus * level + 0.5))
+  local turns = t.duration + (ratio >= t.full_ratio and 1 or 0) + (level >= t.train_turn and 1 or 0)
+  return chance, turns
 end
 
 ---@param ctx DogsAttackContext

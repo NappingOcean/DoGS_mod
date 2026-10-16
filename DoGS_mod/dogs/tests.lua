@@ -58,9 +58,16 @@ function M.run()
   assert(policy.choose_attack(fly("", { dogs_ankle_tear = true })) == nil)
   assert(policy.choose_attack(fly("ankle", both)) == nil)
 
-  -- Takedown resistance by size.
-  assert(policy.takedown_chance("MEDIUM") == 100 and policy.takedown_chance("LARGE") == 50)
-  assert(policy.takedown_chance("HUGE") == 0 and policy.takedown_chance("UNKNOWN") == 0)
+  -- Takedown by weight ratio and training level.
+  assert(policy.takedown(29, 100, 5) == nil and policy.takedown(30, 0, 0) == nil)
+  local chance, turns = policy.takedown(30, 100, 0)
+  assert(chance == 50 and turns == 2)
+  chance, turns = policy.takedown(45, 100, 1)
+  assert(chance == 80 and turns == 2)
+  chance, turns = policy.takedown(60, 100, 4)
+  assert(chance == 100 and turns == 4)
+  chance, turns = policy.takedown(30000, 81500, 3) -- Labrador, max level, on a zombie
+  assert(chance == 76 and turns == 2)
 
   -- Step ranking.
   local zombie = { p(1, 0) }

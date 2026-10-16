@@ -8,7 +8,7 @@
 
 - Implementation: [`DoGS_mod/`](../../DoGS_mod/), for one dog type, the Labrador mutt (`mon_dog`). It runs as a judgment layer over BN's stock pet AI.
 - Behavior: a safety veto (encirclement avoidance, falling back behind the player at low HP), Takedown and Ankle Tear control attacks, and roles (Guard by default; Free and Harass selectable, Harass at v0). Training and role are set per dog in the action menu.
-- Verification: experiments E0–E7 are done. E7 largely confirmed the new Takedown resolution (applied from Lua, resisted by size); miss detection is still unverified. Harass v0 has not been checked in play yet (E8 rerun planned).
+- Verification: experiments E0–E7 are done. E7 largely confirmed Takedown's Lua resolution; miss detection is still unverified. Size resistance has since been replaced by a weight-ratio resolution, not yet checked in play. Harass v0 has not been checked in play yet (E8 rerun planned).
 - Next steps: [roadmap](roadmap.md).
 
 ## Reading order for a new session

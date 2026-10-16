@@ -46,8 +46,8 @@ Following AGENTS.md, evidence is labeled by kind.
 
 ## Basis
 
-- Game: redhot build `2026-10-09-0454`, BN commit `a27f19d399be26836b45462f4784079f54eca704` (the reference revision in AGENTS.md).
-- Source claims recorded at `31a9589` (redhot `2026-10-07-0423`) and `8e8aa90` (redhot `2026-10-05-2327`) keep links pinned to those commits. They still hold at `a27f19d`.
+- Game: redhot build `2026-10-16-0238`, BN commit `f9586ef033948451f9c5a136d1ce6214198f1a67` (the reference revision in AGENTS.md).
+- Source claims recorded at `a27f19d` (redhot `2026-10-09-0454`), `31a9589` (redhot `2026-10-07-0423`) and `8e8aa90` (redhot `2026-10-05-2327`) keep links pinned to those commits. They still hold at `f9586ef`.
 - Source claims recorded earlier were confirmed at `ef0eced` (redhot `2026-10-04-0345`) and their links stay pinned there.
 - Older audit documents keep their historical revision `e0e25e9`.
 

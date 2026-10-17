@@ -30,7 +30,7 @@ Implementation: `M.turn` in [`ai.lua`](../../DoGS_mod/dogs/ai.lua).
 
 ## 3. Perception, states and transitions
 
-**Perception.** [design] Enemies are monsters on the same z-level, within 8 tiles, visible to the dog, and hostile to both the dog and the player. Hostile NPCs are not yet perceived. Each action observes the adjacent enemy count, the count within 3 tiles, the distance to the nearest enemy, the distance to the player and the HP ratio.
+**Perception.** [design] Enemies are monsters on the same z-level, within 8 tiles, visible to the dog, and hostile to the dog or the player (E10-A: an angered stock dog bites the dog while ignoring the player, [engine notes](engine-notes.md)). Hostile NPCs are not yet perceived. Each action observes the adjacent enemy count, the count within 3 tiles, the distance to the nearest enemy, the distance to the player and the HP ratio.
 
 **Object permanence.** [design] The last game turn an enemy was perceived is stored as a per-entity value. The low-HP retreat ends only after 5 turns without perceiving an enemy. [runtime E3] Without this rule, the retreat released and re-entered whenever the enemy briefly left sight or the perception radius.
 
@@ -83,7 +83,7 @@ Numbers and resolution: [control attacks](attacks.md).
 ### Guard
 
 - Farther than 3 tiles from the player, return (same method as "Return" below).
-- With an enemy adjacent, let the engine bite; the enemy in front is removed quickly.
+- With an enemy adjacent, or the engine's own target adjacent, let the engine bite; the enemy in front is removed quickly. The engine-target check covers attackers perception does not count, such as hostile NPCs (E10-A: a waiting Guard dog was killed without biting back).
 - With an enemy within 2 tiles of the player or the dog, approach the one closest to the player, never stepping onto a tile more than 3 tiles from the player (`step kind=intercept`).
 - Otherwise wait in place. Distant enemies are ignored, so the engine never chases them.
 
@@ -145,6 +145,7 @@ Numbers and resolution: [control attacks](attacks.md).
 - Fetch also needs a vanilla pet bag in addition to level 3 (see Fetch below).
 
 - [design, 2026-10-17] Implementation: DoGS reads `training_level` on every action. A level-0 dog is a stock pet. The experimental `dogs_trained` is gone; only in debug mode can the experiment menu override the level (BN's level is not changed).
+- [design, 2026-10-17] A dog at level 1 or more carries the permanent effect `dogs_trained_dog` (named `[DoGS] Trained dog`, shown in the monster's info). It blocks the stock hit-and-run `run` effect ([engine notes](engine-notes.md)). DoGS reads the level every action and adds or removes the effect.
 - [design, 2026-10-17] It covers 12 adult breeds (`mon_dog`, Australian cattle dog, border collie, beagle, boxer, bulldog, Chihuahua, dachshund, Great Pyrenees, German shepherd, pit bull mix, rottweiler). Puppies are left out; a growing puppy turns into its adult type in place and is covered from then on.
 
 **To decide:** whether starting-profession dogs begin trained, what happens when the handler changes or the dog is neglected, and whether to use the bond (`pet_bond_level`) as a basis for judgment.

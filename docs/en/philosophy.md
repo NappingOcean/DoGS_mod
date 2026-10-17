@@ -49,6 +49,11 @@ Principles the user set during the experiments.
 - **BN's training stat gains stay.** The HP, melee and dodge multipliers that BN applies per `training_level` are intended by BN, and DoGS has no right to revert them. DoGS does not override `pet_training`.
 - **Stat gains are not the enemy of judgment.** Putting judgment first forbids making up for a lack of judgment with stats. Stat gains themselves are needed: an untrained dog's base stats are so low that it often dies to a zombie from the stat gap before its judgment matters.
 
+## Principles set on 2026-10-17
+
+- **DoGS decides when a trained dog breaks off.** A stock dog flees for 4 turns after every bite (`HIT_AND_RUN`), which fights against Guard. From training level 1 this flight is blocked, and the dog breaks off only by DoGS's judgment (break-off after a control attack, low-HP retreat, avoiding encirclement).
+- **Level-0 dogs and wild dogs stay stock.** Instead of a JSON change that alters the whole monster type (deleting the flag), a permanent effect that only trained dogs carry, `[DoGS] Trained dog`, blocks `run`. The effect shows in the monster's info, so the player can tell which dogs use DoGS judgment.
+
 ## Scope
 
 The dog judges within the role the player assigns. Even against a group, it does not stray far from the player; it holds up the next enemy to arrive to buy time (the Harass role). Current designs: [behavior design](design.md) and [Harass role](harass.md).

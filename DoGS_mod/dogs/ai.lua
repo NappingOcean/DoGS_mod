@@ -14,6 +14,7 @@ local M = {}
 
 local downed = EffectTypeId.new("downed")
 local docile = EffectTypeId.new("docile")
+local trained_effect = EffectTypeId.new("dogs_trained_dog")
 
 local blockers = {}
 for i, id in ipairs(config.blockers) do blockers[i] = EffectTypeId.new(id) end
@@ -26,6 +27,20 @@ local function restrained(dog)
   end
   -- movement_impaired also covers heavysnare/lightsnare, which have no JSON ID to list.
   return dog:movement_impaired() or dog:is_hallucination()
+end
+
+---A trained dog carries a permanent effect that blocks the stock HIT_AND_RUN flight (`run`):
+---DoGS decides when it breaks off (E10-B). The level can change, so this follows it every action.
+---@param dog Monster
+---@param trained boolean
+local function sync_trained(dog, trained)
+  if trained == dog:has_effect(trained_effect) then return end
+  if trained then
+    dog:add_effect(trained_effect, TimeDuration.from_turns(1))
+  else
+    dog:remove_effect(trained_effect)
+  end
+  log.write("trained", "dog=" .. log.id(dog) .. " on=" .. tostring(trained))
 end
 
 ---@param dog Monster
@@ -100,6 +115,15 @@ local function regroup(dog, positions, now)
   return movement.step(dog, "regroup", positions)
 end
 
+---The engine's own target is next to the dog. Catches attackers perception does not count
+---(hostile NPCs), so a waiting guard still defends itself.
+---@param dog Monster
+---@return boolean
+local function engine_target_adjacent(dog)
+  local target = dog:attack_target()
+  return target ~= nil and policy.distance(dog:get_pos_ms(), target:get_pos_ms()) <= 1
+end
+
 ---Guard role: stay within reach of the player and take on only enemies that threaten the player
 ---or close on the dog. Other enemies are ignored, so the engine never chases them.
 ---@param dog Monster
@@ -109,7 +133,9 @@ end
 ---@return boolean handled
 local function guard(dog, obs, positions, now)
   if obs.player > config.guard.radius then return regroup(dog, positions, now) end
-  if obs.adjacent > 0 then return false end -- the stock AI bites what is in front of the dog
+  -- The stock AI bites what is in front of the dog. Waiting here instead let an uncounted
+  -- attacker kill a guard dog that never bit back (E10-A).
+  if obs.adjacent > 0 or engine_target_adjacent(dog) then return false end
   local target = policy.guard_target(dog:get_pos_ms(), positions, gapi.get_avatar():get_pos_ms())
   if target and movement.step(dog, "intercept", positions, false, target) then return true end
   return true -- by the player: wait
@@ -195,9 +221,9 @@ function M.turn(dog)
   -- Disable before every possible fallback so the stock scheduler cannot pick DoGS attacks.
   attacks.disable(dog)
   -- Below training level 1 the dog is a stock pet (docs/en/design.md, "Acquisition and training").
-  if not breed.is_dog(dog) or dog.friendly == 0 or not breed.can(dog, "judgment") then
-    return false
-  end
+  local trained = breed.is_dog(dog) and dog.friendly ~= 0 and breed.can(dog, "judgment")
+  sync_trained(dog, trained)
+  if not trained then return false end
   if restrained(dog) then return false end
 
   local now = gapi.current_turn():to_turn()

@@ -33,7 +33,7 @@ What you need to change the code or run an experiment. Paths are relative to the
 | [`finalize.lua`](../../DoGS_mod/finalize.lua) | Validates the dog type and effect IDs |
 | [`json/dogs.json`](../../DoGS_mod/json/dogs.json) | Overrides for 12 adult breeds: `lua_ai` and the two attacks. One entry per breed (BN breeds copy `mon_dog` before DoGS loads, [engine notes](engine-notes.md)). HP stays vanilla |
 | [`json/whistle.json`](../../DoGS_mod/json/whistle.json) | Command whistle item, use action and recipe |
-| [`json/effects.json`](../../DoGS_mod/json/effects.json) | The `dogs_ankle_wound` effect |
+| [`json/effects.json`](../../DoGS_mod/json/effects.json) | Effects `dogs_ankle_wound` and `dogs_trained_dog` (permanent, blocks `run`) |
 | [`dogs/ai.lua`](../../DoGS_mod/dogs/ai.lua) | Decision order ([behavior design](design.md) section 2), Guard, delegated return |
 | [`dogs/policy.lua`](../../DoGS_mod/dogs/policy.lua) | Pure functions: state transitions, control window, attack choice, Takedown chance, Guard target, step ranking |
 | [`dogs/perception.lua`](../../DoGS_mod/dogs/perception.lua) | Enemy scan and observations |
@@ -122,6 +122,7 @@ Lines tagged `[DoGS]` in `config/debug.log` in the game user directory. Lines du
 | `disengage` | Break-off attempt in the control follow-up |
 | `docile` | Docile state changed (`on=true/false`) |
 | `docile_disengage` | A step out of contact while docile (`moved`) |
+| `trained` | The trained-dog effect was added or removed (`on=true/false`) |
 | `special` | Attack ID, target, result (`outcome`), actual damage, downed/bleed/ankle flags |
 | `melee` | The dog's normal attacks: target type, hit, target HP after |
 | `player_melee` | The player's melee swings: target (numbered), hit, whether the target was downed, target HP |

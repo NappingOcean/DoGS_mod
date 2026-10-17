@@ -13,7 +13,7 @@ local downed = EffectTypeId.new("downed")
 ---@param target Monster
 ---@return integer|nil, integer|nil
 local function takedown(dog, target)
-  return policy.takedown(dog:get_weight():to_gram(), target:get_weight():to_gram(), dog.training_level)
+  return policy.takedown(dog:get_weight():to_gram(), target:get_weight():to_gram(), breed.level(dog))
 end
 
 -- Set during one Takedown so on_dodged can tell a dodge from a hit.

@@ -33,7 +33,7 @@
 | [`finalize.lua`](../../DoGS_mod/finalize.lua) | 개 타입, 휘슬, 효과 ID 유효성 검사 |
 | [`json/dogs.json`](../../DoGS_mod/json/dogs.json) | 성견 12종 덮어쓰기: `lua_ai`, 공격 두 개. 견종마다 따로 둔다(본편 견종은 DoGS보다 먼저 `mon_dog`를 복사한다, [엔진 사실](engine-notes.md)). HP는 바닐라 그대로 |
 | [`json/whistle.json`](../../DoGS_mod/json/whistle.json) | 명령용 휘슬 아이템, 사용 동작, 제작법 |
-| [`json/effects.json`](../../DoGS_mod/json/effects.json) | `dogs_ankle_wound` 효과 |
+| [`json/effects.json`](../../DoGS_mod/json/effects.json) | 효과 `dogs_ankle_wound`, `dogs_trained_dog`(영구, `run`을 막음) |
 | [`dogs/ai.lua`](../../DoGS_mod/dogs/ai.lua) | 판단 순서([행동 설계](design.md) 2절), 엄호, 복귀 위임 |
 | [`dogs/policy.lua`](../../DoGS_mod/dogs/policy.lua) | 순수 함수: 상태 전환, 제압 조건, 공격 선택, Takedown 확률, 엄호 표적, 이동 후보 순위 |
 | [`dogs/perception.lua`](../../DoGS_mod/dogs/perception.lua) | 적 탐색과 관측값 |
@@ -122,6 +122,7 @@
 | `disengage` | 제압 후속의 이탈 시도 |
 | `docile` | docile 상태가 바뀜(`on=true/false`) |
 | `docile_disengage` | docile인 동안 붙은 적에게서 물러난 시도(`moved`) |
+| `trained` | 훈련된 개 효과를 붙이거나 뗌(`on=true/false`) |
 | `special` | 공격 ID, 표적, 결과(`outcome`), 실제 피해, 넘어짐·출혈·발목 상처 |
 | `melee` | 개의 일반 공격: 표적 타입, 명중, 공격 뒤 표적 HP |
 | `player_melee` | 플레이어의 근접 공격: 대상(번호), 명중, 대상이 넘어져 있었는지, 대상 HP |

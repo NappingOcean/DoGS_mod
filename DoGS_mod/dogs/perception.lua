@@ -3,7 +3,9 @@ local policy = require("dogs.policy")
 
 local M = {}
 
----Visible monsters hostile to both the dog and the player, same z-level, within radius.
+---Visible monsters hostile to the dog or the player, same z-level, within radius.
+---Hostile to the dog alone covers animals with aggro_character false (stock dogs): once angered
+---they bite the dog while ignoring the player (E10-A: a pit bull mix killed a guard dog unseen).
 ---Hostile NPCs are not considered yet.
 ---@param dog Monster
 ---@param radius number|nil defaults to config.radius; math.huge leaves only the sight check
@@ -16,8 +18,8 @@ function M.enemies(dog, radius)
   for _, mon in ipairs(gapi.get_all_monsters()) do
     local pos = mon:get_pos_ms()
     if mon ~= dog and not mon:is_hallucination() and policy.distance(here, pos) <= radius
-      and dog:sees(pos) and mon:attitude_to(dog) == Attitude.Hostile
-      and mon:attitude_to(avatar) == Attitude.Hostile then
+      and dog:sees(pos) and (mon:attitude_to(dog) == Attitude.Hostile
+        or mon:attitude_to(avatar) == Attitude.Hostile) then
       out[#out + 1] = mon
     end
   end

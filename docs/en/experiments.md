@@ -18,7 +18,7 @@ From this diagnosis, the implementation that took over the dog's turn was droppe
 
 ## Common conditions
 
-A separate test world, open terrain, daytime, at least 3 runs per experiment. Player attacks and HP healing are set per experiment.
+A separate test world, open terrain, daytime. The number of runs is set per experiment: one by default, more only when a result is unclear. Player attacks and HP healing are set per experiment.
 
 | Experiment | Status | Player attacks | HP healing |
 | --- | --- | --- | --- |
@@ -32,7 +32,7 @@ A separate test world, open terrain, daytime, at least 3 runs per experiment. Pl
 | E7 New Takedown resolution | done (largely passed) | fights alongside | between runs only |
 | E8 Harass v0 probe | first attempt invalid; rerun planned | fights the zombie the dog is not holding | allowed mid-run |
 | E9 Multiple enemies | planned | fights alongside | between runs only |
-| E10 v0.1 check play | planned | varies by item | between runs only |
+| E10 v0.1 check play | in progress (A, C, D passed; B, I, F, J left) | varies by item | between runs only |
 
 ## Procedures
 
@@ -105,25 +105,28 @@ Roles were implemented after E3 (Guard implemented, Harass planned). The experim
 
 The old E8 (a 5-zombie crowd, per role) is not run; E9 replaces it, because Guard and Harass never enter a group by design.
 
-### E10 v0.1 check play (planned)
-Before the v0.1 release, check the new pieces (training levels, whistle, breeds, debug mode, weight-ratio Takedown) and regressions of existing behavior on the reference build. Each item states its minimum runs.
+### E10 v0.1 check play (in progress)
+Before the v0.1 release, check the new pieces and regressions of existing behavior on the reference build. Items were cut on 2026-10-17: what the self-tests or finished items already cover is not replayed.
 
-- Setup: a fresh test world with DoGS on. Turn debug mode on in action_menu → Debug → **DoGS debug**. Create dogs and zombies with BN's debug menu and tame dogs with dog food. Set training levels with DoGS debug → Dog tools → "Training level override" (no override for items G and H).
-- Log: `[DoGS]` lines after the last `event=load`. Split items by `menu` events. After the run, also record the game build (`VERSION.txt`).
+- Setup: a test world with debug mode on. Create dogs and enemies with BN's debug menu and tame dogs with dog food. Set training levels with DoGS debug → Dog tools → "Training level override".
+- Run the remaining items in one play session, in the order B → I → F·J. Afterwards, give one line listing the dogs and enemies used per item (for example "B: 2 zombies, I: 1 pit bull"). The log is read after the last `event=load`.
 
-| Item | Setup | Check in the log | Success criterion |
+| Item | Setup | Check | Pass |
 | --- | --- | --- | --- |
-| A Training levels | Labrador, one regular zombie; override 0 → 1 → 2 | 0: no `decide`, `step` or `special` for that dog. 1: `decide` and `step`, no `special`. 2: `special` | Each level as on the left; one run per level |
-| B Guard and return regression | E6 setup (two zombies, 6 tiles, player in melee), override 2. Afterwards the player walks away from the dog | `step kind=intercept`, `summary player=`, `decide to=REGROUP` entry and exit | The E6 and E5 criteria; 2 runs |
-| C Low-HP retreat regression | E2 setup, override 2 | `decide to=RETREAT`, `step kind=flee`, `hold` | The E2 criteria; 1 run |
-| D Weight-ratio Takedown | Labrador at override 0 and 3, regular zombies; then one zombie moose | Zombie: `special id=dogs_takedown outcome=knocked/resisted chance=61` (level 0), `chance=76` (level 3), `turns=2`. Zombie moose: no `dogs_takedown` | `chance` matches the table in [control attacks](attacks.md); no attempt below ratio 0.3; at least 5 Takedowns per level |
-| E Breeds | Chihuahua and German shepherd (override 2), regular zombies | Chihuahua: `dogs_ankle_tear` only. Shepherd: `chance=72` | One run per breed |
-| F Whistle | Craft the whistle (Other → Tools) or spawn it; two dogs | Use → dog list → role list. `menu source=whistle role=`, then `summary role=` | The chosen role applies. Debug off: no Harass. On and level 3: Harass offered. Level-0 dog: notice message |
-| G Puppy growth | A tamed Labrador puppy trained to level 2 the BN way (raise survival with the debug menu; keep the dog well fed). Skip 42+ days with BN's debug Change time | `summary type=mon_dog level=2`, then `special` | Behaves as in B and D once grown; 1 run |
-| H BN training | Train to level 1 or more with BN's Train, no override | `summary level=` equals the BN level | 1 run |
-| I Debug off | After any item, turn debug mode off; save and reload | After turning it off the only `[DoGS]` line is `event=debug on=false`; no state messages; attack messages read `Your Labrador mutt: Takedown on …` | Still off after reloading |
+| B Guard regression | E6 setup (two zombies, 6 tiles, player in melee). Labrador at override 2. 1 run | `trained on=true`, `[DoGS] Trained dog` in the monster's info, `intercept` after `melee`, damage to the dog | No repeated `intercept` onto the same tile after a bite. Within 3 tiles of the player in combat |
+| I Wild animal attack | Labrador at override 1. One untamed pit bull mix spawned 3–5 tiles away; let the dog bite first. The player does not attack. 1 run | `summary enemies=` while being bitten, the dog's `melee target_type=mon_dog_pitbullmix` | No `enemies=0` while being bitten, and the dog bites back |
+| F·J Whistle and debug off | The whistle (craft under Other → Tools or spawn it). One dog at override 3 | Debug on: whistle → the role list includes Harass → choosing Free logs `menu source=whistle role=free`. Debug off: the whistle on the same dog gives the "does not know the signals yet" notice (the override is off, so level 0), and `[DoGS] Trained dog` leaves the monster's info. Save and reload | After turning debug off, the only `[DoGS]` line is `event=debug on=false` and there are no state messages. Still off after reloading |
 
-- On a failure, fix and rerun only that item. A–F and I passing meets the v0.1 release condition. G and H take time and may follow the release, but their results are recorded.
+Finished and removed items:
+
+- A Training levels, C Low-HP retreat: passed (see Results).
+- D Weight-ratio Takedown: passed. Twenty level-2 attempts showed `chance=71` and a 70% knockdown rate, and level 3 logged `chance=76`. Per-level values come from the same formula, which the self-tests cover, so no more level-3 samples are collected.
+- E Breeds: removed. A's border collie (#1) logged `decide` at level 1, which shows the per-breed JSON is attached. The weight-ratio rule (no attempt for a Chihuahua) is covered by the self-tests.
+- G Puppy growth, H BN training: removed. They take long. DoGS only reads BN's level every action and uses it as is without an override (A's pit bull #3 logged `level=0`). If a problem shows up in ordinary play after the release, it will be looked at then.
+- B's return walk and second run: removed. Return was not changed and was checked in E10-B.
+- J's attack-message wording: removed. With debug off the override is off too, so it would need a BN-trained dog.
+
+- On a failure, fix and rerun only that item. B, I and F·J passing meets the v0.1 release condition.
 
 ## Results
 
@@ -322,3 +325,75 @@ Salvaged:
 1. **Docile stop order checked.** While docile (turns 1336062–1336070) the dog stepped away from the adjacent zombie twice (`docile_disengage moved=true`), with no normal attacks logged; it resumed attacking once docile ended. One sample.
 2. **Encirclement timing.** Fighting two zombies, the dog entered RETREAT four times, each time already adjacent to 2 enemies; its HP fell from 30 to 15. This looks later than "without hesitation before encirclement"; E9 will judge it.
 3. **Wait-log noise.** During the low-HP wait, a moving player made flee steps and waits alternate, so `hold` was logged almost every action. A logging issue, not a behavior one.
+
+### 2026-10-17 E10-A (training levels)
+
+Log: `config/debug.log` 20:03–20:34. Game build 2026-10-16-0238 (`f9586ef`). Level 0 ran in the session before the last `event=load` (20:15). The experimenter removed dog #1 (border collie) with the debug menu. Dog #3 (pit bull mix) kept biting Labrador #2, so the experimenter tamed it partway through.
+
+| Level | Dog | Turns | Result |
+| --- | --- | --- | --- |
+| 0 | Labrador #2 | 1325048–1325200 | No `decide`, `step` or `special`. Killed the zombie with 12 engine bites |
+| 1 | Labrador #4 | 1325692–1325899 | `decide` and `step`, no `special`. Killed zombie #5 with engine bites |
+| 2 | Labrador #4 | 1325899–1325928 | `dogs_takedown outcome=knocked` at 1325910 |
+
+**Verdict: A passed.**
+
+Observations:
+
+1. **A trained dog died to an animal it did not count as an enemy.** While level-1 Guard Labrador #2 was bitten by wild pit bull mixes (turns 1325280–1325530), every `summary` read `enemies=0`. #2 never bit back. Its HP fell 30→21, and after a menu refill 30→13→8→3. It died at 1325531 with `killer=mon_dog_pitbullmix`. At level 0 it had bitten a pit bull (1325224, 1325236). Meanwhile `probe_result engine_target=true` was logged, so the engine did see a target. There were at least two pit bulls: tamed #3 was more than 25 tiles away when #2 died, and #3 itself bit another pit bull (1325479).
+   - Cause [source]: stock dogs have `aggro_character: false`, so when another monster's bite angers them they still ignore the player ([engine notes](engine-notes.md)). Perception then required hostility to both the dog and the player, so it missed the pit bull. With no enemy, Guard spent the turn waiting, so the engine never got to bite back.
+   - Fix: perception now counts monsters hostile to the dog or the player. Guard also hands the turn to the engine when the engine's own target is adjacent. E10-I will check this.
+2. **Takedown chance ignored the override.** Override 2 logged `chance=61`, the level-0 value: the code read BN's `training_level`. It now uses the overridden level. Item D now uses levels 2 and 3 instead of level 0, which has no special attacks.
+3. **Guard steps back and forth.** At 1325856–1325876, `intercept from=89,86 to=89,85` repeated 8 times. The dog moves in, and the next action puts it back. The level-1 dog took about 190 turns to kill one zombie. Item B looks at this.
+4. **The low-HP retreat still works.** #4 entered RETREAT at HP 0.23 and waited within 2 tiles of the player. The 5 `hold` lines in 15 turns are the same log noise seen in E8.
+5. **`step_failed kind=intercept` was logged twice per turn.** This is not a duplicate. A stock dog has speed 150, so it acts once or twice per turn, and each action is logged (corrected in E10-B).
+6. After the Takedown (1325910) the player was 4 tiles away, so the dog returned instead of biting the downed zombie. This is the Guard radius (3) working as designed.
+
+### 2026-10-17 E10-B, C, D
+
+Log: `config/debug.log` 20:52–21:02. Same build. Dog #4 (Labrador, Guard). Runs were split from the log.
+- Override 2: B (zombies #7 and #8, then #9 and #10), D with the dog fighting alone (#11, #12), C (#13)
+- Override 3: D (#14), zombie moose #15
+
+HP was refilled from the menu. It was not refilled between #11 and #13, which is why the low-HP retreat happened at #13.
+
+**B Guard and return (2 runs): mostly passed. To be rerun once `HIT_AND_RUN` is blocked.**
+
+| Run | Zombies | Hits on the player | Damage to the dog | Kills |
+| --- | --- | --- | --- | --- |
+| B-1 | #7, #8 | 0 | 21 (30→9, about 6 turns) | both by the player |
+| B-2 | #9, #10 | 1 | 0 | player 1, dog 1 |
+
+- In combat the player distance was 1–3. It reached 4 or more only during retreat or with no enemy around. `step kind=intercept` occurred 76 times.
+- There was one REGROUP (1326174→1326181). The dog came back from distance 15 to 4 in 7 turns. Just before it entered, the distance went from 6 to 15 in 4 turns; the cause has not been checked.
+- The 21 damage to the dog in B-1 is far more than in E6 Guard (4 over five zombies). Observation 1 gives the cause.
+- At 1326080–1326090 `player_hp` dropped from 1034 to 1032 with no `player_attacked` line. The cause has not been checked.
+
+**C Low-HP retreat (1 run, #13): passed.**
+- RETREAT started at HP 0.37 (1326385).
+- On the next action the dog waited within 1 tile of the player (`hold`).
+- Its HP then stayed at 11.
+- The retreat ended 4 turns after the zombie died (1326397).
+- The retreat during B-1 (HP 0.30) was different: the dog circled 3–4 tiles from the player and only started waiting after 16 turns, against the E2 limit of 10. With two zombies near the player, it apparently found no tile behind the player. E9 will look at this again.
+
+**D Weight-ratio Takedown: level 2 passed; too few level-3 samples.**
+
+| Level | `chance` | Attempts | Knocked | Resisted |
+| --- | --- | --- | --- | --- |
+| 2 | 71 | 20 | 14 (70%) | 6 |
+| 3 | 76 | 3 | 2 | 1 |
+
+- `turns=2` was correct throughout.
+- The zombie moose drew no Takedown attempt (ratio 0.25), only two Ankle Tears (0 damage).
+- A Takedown that killed its target logged `outcome=killed` (1326121), which confirms the E7 fix.
+- D was later marked passed: per-level values come from the same formula, which the self-tests cover (E10 procedure).
+
+Observations:
+
+1. **Stock hit-and-run fights against Guard.** [source] Because of the `HIT_AND_RUN` flag, a stock dog flees for 4 turns after every bite ([engine notes](engine-notes.md)). When Guard moves the dog back into contact, the engine pulls it out again without biting.
+   - `intercept` repeatedly stepped onto the same tile (1326196, 1326198).
+   - In the same turn the dog broke off after a control attack, Guard moved it straight back into contact (1326013, 1326015).
+   - E10-A observation 3 has the same cause.
+   - Fix: dogs at level 1 or more get the permanent effect `[DoGS] Trained dog`, which blocks `run` ([philosophy](philosophy.md)).
+2. **Log lines are written per action.** Several `hold` and `step_failed` lines in one turn come from speed 150. E10-A observation 5 is corrected.
+3. **The zombie moose was dangerous.** The dog fell back at HP 0.23 within 4 turns, and the player's HP dropped from 1021 to 994, as in E7.

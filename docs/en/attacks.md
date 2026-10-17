@@ -27,7 +27,7 @@ Labels: [design] decision, [source] confirmed in BN source, [runtime E#] confirm
 | Move cost / cooldown | 100 / 8 turns |
 | Weight ratio | Dog weight ÷ target weight, both the monster definition's `weight` ([engine notes](engine-notes.md), Data) |
 | Attempt | weight ratio 0.3 or more |
-| Knockdown chance | rises linearly from 50% at ratio 0.3 to 100% at 0.6; +5% per BN training level (max 100%) |
+| Knockdown chance | rises linearly from 50% at ratio 0.3 to 100% at 0.6; +5% per BN training level (max 100%). The level follows the debug override |
 | Knockdown duration | 2 turns; +1 at ratio 0.6 or more, +1 at training level 4 or more. Applied from Lua |
 | Targets | any enemy that meets the attempt condition, flying ones included (read as struck and knocked out of the air) |
 

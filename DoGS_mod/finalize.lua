@@ -8,8 +8,8 @@ assert(ItypeId.new("dogs_command_whistle"):is_valid(), "missing item dogs_comman
 for _, id in ipairs(config.blockers) do
   assert(EffectTypeId.new(id):is_valid(), "unknown blocker effect " .. id)
 end
-for _, id in ipairs({ "downed", "bleed", "dogs_ankle_wound", "docile" }) do
-  assert(EffectTypeId.new(id):is_valid(), "unknown attack effect " .. id)
+for _, id in ipairs({ "downed", "bleed", "dogs_ankle_wound", "docile", "dogs_trained_dog", "run" }) do
+  assert(EffectTypeId.new(id):is_valid(), "unknown effect " .. id)
 end
 -- Monster bindings from BN 5442dd4 (#10504); older builds lack them.
 for _, name in ipairs({ "attack_target", "movement_impaired", "is_dead_or_dying" }) do

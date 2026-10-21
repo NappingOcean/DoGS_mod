@@ -23,7 +23,7 @@ if ($dogsProcess.ExitCode -ne 0) { throw "BN check failed: exit $($dogsProcess.E
 $dogsOutput = (Get-Content -LiteralPath $dogsStdout -Raw) + (Get-Content -LiteralPath $dogsStderr -Raw)
 if ($dogsOutput -match 'Error') { throw 'BN reported an error while checking DoGS.' }
 $dogsLogText = Get-Content -LiteralPath $dogsLog -Raw
-foreach ($dogsMarker in @('event=selftest scope=policy result=pass', 'event=load build=claude-rebuild', 'event=finalize result=pass')) {
+foreach ($dogsMarker in @('event=selftest scope=policy result=pass', 'event=load build=v0.1', 'event=finalize result=pass')) {
     if (-not $dogsLogText.Contains($dogsMarker)) { throw "Missing Lua validation marker: $dogsMarker" }
 }
 Write-Output 'PASS: BN data loading, ID checks and pure policy checks. This is not a play test.'

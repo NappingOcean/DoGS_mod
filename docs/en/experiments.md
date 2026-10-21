@@ -32,7 +32,7 @@ A separate test world, open terrain, daytime. The number of runs is set per expe
 | E7 New Takedown resolution | done (largely passed) | fights alongside | between runs only |
 | E8 Harass v0 probe | first attempt invalid; rerun planned | fights the zombie the dog is not holding | allowed mid-run |
 | E9 Multiple enemies | planned | fights alongside | between runs only |
-| E10 v0.1 check play | in progress (A, C, D passed; B, I, F, J left) | varies by item | between runs only |
+| E10 v0.1 check play | done | varies by item | between runs only |
 
 ## Procedures
 
@@ -105,7 +105,7 @@ Roles were implemented after E3 (Guard implemented, Harass planned). The experim
 
 The old E8 (a 5-zombie crowd, per role) is not run; E9 replaces it, because Guard and Harass never enter a group by design.
 
-### E10 v0.1 check play (in progress)
+### E10 v0.1 check play (done)
 Before the v0.1 release, check the new pieces and regressions of existing behavior on the reference build. Items were cut on 2026-10-17: what the self-tests or finished items already cover is not replayed.
 
 - Setup: a test world with debug mode on. Create dogs and enemies with BN's debug menu and tame dogs with dog food. Set training levels with DoGS debug → Dog tools → "Training level override".
@@ -115,7 +115,7 @@ Before the v0.1 release, check the new pieces and regressions of existing behavi
 | --- | --- | --- | --- |
 | B Guard regression | E6 setup (two zombies, 6 tiles, player in melee). Labrador at override 2. 1 run | `trained on=true`, `[DoGS] Trained dog` in the monster's info, `intercept` after `melee`, damage to the dog | No repeated `intercept` onto the same tile after a bite. Within 3 tiles of the player in combat |
 | I Wild animal attack | Labrador at override 1. One untamed pit bull mix spawned 3–5 tiles away; let the dog bite first. The player does not attack. 1 run | `summary enemies=` while being bitten, the dog's `melee target_type=mon_dog_pitbullmix` | No `enemies=0` while being bitten, and the dog bites back |
-| F·J Whistle and debug off | The whistle (craft under Other → Tools or spawn it). One dog at override 3 | Debug on: whistle → the role list includes Harass → choosing Free logs `menu source=whistle role=free`. Debug off: the whistle on the same dog gives the "does not know the signals yet" notice (the override is off, so level 0), and `[DoGS] Trained dog` leaves the monster's info. Save and reload | After turning debug off, the only `[DoGS]` line is `event=debug on=false` and there are no state messages. Still off after reloading |
+| F·J Whistle and debug off | Refill the dog's HP first. The whistle (craft under Other → Tools or spawn it). One dog at override 3 | Debug on: whistle → the role list includes Harass → choosing Free logs `menu source=whistle role=free`. Debug off: the whistle on the same dog gives the "does not know the signals yet" notice (the override is off, so level 0), and `[DoGS] Trained dog` leaves the monster's info. Save and reload | After turning debug off, the only `[DoGS]` line is `event=debug on=false` and there are no state messages. Still off after reloading |
 
 Finished and removed items:
 
@@ -397,3 +397,21 @@ Observations:
    - Fix: dogs at level 1 or more get the permanent effect `[DoGS] Trained dog`, which blocks `run` ([philosophy](philosophy.md)).
 2. **Log lines are written per action.** Several `hold` and `step_failed` lines in one turn come from speed 150. E10-A observation 5 is corrected.
 3. **The zombie moose was dangerous.** The dog fell back at HP 0.23 within 4 turns, and the player's HP dropped from 1021 to 994, as in E7.
+
+### 2026-10-21 E10-B (rerun), I
+
+Log: `config/debug.log` 21:34–21:40 (played 2026-10-17). Dog #4, override 3, Guard.
+
+**B: passed.** Four zombies (#16–#19). `trained on=true` (1326452). Hit-and-run is gone: once in contact the dog bit 3–6 times in a row and killed a zombie alone in about 14 turns (190 before). Damage to the dog 10, hits on the player 3, player distance 1–3 in combat. One problem remained: after a control attack the dog broke off and Guard put it back in contact in the same turn (7 times). Guard no longer breaks off ([behavior design](design.md)).
+
+**I: passed (on what it checks).** Pit bull #20 counted as an enemy from the start (`enemies=1–2`), and the dog moved in and used Takedown (dodged, 1327775). In the next 2 turns its HP fell from 20 to 2; it fell back and died 30 turns later (1327809). The cause is the experiment design. "The player does not attack" contradicts the retreat's premise that the player deals with the pursuer, and the dog started without recovering from B. Not rerun.
+
+Limit [source]: the debug override does not give BN's per-level HP, melee and dodge multipliers, which use the real `training_level` (`monster.cpp:1360`). A Labrador at override 3 has HP 30; at BN level 3 it would have about 52. All E10 survival results come from this condition.
+
+### 2026-10-21 E10-F, J
+
+Log: `config/debug.log` 23:47–23:51. Dog #21 (Labrador), override 3. Same build.
+
+**F·J: passed.** With debug on, the whistle's role list offered Harass, and each choice logged `menu source=whistle role=harass/free/guard`. After debug was turned off, the only `[DoGS]` line was `event=debug on=false`. After reloading it stayed off (no lines beyond the load markers). The experimenter confirmed on screen the level-0 notice and that `[DoGS] Trained dog` went away. There was no combat, so removing the break-off from Guard was not checked in play.
+
+**E10 done.** The v0.1 release condition (B, I, F·J passed) is met.

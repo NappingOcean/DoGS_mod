@@ -20,4 +20,4 @@ gapi.register_action_menu_entry({ id = "dogs_debug", name = "DoGS debug", catego
 gapi.add_on_every_x_hook(TimeDuration.from_turns(config.summary_interval), events.summary)
 
 require("dogs.tests").run()
-gdebug.log_info("[DoGS] event=load build=claude-rebuild")
+gdebug.log_info("[DoGS] event=load build=v0.1")

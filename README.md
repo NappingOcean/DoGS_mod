@@ -22,7 +22,7 @@ Planned: firing-line avoidance and the Harass role (holding up the next enemy ne
 .\scripts\Test-Mod.ps1 -GameDirectory <BN game directory>
 ```
 
-Enable **DoGS — Dogs of Good Sense (rebuild)** in a test world, tame a dog, raise it to training level 1 or more with BN's training (Train in the pet menu), and set its role with the **command dog whistle** (crafting: Other → Tools). Experiment tools and logs are in debug mode under action menu → Debug → **DoGS debug**.
+Enable **DoGS — Dogs of Good Sense** in a test world, tame a dog, raise it to training level 1 or more with BN's training (Train in the pet menu), and set its role with the **command dog whistle** (crafting: Other → Tools). Experiment tools and logs are in debug mode under action menu → Debug → **DoGS debug**.
 
 ## Documentation
 

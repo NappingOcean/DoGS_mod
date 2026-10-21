@@ -21,7 +21,7 @@
 ```
 
 - `Install-Mod.ps1`은 게임의 `mods/DoGS`를 `DoGS_mod/`에 정션으로 연결한다. 예전 `mod/`를 가리키는 정션만 교체하고, 다른 대상이 있으면 멈춘다.
-- `Test-Mod.ps1`은 임시 사용자 디렉터리에서 `--check-mods DoGS`를 실행한다. 출력에 `Error`가 있거나 로딩 표식(`selftest scope=policy result=pass`, `load build=claude-rebuild`, `finalize result=pass`)이 없으면 실패한다. BN은 Lua 로딩 오류가 나도 종료 코드 0으로 끝날 수 있다.
+- `Test-Mod.ps1`은 임시 사용자 디렉터리에서 `--check-mods DoGS`를 실행한다. 출력에 `Error`가 있거나 로딩 표식(`selftest scope=policy result=pass`, `load build=v0.1`, `finalize result=pass`)이 없으면 실패한다. BN은 Lua 로딩 오류가 나도 종료 코드 0으로 끝날 수 있다.
 - 통과는 데이터 로딩, ID 검사, 순수 정책 함수 검사가 통과했다는 뜻이다. 플레이 검증이 아니다.
 - 코드를 바꾼 뒤에는 게임에서 월드를 다시 불러와야 적용된다.
 
@@ -152,7 +152,7 @@
 
 - 절차와 결과는 [실험 기록](experiments.md)에 있다. 새 실험은 배치, 측정, 성공 기준을 먼저 적고 시작한다.
 - 매 수정은 직전 플레이 로그 분석으로 시작한다. 로그를 읽지 않고 기능을 더하지 않는다.
-- 로그는 마지막 `event=load build=claude-rebuild` 이후를 본다. 회차는 `menu`(HP 회복, 단계 덮어쓰기) 이벤트로 나눈다. 실험 전에 디버그 모드를 켠다.
+- 로그는 마지막 `event=load build=v0.1` 이후를 본다. 회차는 `menu`(HP 회복, 단계 덮어쓰기) 이벤트로 나눈다. 실험 전에 디버그 모드를 켠다.
 - 실험자가 회차를 어떻게 정리했는지(직접 처치, 디버그 처치)를 함께 기록한다. 로그의 `killer=none`만으로는 출혈 사망과 디버그 처치를 구분할 수 없다.
 - 로딩 성공이나 정책 검사 통과를 플레이 검증으로 적지 않는다.
 

@@ -21,7 +21,7 @@ What you need to change the code or run an experiment. Paths are relative to the
 ```
 
 - `Install-Mod.ps1` links the game's `mods/DoGS` to `DoGS_mod/` with a junction. It replaces only a junction to the old `mod/` and stops if anything else is there.
-- `Test-Mod.ps1` runs `--check-mods DoGS` in a temporary user directory. It fails if the output contains `Error` or the load markers (`selftest scope=policy result=pass`, `load build=claude-rebuild`, `finalize result=pass`) are missing. BN can exit with code 0 after a Lua load error.
+- `Test-Mod.ps1` runs `--check-mods DoGS` in a temporary user directory. It fails if the output contains `Error` or the load markers (`selftest scope=policy result=pass`, `load build=v0.1`, `finalize result=pass`) are missing. BN can exit with code 0 after a Lua load error.
 - A pass means data loading, ID checks and the pure policy checks passed. It is not play verification.
 - After changing code, reload the world in the game to apply it.
 
@@ -152,7 +152,7 @@ Lines tagged `[DoGS]` in `config/debug.log` in the game user directory. Lines du
 
 - Procedures and results are in [experiments](experiments.md). Write a new experiment's setup, measurements and success criteria before starting.
 - Every change starts from analyzing the previous play log. No feature is added without reading the log.
-- Read the log after the last `event=load build=claude-rebuild`. Split runs by `menu` events (HP refill, level override). Turn debug mode on before an experiment.
+- Read the log after the last `event=load build=v0.1`. Split runs by `menu` events (HP refill, level override). Turn debug mode on before an experiment.
 - Record how the experimenter ended each run (direct kill, debug kill). `killer=none` alone cannot separate bleeding deaths from debug kills.
 - Loading success or passing policy checks is not reported as play verification.
 

@@ -19,7 +19,7 @@ Implementation: `M.turn` in [`ai.lua`](../../DoGS_mod/dogs/ai.lua).
 | 0 | Other type, untrained, not friendly, restrained/ridden/leashed etc. (including any movement-impairing effect), hallucination | Disable DoGS attacks and leave the action to the engine | false |
 | 1 | State RETREAT | Safety veto (section 4) | true / false |
 | 1a | `docile` (the existing whistle's stop-attacking order) | With an enemy adjacent, step to a tile out of contact; otherwise leave it to the engine (following) | true / false |
-| 2 | A control attack was just used | While a downed enemy is adjacent, let the engine bite; once it stands, step away (section 5). The Harass role skips the bite and goes to step 4 | false / true |
+| 2 | A control attack was just used | While a downed enemy is adjacent, let the engine bite; once it stands, step away (section 5). Free role only: Guard does not break off, and Harass skips the bite and goes to step 4 | false / true |
 | 3 | State DEFAULT, exactly one adjacent enemy, at most 2 within 3 tiles | Control attack (section 5) | true |
 | 4 | Guard or Harass role | Guard behavior (section 6), Harass behavior ([Harass role](harass.md)) | true / false |
 | 5 | Free role, state REGROUP | Return to the player (section 6) | false / true |
@@ -68,7 +68,7 @@ This brings the enemy to the player; it is a deliberate choice for wounded dogs 
 Numbers and resolution: [control attacks](attacks.md).
 
 - **Opportunity.** [design] Used when the state is DEFAULT, exactly one enemy is adjacent, and at most 2 enemies are within 3 tiles.
-- **Follow-up.** [design] After a control attack, while a downed enemy is adjacent the engine bites it; once it stands, the dog steps away: "knock down → bite → break off once it stands." [runtime E1, E2] Breaking off right after the attack threw away the chance to bite a downed enemy (dodge 0). After the change, several runs had the dog kill a zombie without taking damage.
+- **Follow-up.** [design] After a control attack, while a downed enemy is adjacent the engine bites it; once it stands, the dog steps away: "knock down → bite → break off once it stands." [runtime E1, E2] Breaking off right after the attack threw away the chance to bite a downed enemy (dodge 0). After the change, several runs had the dog kill a zombie without taking damage. [design, 2026-10-21] Only the Free role breaks off. [runtime E10-B] In Guard, the role's own intercept put the dog back in contact in the same turn, so the break-off did nothing.
 
 ## 6. Roles
 

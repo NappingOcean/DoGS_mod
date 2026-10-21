@@ -275,9 +275,10 @@ function M.turn(dog)
     return false -- out of contact: the engine follows; cornered: it defends itself
   end
 
-  -- 2. After a control attack: bite while a neighbor is down, break off once it stands.
+  -- 2. After a control attack (Free role): bite while a neighbor is down, break off once it stands.
   -- Harass does not fight in contact, so it skips the bite and goes straight to holding distance.
-  if dog:get_value("dogs_disengage") == "1" and role.get(dog) == "harass" then
+  -- Guard keeps biting what is in front of it; its intercept undid every break-off in the same turn (E10-B).
+  if dog:get_value("dogs_disengage") == "1" and role.get(dog) ~= "free" then
     dog:set_value("dogs_disengage", "")
   elseif dog:get_value("dogs_disengage") == "1" then
     if obs.adjacent == 0 then

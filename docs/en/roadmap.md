@@ -32,10 +32,10 @@ The release scope is separate from the experiment steps (decided 2026-10-17). v0
 - [x] Debug mode: logs, state messages, experiment tools
 - [x] Apply to 12 adult breeds
 - [x] Command whistle (role orders)
-- [ ] E10 v0.1 check play ([experiments](experiments.md)); record the BN build it was confirmed on
+- [x] E10 v0.1 check play ([experiments](experiments.md)); confirmed on redhot `2026-10-16-0238` (`f9586ef`)
 - [ ] Release zip and install instructions
 - [ ] README from the player's side: what differs from vanilla dogs, supported build, known limits
-- [ ] Drop "(rebuild)" from the mod name and "Experimental" from its description
+- [x] Drop "(rebuild)" from the mod name and "Experimental" from its description
 
 ## After v0.1
 

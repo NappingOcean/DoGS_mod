@@ -22,7 +22,7 @@
 .\scripts\Test-Mod.ps1 -GameDirectory <BN 게임 디렉터리>
 ```
 
-시험 월드에서 **DoGS — Dogs of Good Sense (rebuild)**를 켜고, 개를 길들여 본편 훈련(펫 메뉴의 Train)으로 1단계 이상 올린 뒤 **명령용 도그 휘슬**(제작: 기타 → 도구)로 역할을 정합니다. 실험 도구와 로그는 action_menu → Debug → **DoGS debug**의 디버그 모드에 있습니다.
+시험 월드에서 **DoGS — Dogs of Good Sense**를 켜고, 개를 길들여 본편 훈련(펫 메뉴의 Train)으로 1단계 이상 올린 뒤 **명령용 도그 휘슬**(제작: 기타 → 도구)로 역할을 정합니다. 실험 도구와 로그는 action_menu → Debug → **DoGS debug**의 디버그 모드에 있습니다.
 
 ## 문서
 

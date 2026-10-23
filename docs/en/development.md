@@ -10,7 +10,8 @@ What you need to change the code or run an experiment. Paths are relative to the
 | --- | --- |
 | [`DoGS_mod/`](../../DoGS_mod/) | The mod (mod ID `DoGS`). The game's `mods/DoGS` points to this folder |
 | [`docs/`](../) | Documentation (English `en`, Korean `ko`); change both together |
-| [`scripts/`](../../scripts/) | Install and check scripts |
+| [`scripts/`](../../scripts/) | Install, check and release scripts |
+| [`release/`](../../release/) | Player READMEs shipped inside the release zip |
 | [`AGENTS.md`](../../AGENTS.md), [`AGENT/research-rules.md`](../../AGENT/research-rules.md) | Agent working rules, commit trailers |
 
 ## Install and check
@@ -21,15 +22,30 @@ What you need to change the code or run an experiment. Paths are relative to the
 ```
 
 - `Install-Mod.ps1` links the game's `mods/DoGS` to `DoGS_mod/` with a junction. It replaces only a junction to the old `mod/` and stops if anything else is there.
-- `Test-Mod.ps1` runs `--check-mods DoGS` in a temporary user directory. It fails if the output contains `Error` or the load markers (`selftest scope=policy result=pass`, `load build=v0.1`, `finalize result=pass`) are missing. BN can exit with code 0 after a Lua load error.
+- `Test-Mod.ps1` runs `--check-mods DoGS` in a temporary user directory, with developer tools turned on in its copy. It fails if the output contains `Error` or the load markers (`selftest scope=policy result=pass`, `load build=<version> dev_tools=true`, `finalize result=pass`) are missing. BN can exit with code 0 after a Lua load error. With `-Release` it checks the folder as shipped: `dev_tools=false`, and no `selftest` line.
 - A pass means data loading, ID checks and the pure policy checks passed. It is not play verification.
 - After changing code, reload the world in the game to apply it.
+
+## Developer tools
+
+`dev_tools` in [`dogs/config.lua`](../../DoGS_mod/dogs/config.lua) is `false` in the repository and in releases. Off, DoGS registers no debug menu entry, no logging hooks (`on_creature_melee_attacked`, `on_mon_death`, the summary timer) and runs no self-tests. Debug mode stays off even in a world saved with it on, so logs, state messages, the level override and Harass are unreachable.
+
+- [source] A Lua entry in the action menu's `debug` category makes BN show the Debug category even when the debug key is unbound ([action.cpp:1100](https://github.com/cataclysmbn/Cataclysm-BN/blob/f9586ef033948451f9c5a136d1ce6214198f1a67/src/action.cpp#L1100)). So the entry is not registered at all, rather than registered and hidden.
+- To develop, set `dev_tools = true` locally and do not commit it. `Build-Release.ps1` and `Test-Mod.ps1 -Release` refuse a config without `dev_tools = false,`.
+
+## Release
+
+```powershell
+.\scripts\Build-Release.ps1 -GameDirectory <BN game directory>
+```
+
+It needs a clean working tree. It copies `DoGS_mod/` to `dist/stage-<version>/DoGS/` without the developer-only files (`dogs/tests.lua`), adds `LICENSE` and the player READMEs from `release/`, checks that folder with `Test-Mod.ps1 -Release`, and writes `dist/DoGS-<version>.zip` holding the single folder `DoGS/`. The version comes from `modinfo.json`; keep the `build=` load marker in `preload.lua` the same.
 
 ## Modules
 
 | File | Role |
 | --- | --- |
-| [`preload.lua`](../../DoGS_mod/preload.lua) | Loads modules; registers the AI callback, hooks, menu and periodic log; runs policy checks |
+| [`preload.lua`](../../DoGS_mod/preload.lua) | Loads modules; registers the AI callback, hooks and whistle use function; with developer tools, also the debug menu, logging hooks and periodic log, and runs policy checks |
 | [`finalize.lua`](../../DoGS_mod/finalize.lua) | Validates the dog type and effect IDs |
 | [`json/dogs.json`](../../DoGS_mod/json/dogs.json) | Overrides for 12 adult breeds: `lua_ai` and the two attacks. One entry per breed (BN breeds copy `mon_dog` before DoGS loads, [engine notes](engine-notes.md)). HP stays vanilla |
 | [`json/whistle.json`](../../DoGS_mod/json/whistle.json) | Command whistle item, use action and recipe |
@@ -41,12 +57,12 @@ What you need to change the code or run an experiment. Paths are relative to the
 | [`dogs/attacks.lua`](../../DoGS_mod/dogs/attacks.lua) | Attack choice and execution, per-entity cooldowns, Takedown resolution, dodge hook |
 | [`dogs/role.lua`](../../DoGS_mod/dogs/role.lua) | Reading and setting the role; Guard when unset. Harass only when allowed (debug mode in v0.1) |
 | [`dogs/breed.lua`](../../DoGS_mod/dogs/breed.lua) | Which monsters are DoGS dogs (breed list), training level (with the debug override), capability checks |
-| [`dogs/debug.lua`](../../DoGS_mod/dogs/debug.lua) | Debug mode state (mod storage) |
+| [`dogs/debug.lua`](../../DoGS_mod/dogs/debug.lua) | Debug mode state (mod storage); always off without developer tools |
 | [`dogs/events.lua`](../../DoGS_mod/dogs/events.lua) | 10-turn summaries, melee records (dog and player), death records |
 | [`dogs/menu.lua`](../../DoGS_mod/dogs/menu.lua) | Whistle (role orders) and debug menu |
 | [`dogs/log.lua`](../../DoGS_mod/dogs/log.lua) | Log lines (debug mode only), entity numbers |
 | [`dogs/config.lua`](../../DoGS_mod/dogs/config.lua) | All numbers, with comments naming the experiment behind each change |
-| [`dogs/tests.lua`](../../DoGS_mod/dogs/tests.lua) | Policy-function checks at load; not evidence of engine behavior |
+| [`dogs/tests.lua`](../../DoGS_mod/dogs/tests.lua) | Policy-function checks at load (developer tools only, not in the release zip); not evidence of engine behavior |
 
 ## Coding rules
 
@@ -91,6 +107,7 @@ Values in [`config.lua`](../../DoGS_mod/dogs/config.lua). Change them only throu
 | --- | --- | --- |
 | `dog_ids` | 12 adult breeds | Monster types treated as DoGS dogs; `json/dogs.json` must list the same |
 | `training.judgment` / `attacks` / `harass` | 1 / 2 / 3 | BN training level opening the judgment layer with Guard and Free, control attacks, Harass |
+| `dev_tools` | false | Developer tools (see above); false in releases |
 | `harass_enabled` | false | Whether Harass is allowed outside debug mode (hidden in v0.1) |
 | `radius` | 8 | Enemy perception radius |
 | `retreat.adjacent` / `nearby` | 2 / 4 | Encirclement: adjacent count / count within 3 tiles |
@@ -110,7 +127,7 @@ Values in [`config.lua`](../../DoGS_mod/dogs/config.lua). Change them only throu
 
 ## Logging
 
-Lines tagged `[DoGS]` in `config/debug.log` in the game user directory. Lines during play are written **only in debug mode** (load markers and the `debug` event always). Every line written during play carries `turn=` (game turn).
+Lines tagged `[DoGS]` in `config/debug.log` in the game user directory. Lines during play are written **only in debug mode** (load markers always; the `selftest` marker and the `debug` event only with developer tools). Every line written during play carries `turn=` (game turn).
 
 | Event | Content |
 | --- | --- |
@@ -138,7 +155,7 @@ Lines tagged `[DoGS]` in `config/debug.log` in the game user directory. Lines du
 
 **Command whistle** (for players): use it from the inventory. With several tamed DoGS dogs in sight, pick one from a list sorted by distance, then pick a role (Guard, Free; Harass too in debug mode). Crafting: Other → Tools, same materials (2x4 or stick) and skills (fabrication 2, survival 2) as the wooden whistle.
 
-**Debug menu**: action_menu → Debug → **DoGS debug** (hotkey `D` inside it). The first item toggles debug mode. On, it opens logs, state messages (`DoGS #number: STATE`) and dog tools. The dog tools' title shows the number, type, role, HP, state and cooldowns.
+**Debug menu** (developer tools only): action_menu → Debug → **DoGS debug** (hotkey `D` inside it). The first item toggles debug mode. On, it opens logs, state messages (`DoGS #number: STATE`) and dog tools. The dog tools' title shows the number, type, role, HP, state and cooldowns.
 
 | No. | Dog tool |
 | --- | --- |
@@ -152,7 +169,7 @@ Lines tagged `[DoGS]` in `config/debug.log` in the game user directory. Lines du
 
 - Procedures and results are in [experiments](experiments.md). Write a new experiment's setup, measurements and success criteria before starting.
 - Every change starts from analyzing the previous play log. No feature is added without reading the log.
-- Read the log after the last `event=load build=v0.1`. Split runs by `menu` events (HP refill, level override). Turn debug mode on before an experiment.
+- Read the log after the last `event=load`. Split runs by `menu` events (HP refill, level override). Turn developer tools and debug mode on before an experiment.
 - Record how the experimenter ended each run (direct kill, debug kill). `killer=none` alone cannot separate bleeding deaths from debug kills.
 - Loading success or passing policy checks is not reported as play verification.
 

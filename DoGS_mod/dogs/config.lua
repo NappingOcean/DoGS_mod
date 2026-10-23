@@ -1,5 +1,8 @@
 -- Values are documented in docs/en/development.md. Tune from play logs only.
 return {
+  -- Developer tools (docs/en/development.md, "Developer tools"): the debug menu and debug mode,
+  -- experiment logs and the load-time self-tests. false in releases; set true by hand to develop.
+  dev_tools = false,
   -- Adult breeds (docs/en/engine-notes.md, "Pet training and breeds"). Puppies are left out: they
   -- turn into these types in place when they grow. Each needs its entry in json/dogs.json.
   dog_ids = {

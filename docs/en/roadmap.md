@@ -2,7 +2,7 @@
 
 [한국어](../ko/roadmap.md) · [Contents](index.md)
 
-## Status (2026-10-17)
+## Status (2026-10-23)
 
 | Area | Status |
 | --- | --- |
@@ -20,7 +20,7 @@
 | Fetch (bring back registered items) | design candidate, not implemented |
 | Acquisition and training: capabilities open at fixed BN training levels | implemented, not checked in play. Details (starting-profession dogs, bond) undecided |
 | Other dog types | applied to 12 adult breeds, not checked in play |
-| Debug mode (logs, state messages, experiment tools) | implemented, not checked in play |
+| Debug mode (logs, state messages, experiment tools) | implemented, not checked in play. Reachable only with developer tools (`dev_tools`), off in releases |
 | Hostile NPCs | undecided |
 
 ## v0.1 release
@@ -33,8 +33,10 @@ The release scope is separate from the experiment steps (decided 2026-10-17). v0
 - [x] Apply to 12 adult breeds
 - [x] Command whistle (role orders)
 - [x] E10 v0.1 check play ([experiments](experiments.md)); confirmed on redhot `2026-10-16-0238` (`f9586ef`)
-- [ ] Release zip and install instructions
-- [ ] README from the player's side: what differs from vanilla dogs, supported build, known limits
+- [x] Developer tools off by default (`dev_tools`): no debug menu entry, logging hooks or self-tests in a release
+- [x] Release zip and install instructions (`scripts/Build-Release.ps1`, version 0.1.0)
+- [x] README from the player's side: what differs from vanilla dogs, supported build, known limits (`release/`, shipped in the zip)
+- [ ] Publish the GitHub release (created as a draft)
 - [x] Drop "(rebuild)" from the mod name and "Experimental" from its description
 
 ## After v0.1
@@ -115,3 +117,5 @@ The docile stop order was checked once in E8's first attempt; check it again in 
 | 2026-10-17 | Retire the experimental `dogs_trained`; capabilities open by BN `training_level`. A level override exists only in debug mode | Implements the 2026-10-09 decision; the override allows per-level experiments without training time |
 | 2026-10-17 | Give dogs at level 1 or more the permanent, visible effect `[DoGS] Trained dog`, which blocks the stock hit-and-run (`run`) | Guard moved the dog in and the fleeing engine pulled it out again, in a loop (E10-A, B). Deleting the flag would also change level-0 and wild dogs, so it is not used (user decision) |
 | 2026-10-17 | Move the reference revision to `f9586ef` (redhot `2026-10-16-0238`) | The installed experimental build is this one; cited sources changed, but no claim DoGS relies on |
+| 2026-10-23 | Keep one mod and gate the developer tools (debug menu and mode, logging hooks, self-tests) behind `dev_tools` in `config.lua`, false in releases. The debug menu entry is not registered at all | Any Lua entry in the Debug category makes BN show that category to every player. A separate developer mod was not chosen (user decision) |
+| 2026-10-23 | The release zip holds one `DoGS/` folder: the mod without developer-only files, `LICENSE` and a player README (English, Korean). Docs and scripts stay in the repository. Version 0.1.0 (tag `v0.1.0`); the GitHub release starts as a draft | User decision |

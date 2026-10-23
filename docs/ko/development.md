@@ -10,7 +10,8 @@
 | --- | --- |
 | [`DoGS_mod/`](../../DoGS_mod/) | 모드 본체(모드 ID `DoGS`). 게임의 `mods/DoGS`가 이 폴더를 가리킨다 |
 | [`docs/`](../) | 문서(영어 `en`, 한국어 `ko`). 두 언어를 같이 고친다 |
-| [`scripts/`](../../scripts/) | 설치·검사 스크립트 |
+| [`scripts/`](../../scripts/) | 설치·검사·릴리스 스크립트 |
+| [`release/`](../../release/) | 릴리스 zip에 들어가는 플레이어용 README |
 | [`AGENTS.md`](../../AGENTS.md), [`AGENT/research-rules.md`](../../AGENT/research-rules.md) | 에이전트 작업 규칙, 커밋 표기 |
 
 ## 설치와 검사
@@ -21,15 +22,30 @@
 ```
 
 - `Install-Mod.ps1`은 게임의 `mods/DoGS`를 `DoGS_mod/`에 정션으로 연결한다. 예전 `mod/`를 가리키는 정션만 교체하고, 다른 대상이 있으면 멈춘다.
-- `Test-Mod.ps1`은 임시 사용자 디렉터리에서 `--check-mods DoGS`를 실행한다. 출력에 `Error`가 있거나 로딩 표식(`selftest scope=policy result=pass`, `load build=v0.1`, `finalize result=pass`)이 없으면 실패한다. BN은 Lua 로딩 오류가 나도 종료 코드 0으로 끝날 수 있다.
+- `Test-Mod.ps1`은 임시 사용자 디렉터리에서 복사본의 개발자 도구를 켜고 `--check-mods DoGS`를 실행한다. 출력에 `Error`가 있거나 로딩 표식(`selftest scope=policy result=pass`, `load build=<버전> dev_tools=true`, `finalize result=pass`)이 없으면 실패한다. BN은 Lua 로딩 오류가 나도 종료 코드 0으로 끝날 수 있다. `-Release`를 주면 배포 상태 그대로 검사한다. `dev_tools=false`이고 `selftest` 줄이 없어야 한다.
 - 통과는 데이터 로딩, ID 검사, 순수 정책 함수 검사가 통과했다는 뜻이다. 플레이 검증이 아니다.
 - 코드를 바꾼 뒤에는 게임에서 월드를 다시 불러와야 적용된다.
+
+## 개발자 도구
+
+[`dogs/config.lua`](../../DoGS_mod/dogs/config.lua)의 `dev_tools`는 저장소와 릴리스에서 `false`다. 꺼져 있으면 DoGS는 디버그 메뉴 항목과 기록용 훅(`on_creature_melee_attacked`, `on_mon_death`, 요약 타이머)을 등록하지 않고 자체 검사도 돌리지 않는다. 디버그 모드를 켠 채 저장된 월드에서도 디버그 모드는 꺼진 것으로 다루므로 로그, 상태 메시지, 단계 덮어쓰기, 견제에 닿을 수 없다.
+
+- [source] action menu의 `debug` 분류에 Lua 항목이 하나라도 있으면 디버그 키가 해제되어 있어도 BN이 Debug 분류를 보여 준다([action.cpp:1100](https://github.com/cataclysmbn/Cataclysm-BN/blob/f9586ef033948451f9c5a136d1ce6214198f1a67/src/action.cpp#L1100)). 그래서 항목을 등록한 뒤 숨기지 않고 아예 등록하지 않는다.
+- 개발할 때는 로컬에서 `dev_tools = true`로 바꾸고 커밋하지 않는다. `Build-Release.ps1`과 `Test-Mod.ps1 -Release`는 `dev_tools = false,`가 없는 설정을 거부한다.
+
+## 릴리스
+
+```powershell
+.\scripts\Build-Release.ps1 -GameDirectory <BN 게임 디렉터리>
+```
+
+작업 트리가 깨끗해야 한다. `DoGS_mod/`를 개발자 전용 파일(`dogs/tests.lua`)을 뺀 채 `dist/stage-<버전>/DoGS/`로 복사하고, `LICENSE`와 `release/`의 플레이어용 README를 넣은 뒤, 그 폴더를 `Test-Mod.ps1 -Release`로 검사하고, `DoGS/` 폴더 하나만 든 `dist/DoGS-<버전>.zip`을 만든다. 버전은 `modinfo.json`에서 읽는다. `preload.lua`의 `build=` 로딩 표식도 같게 맞춘다.
 
 ## 모듈
 
 | 파일 | 역할 |
 | --- | --- |
-| [`preload.lua`](../../DoGS_mod/preload.lua) | 모듈 로딩, AI 콜백·훅·휘슬 사용 함수·디버그 메뉴·주기 기록 등록, 정책 검사 실행 |
+| [`preload.lua`](../../DoGS_mod/preload.lua) | 모듈 로딩, AI 콜백·훅·휘슬 사용 함수 등록. 개발자 도구가 켜져 있으면 디버그 메뉴·기록용 훅·주기 기록도 등록하고 정책 검사를 실행 |
 | [`finalize.lua`](../../DoGS_mod/finalize.lua) | 개 타입, 휘슬, 효과 ID 유효성 검사 |
 | [`json/dogs.json`](../../DoGS_mod/json/dogs.json) | 성견 12종 덮어쓰기: `lua_ai`, 공격 두 개. 견종마다 따로 둔다(본편 견종은 DoGS보다 먼저 `mon_dog`를 복사한다, [엔진 사실](engine-notes.md)). HP는 바닐라 그대로 |
 | [`json/whistle.json`](../../DoGS_mod/json/whistle.json) | 명령용 휘슬 아이템, 사용 동작, 제작법 |
@@ -41,12 +57,12 @@
 | [`dogs/attacks.lua`](../../DoGS_mod/dogs/attacks.lua) | 공격 선택·실행, 개체 값 쿨다운, Takedown 판정, 회피 훅 |
 | [`dogs/role.lua`](../../DoGS_mod/dogs/role.lua) | 역할 읽기·설정. 값이 없으면 엄호. 견제는 허용될 때만(v0.1은 디버그 모드) |
 | [`dogs/breed.lua`](../../DoGS_mod/dogs/breed.lua) | DoGS 개 판별(견종 목록), 훈련 단계(디버그 덮어쓰기 포함), 능력별 단계 검사 |
-| [`dogs/debug.lua`](../../DoGS_mod/dogs/debug.lua) | 디버그 모드 상태(모드 저장소) |
+| [`dogs/debug.lua`](../../DoGS_mod/dogs/debug.lua) | 디버그 모드 상태(모드 저장소). 개발자 도구가 꺼져 있으면 항상 꺼짐 |
 | [`dogs/events.lua`](../../DoGS_mod/dogs/events.lua) | 10턴 요약, 근접공격 기록(개·플레이어), 사망 기록 |
 | [`dogs/menu.lua`](../../DoGS_mod/dogs/menu.lua) | 휘슬(역할 지시)과 디버그 메뉴 |
 | [`dogs/log.lua`](../../DoGS_mod/dogs/log.lua) | 로그 줄 작성(디버그 모드에서만), 개체 번호 |
 | [`dogs/config.lua`](../../DoGS_mod/dogs/config.lua) | 모든 수치. 바꾼 이유가 된 실험을 주석으로 단다 |
-| [`dogs/tests.lua`](../../DoGS_mod/dogs/tests.lua) | 로딩 중 정책 함수 검사. 엔진 동작의 증거가 아니다 |
+| [`dogs/tests.lua`](../../DoGS_mod/dogs/tests.lua) | 로딩 중 정책 함수 검사(개발자 도구 전용, 릴리스 zip에서 제외). 엔진 동작의 증거가 아니다 |
 
 ## 코드 규칙
 
@@ -91,6 +107,7 @@
 | --- | --- | --- |
 | `dog_ids` | 성견 12종 | DoGS 개로 다루는 몬스터 종류. `json/dogs.json`에 같은 목록이 있어야 한다 |
 | `training.judgment` / `attacks` / `harass` | 1 / 2 / 3 | 판단층과 엄호·자유, 제압 공격, 견제가 열리는 본편 훈련 단계 |
+| `dev_tools` | false | 개발자 도구(위 참고). 릴리스에서는 false |
 | `harass_enabled` | false | 디버그 모드 밖에서 견제를 허용하는가(v0.1은 숨김) |
 | `radius` | 8 | 적 인식 반경 |
 | `retreat.adjacent` / `nearby` | 2 / 4 | 포위 판단: 인접 적 수 / 3타일 안 적 수 |
@@ -110,7 +127,7 @@
 
 ## 로그
 
-게임 사용자 디렉터리의 `config/debug.log`에서 `[DoGS]`가 붙은 줄이다. 플레이 중 기록은 **디버그 모드에서만** 남는다(로딩 표식과 `debug` 이벤트는 항상). 플레이 중 기록되는 줄에는 모두 `turn=`(게임 턴)이 붙는다.
+게임 사용자 디렉터리의 `config/debug.log`에서 `[DoGS]`가 붙은 줄이다. 플레이 중 기록은 **디버그 모드에서만** 남는다(로딩 표식은 항상, `selftest` 표식과 `debug` 이벤트는 개발자 도구가 켜져 있을 때만). 플레이 중 기록되는 줄에는 모두 `turn=`(게임 턴)이 붙는다.
 
 | 이벤트 | 내용 |
 | --- | --- |
@@ -138,7 +155,7 @@
 
 **명령용 휘슬**(플레이어용): 소지품에서 사용한다. 보이는 길들인 DoGS 개가 여럿이면 거리순 목록에서 고르고, 역할(엄호·자유, 디버그 모드에서는 견제도)을 고른다. 제작: 기타 → 도구, 나무 휘슬과 같은 재료(각목 또는 막대기)와 기술(제작 2, 생존 2).
 
-**디버그 메뉴**: action_menu → Debug → **DoGS debug**(그 안의 단축키 `D`). 첫 항목이 디버그 모드 켜기·끄기다. 켜면 로그, 상태 메시지(`DoGS #번호: 상태`), 개 도구가 열린다. 개 도구의 제목에 번호, 종류, 역할, HP, 상태, 쿨다운이 표시된다.
+**디버그 메뉴**(개발자 도구 전용): action_menu → Debug → **DoGS debug**(그 안의 단축키 `D`). 첫 항목이 디버그 모드 켜기·끄기다. 켜면 로그, 상태 메시지(`DoGS #번호: 상태`), 개 도구가 열린다. 개 도구의 제목에 번호, 종류, 역할, HP, 상태, 쿨다운이 표시된다.
 
 | 번호 | 개 도구 항목 |
 | --- | --- |
@@ -152,7 +169,7 @@
 
 - 절차와 결과는 [실험 기록](experiments.md)에 있다. 새 실험은 배치, 측정, 성공 기준을 먼저 적고 시작한다.
 - 매 수정은 직전 플레이 로그 분석으로 시작한다. 로그를 읽지 않고 기능을 더하지 않는다.
-- 로그는 마지막 `event=load build=v0.1` 이후를 본다. 회차는 `menu`(HP 회복, 단계 덮어쓰기) 이벤트로 나눈다. 실험 전에 디버그 모드를 켠다.
+- 로그는 마지막 `event=load` 이후를 본다. 회차는 `menu`(HP 회복, 단계 덮어쓰기) 이벤트로 나눈다. 실험 전에 개발자 도구와 디버그 모드를 켠다.
 - 실험자가 회차를 어떻게 정리했는지(직접 처치, 디버그 처치)를 함께 기록한다. 로그의 `killer=none`만으로는 출혈 사망과 디버그 처치를 구분할 수 없다.
 - 로딩 성공이나 정책 검사 통과를 플레이 검증으로 적지 않는다.
 

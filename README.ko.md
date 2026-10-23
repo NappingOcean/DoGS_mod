@@ -13,16 +13,20 @@
 
 계획: 사선 회피, 견제 역할(플레이어 근처에서 다음 적을 붙잡아 적이 한꺼번에 오지 않게 하기).
 
-**현재 상태:** redhot BN(Lua API 2)용 실험 빌드이며 [`DoGS_mod/`](DoGS_mod/)에 있습니다. 실험 E0~E7을 기록했고, v0.1을 준비하고 있습니다.
+**현재 상태:** redhot BN(Lua API 2)용 0.1.0이며 `2026-10-16-0238` 빌드에서 확인했습니다. 소스는 [`DoGS_mod/`](DoGS_mod/)에 있습니다.
 
 ## 설치
+
+플레이어: [Releases](https://github.com/NappingOcean/DoGS_mod/releases)에서 `DoGS-<버전>.zip`을 받아 게임의 `mods` 폴더에 풉니다. 사용법은 zip 안의 README에 있습니다.
+
+저장소에서(개발용):
 
 ```powershell
 .\scripts\Install-Mod.ps1 -GameDirectory <BN 게임 디렉터리>
 .\scripts\Test-Mod.ps1 -GameDirectory <BN 게임 디렉터리>
 ```
 
-시험 월드에서 **DoGS — Dogs of Good Sense**를 켜고, 개를 길들여 본편 훈련(펫 메뉴의 Train)으로 1단계 이상 올린 뒤 **명령용 도그 휘슬**(제작: 기타 → 도구)로 역할을 정합니다. 실험 도구와 로그는 action_menu → Debug → **DoGS debug**의 디버그 모드에 있습니다.
+시험 월드에서 **DoGS — Dogs of Good Sense**를 켜고, 개를 길들여 본편 훈련(펫 메뉴의 Train)으로 1단계 이상 올린 뒤 **명령용 도그 휘슬**(제작: 기타 → 도구)로 역할을 정합니다. 실험 도구와 로그는 `DoGS_mod/dogs/config.lua`에서 `dev_tools = true`로 바꿔야 쓸 수 있습니다([개발 안내](docs/ko/development.md#개발자-도구)).
 
 ## 문서
 

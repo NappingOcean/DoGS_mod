@@ -13,16 +13,20 @@ An experimental dog AI mod for **Cataclysm: Bright Nights**. DoGS does not make 
 
 Planned: firing-line avoidance and the Harass role (holding up the next enemy near the player so enemies do not arrive at once).
 
-**Status:** experimental build for redhot BN (Lua API 2) in [`DoGS_mod/`](DoGS_mod/). Experiments E0–E7 are recorded; v0.1 is being prepared.
+**Status:** 0.1.0 for redhot BN (Lua API 2), checked on build `2026-10-16-0238`. Source in [`DoGS_mod/`](DoGS_mod/).
 
 ## Install
+
+Players: download `DoGS-<version>.zip` from [Releases](https://github.com/NappingOcean/DoGS_mod/releases) and extract it into the game's `mods` folder. The README inside the zip explains how to use the mod.
+
+From the repository (development):
 
 ```powershell
 .\scripts\Install-Mod.ps1 -GameDirectory <BN game directory>
 .\scripts\Test-Mod.ps1 -GameDirectory <BN game directory>
 ```
 
-Enable **DoGS — Dogs of Good Sense** in a test world, tame a dog, raise it to training level 1 or more with BN's training (Train in the pet menu), and set its role with the **command dog whistle** (crafting: Other → Tools). Experiment tools and logs are in debug mode under action menu → Debug → **DoGS debug**.
+Enable **DoGS — Dogs of Good Sense** in a test world, tame a dog, raise it to training level 1 or more with BN's training (Train in the pet menu), and set its role with the **command dog whistle** (crafting: Other → Tools). Experiment tools and logs need `dev_tools = true` in `DoGS_mod/dogs/config.lua` ([development guide](docs/en/development.md#developer-tools)).
 
 ## Documentation
 

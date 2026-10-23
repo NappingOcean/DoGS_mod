@@ -177,7 +177,7 @@ The flow, the difference from Guard, open points, and the shelved "cut enemies o
 ## 8. Known limits
 
 - Hostile NPCs are not perceived.
-- Only `mon_dog` (Labrador mutt) is covered.
+- Only the 12 adult breeds in section 7 are covered; puppies join when grown.
 - While enemies are visible, movement is DoGS's one-tile step without pathfinding. Whether it gets stuck among obstacles is untested.
 - The engine's target choice and attack target cannot be changed from Lua; to take on a specific enemy, the dog must move next to it itself.
 - Off-sight targets (scent or sound tracking) cannot be detected; a replaced destination is used as the signal.
